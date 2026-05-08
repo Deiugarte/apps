@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Unidades y Decenas</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #FFF8F0;
+  --surface: #FFFFFF;
+  --unit-clr: #E84393;
+  --unit-light: #FFE0F0;
+  --unit-mid: #F9A8D4;
+  --dec-clr: #2563EB;
+  --dec-light: #DBEAFE;
+  --dec-mid: #93C5FD;
+  --correct: #16A34A;
+  --correct-bg: #DCFCE7;
+  --wrong: #DC2626;
+  --wrong-bg: #FEE2E2;
+  --neutral: #64748B;
+  --text: #1E293B;
+  --text-light: #64748B;
+  --border: rgba(0,0,0,0.08);
+  --shadow: 0 2px 12px rgba(0,0,0,0.06);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.10);
+  --radius: 16px;
+  --radius-sm: 10px;
+}
+
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  font-family: 'Nunito', sans-serif;
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  touch-action: manipulation;
+}
+
+#app { display: flex; flex-direction: column; height: 100vh; width: 100vw; }
+
+/* ── NAV ── */
+#nav {
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  height: 56px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  gap: 8px;
+  flex-shrink: 0;
+}
+#nav-title {
+  font-family: 'Baloo 2', cursive;
+  font-size: 20px;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--unit-clr), var(--dec-clr));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-right: 8px;
+  white-space: nowrap;
+}
+.nav-tab {
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 2px solid transparent;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .15s;
+  white-space: nowrap;
+  user-select: none;
+  background: transparent;
+  color: var(--text-light);
+}
+.nav-tab.active {
+  background: var(--text);
+  color: white;
+  border-color: var(--text);
+}
+#score-area {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.score-chip {
+  display: flex; align-items: center; gap: 4px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 800;
+}
+.score-chip.right { background: var(--correct-bg); color: var(--correct); }
+.score-chip.wrong { background: var(--wrong-bg);   color: var(--wrong);   }
+
+/* ── MAIN CONTENT ── */
+#content { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 20px 16px 32px; -webkit-overflow-scrolling: touch; }
+
+/* ════════════════════════════
+   TAB: APRENDER
+════════════════════════════ */
+#tab-learn { display: flex; flex-direction: column; gap: 20px; }
+
+.learn-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+}
+.learn-card h2 {
+  font-family: 'Baloo 2', cursive;
+  font-size: 18px; font-weight: 800;
+  margin-bottom: 14px;
+}
+
+/* positional table */
+.pos-table {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.pos-cell {
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  text-align: center;
+}
+.pos-cell.dec { background: var(--dec-light); }
+.pos-cell.uni { background: var(--unit-light); }
+.pos-cell .pos-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 6px; }
+.pos-cell.dec .pos-label { color: var(--dec-clr); }
+.pos-cell.uni .pos-label { color: var(--unit-clr); }
+.pos-cell .pos-digit { font-family: 'Baloo 2', cursive; font-size: 48px; font-weight: 800; line-height: 1; }
+.pos-cell.dec .pos-digit { color: var(--dec-clr); }
+.pos-cell.uni .pos-digit { color: var(--unit-clr); }
+.pos-cell .pos-value { font-size: 13px; font-weight: 600; color: var(--text-light); margin-top: 4px; }
+
+.example-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+.ex-number {
+  font-family: 'Baloo 2', cursive; font-size: 36px; font-weight: 800; color: var(--text);
+}
+.ex-eq { font-size: 20px; font-weight: 700; color: var(--text-light); }
+.ex-part {
+  font-family: 'Baloo 2', cursive; font-size: 28px; font-weight: 800;
+  padding: 2px 10px; border-radius: 8px;
+}
+.ex-part.dec { background: var(--dec-light); color: var(--dec-clr); }
+.ex-part.uni { background: var(--unit-light); color: var(--unit-clr); }
+.ex-plus { font-size: 22px; font-weight: 700; color: var(--text-light); }
+
+/* interactive demo */
+#demo-slider-wrap { display: flex; flex-direction: column; gap: 12px; }
+#demo-number-display {
+  font-family: 'Baloo 2', cursive;
+  font-size: 64px; font-weight: 900;
+  text-align: center; line-height: 1;
+  margin: 8px 0;
+}
+#demo-tens-digit { color: var(--dec-clr); }
+#demo-units-digit { color: var(--unit-clr); }
+.demo-breakdown {
+  display: flex; align-items: center; justify-content: center;
+  gap: 10px; flex-wrap: wrap; margin-bottom: 8px;
+}
+.demo-label { text-align: center; font-size: 12px; font-weight: 700; color: var(--text-light); margin-top: 4px; }
+.slider-row { display: flex; align-items: center; gap: 10px; }
+.slider-label { font-size: 13px; font-weight: 700; min-width: 70px; }
+.slider-label.dec { color: var(--dec-clr); }
+.slider-label.uni { color: var(--unit-clr); }
+input[type=range].dec-range { flex: 1; accent-color: var(--dec-clr); height: 6px; }
+input[type=range].uni-range { flex: 1; accent-color: var(--unit-clr); height: 6px; }
+input[type=range] { -webkit-appearance: none; border-radius: 3px; outline: none; cursor: pointer; background: #e2e8f0; }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 24px; height: 24px; border-radius: 50%; cursor: pointer; border: 3px solid white; box-shadow: 0 2px 6px rgba(0,0,0,.2); }
+input[type=range].dec-range::-webkit-slider-thumb { background: var(--dec-clr); }
+input[type=range].uni-range::-webkit-slider-thumb { background: var(--unit-clr); }
+.slider-val { font-family: 'Baloo 2', cursive; font-size: 20px; font-weight: 800; min-width: 28px; text-align: right; }
+.slider-val.dec { color: var(--dec-clr); }
+.slider-val.uni { color: var(--unit-clr); }
+
+/* blocks visual */
+#blocks-area {
+  display: flex; gap: 16px; align-items: flex-end;
+  min-height: 80px; padding: 8px 0; flex-wrap: wrap;
+}
+.block-group { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.block-group-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
+.block-group-label.dec { color: var(--dec-clr); }
+.block-group-label.uni { color: var(--unit-clr); }
+.blocks-row { display: flex; gap: 3px; flex-wrap: wrap; max-width: 220px; }
+.block-ten {
+  width: 22px; height: 80px;
+  background: var(--dec-clr);
+  border-radius: 5px;
+  display: flex; flex-direction: column; justify-content: space-around;
+  padding: 3px;
+}
+.block-ten-seg { width: 100%; height: 6px; background: rgba(255,255,255,0.35); border-radius: 2px; }
+.block-one {
+  width: 22px; height: 22px;
+  background: var(--unit-clr);
+  border-radius: 5px;
+}
+
+/* ════════════════════════════
+   TAB: EJERCICIOS
+════════════════════════════ */
+#tab-ejercicios { display: flex; flex-direction: column; gap: 0; }
+
+#exercise-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 24px 20px 20px;
+  box-shadow: var(--shadow-lg);
+  display: flex; flex-direction: column; gap: 16px;
+}
+
+#ex-mode-tabs {
+  display: flex; gap: 8px; flex-wrap: wrap;
+}
+.ex-mode-btn {
+  padding: 5px 12px; border-radius: 20px;
+  border: 2px solid var(--border); background: transparent;
+  font-size: 12px; font-weight: 700; cursor: pointer;
+  color: var(--text-light); transition: all .15s;
+  font-family: 'Nunito', sans-serif;
+}
+.ex-mode-btn.active { background: var(--text); color: white; border-color: var(--text); }
+
+#question-area { text-align: center; }
+#question-prompt {
+  font-size: 14px; font-weight: 700; color: var(--text-light);
+  text-transform: uppercase; letter-spacing: .06em; margin-bottom: 12px;
+}
+#question-number {
+  font-family: 'Baloo 2', cursive; font-size: 80px; font-weight: 900;
+  line-height: 1; color: var(--text);
+}
+#question-blocks-display {
+  display: flex; justify-content: center; gap: 20px;
+  flex-wrap: wrap; margin: 8px 0;
+}
+#question-decomp {
+  font-family: 'Baloo 2', cursive; font-size: 32px; font-weight: 800;
+  color: var(--text); margin: 4px 0;
+}
+
+/* answer inputs */
+#answer-area { display: flex; flex-direction: column; gap: 14px; }
+
+.answer-group {
+  display: flex; align-items: center; gap: 12px;
+}
+.answer-label-badge {
+  width: 90px; flex-shrink: 0;
+  padding: 8px 0;
+  border-radius: 10px;
+  text-align: center;
+  font-size: 13px; font-weight: 800;
+}
+.answer-label-badge.dec { background: var(--dec-light); color: var(--dec-clr); }
+.answer-label-badge.uni { background: var(--unit-light); color: var(--unit-clr); }
+
+.answer-input {
+  flex: 1;
+  height: 52px;
+  border-radius: 12px;
+  border: 2.5px solid var(--border);
+  background: var(--bg);
+  font-family: 'Baloo 2', cursive;
+  font-size: 28px; font-weight: 800;
+  text-align: center;
+  outline: none;
+  color: var(--text);
+  transition: border-color .15s;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.answer-input:focus { border-color: var(--dec-clr); background: white; }
+.answer-input.correct { border-color: var(--correct); background: var(--correct-bg); color: var(--correct); }
+.answer-input.wrong   { border-color: var(--wrong);   background: var(--wrong-bg);   color: var(--wrong);   }
+
+/* number pad */
+#numpad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.np-btn {
+  height: 52px;
+  border-radius: 12px;
+  border: 2px solid var(--border);
+  background: white;
+  font-family: 'Baloo 2', cursive;
+  font-size: 22px; font-weight: 800;
+  cursor: pointer;
+  transition: transform .1s, background .1s;
+  color: var(--text);
+  user-select: none;
+}
+.np-btn:active { transform: scale(.94); background: var(--bg); }
+.np-btn.np-del { font-size: 18px; color: var(--text-light); }
+.np-btn.np-ok  { background: var(--text); color: white; border-color: var(--text); font-size: 16px; }
+.np-btn.np-next { background: var(--dec-clr); color: white; border-color: var(--dec-clr); font-size: 14px; }
+
+#feedback-bar {
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 15px; font-weight: 800;
+  text-align: center;
+  display: none;
+}
+#feedback-bar.correct { background: var(--correct-bg); color: var(--correct); display: block; }
+#feedback-bar.wrong   { background: var(--wrong-bg);   color: var(--wrong);   display: block; }
+
+/* ════════════════════════════
+   TAB: CONTAR
+════════════════════════════ */
+#tab-contar { display: flex; flex-direction: column; gap: 16px; }
+
+.count-card {
+  background: var(--surface); border-radius: var(--radius);
+  padding: 20px; box-shadow: var(--shadow);
+}
+
+#count-challenge {
+  text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+}
+#count-instruction {
+  font-size: 14px; font-weight: 700; color: var(--text-light);
+  text-transform: uppercase; letter-spacing: .06em;
+}
+#count-blocks-area {
+  display: flex; gap: 14px; flex-wrap: wrap; justify-content: center;
+  padding: 12px; background: var(--bg); border-radius: 12px; width: 100%;
+  min-height: 100px; align-items: flex-end;
+}
+#count-answer-row {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: center;
+}
+.count-input {
+  width: 64px; height: 60px;
+  border-radius: 12px;
+  border: 2.5px solid var(--border);
+  background: var(--bg);
+  font-family: 'Baloo 2', cursive;
+  font-size: 30px; font-weight: 900;
+  text-align: center; outline: none;
+  color: var(--text);
+}
+.count-input.dec:focus { border-color: var(--dec-clr); }
+.count-input.uni:focus { border-color: var(--unit-clr); }
+.count-input.correct { border-color: var(--correct); background: var(--correct-bg); color: var(--correct); }
+.count-input.wrong   { border-color: var(--wrong); background: var(--wrong-bg); color: var(--wrong); }
+.count-sep { font-family: 'Baloo 2', cursive; font-size: 28px; font-weight: 900; color: var(--text-light); }
+#count-check-btn {
+  padding: 10px 24px; border-radius: 12px;
+  background: var(--text); border: none;
+  color: white; font-family: 'Nunito', sans-serif;
+  font-size: 15px; font-weight: 800; cursor: pointer;
+  transition: opacity .15s;
+}
+#count-check-btn:active { opacity: .85; }
+#count-new-btn {
+  padding: 10px 20px; border-radius: 12px;
+  background: transparent; border: 2px solid var(--border);
+  color: var(--text-light); font-family: 'Nunito', sans-serif;
+  font-size: 14px; font-weight: 700; cursor: pointer;
+}
+
+/* ════════════════════════════
+   TAB: DESAFÍO
+════════════════════════════ */
+#tab-desafio { display: flex; flex-direction: column; gap: 16px; }
+#challenge-card {
+  background: var(--surface); border-radius: var(--radius);
+  padding: 20px; box-shadow: var(--shadow-lg);
+  display: flex; flex-direction: column; gap: 14px;
+}
+#timer-bar-wrap { height: 8px; background: var(--bg); border-radius: 4px; overflow: hidden; }
+#timer-bar { height: 100%; background: var(--dec-clr); border-radius: 4px; transition: width .1s linear; }
+#challenge-q {
+  text-align: center;
+  font-family: 'Baloo 2', cursive; font-size: 22px; font-weight: 800;
+  min-height: 60px; display: flex; align-items: center; justify-content: center;
+}
+#challenge-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.ch-option {
+  padding: 16px 12px; border-radius: 14px;
+  border: 2.5px solid var(--border); background: white;
+  font-family: 'Baloo 2', cursive; font-size: 22px; font-weight: 800;
+  cursor: pointer; text-align: center;
+  transition: transform .1s, border-color .15s;
+  color: var(--text); user-select: none;
+}
+.ch-option:active { transform: scale(.96); }
+.ch-option.correct { background: var(--correct-bg); border-color: var(--correct); color: var(--correct); }
+.ch-option.wrong   { background: var(--wrong-bg);   border-color: var(--wrong);   color: var(--wrong);   }
+#challenge-score-row {
+  display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;
+}
+.ch-stat {
+  padding: 6px 14px; border-radius: 20px;
+  font-size: 13px; font-weight: 800;
+}
+.ch-stat.time { background: var(--dec-light); color: var(--dec-clr); }
+.ch-stat.pts  { background: var(--unit-light); color: var(--unit-clr); }
+.ch-stat.streak { background: #FEF9C3; color: #854D0E; }
+#challenge-start {
+  padding: 14px; border-radius: 14px; border: none;
+  background: var(--dec-clr); color: white;
+  font-family: 'Nunito', sans-serif; font-size: 17px; font-weight: 800;
+  cursor: pointer; transition: opacity .15s;
+}
+#challenge-start:active { opacity: .85; }
+
+/* result overlay */
+#result-overlay {
+  display: none; position: fixed; inset: 0; z-index: 100;
+  background: rgba(0,0,0,0.4);
+  align-items: center; justify-content: center;
+}
+#result-overlay.show { display: flex; }
+#result-box {
+  background: white; border-radius: 24px; padding: 32px 28px;
+  text-align: center; max-width: 320px; width: 90%;
+  box-shadow: 0 20px 60px rgba(0,0,0,.2);
+}
+#result-emoji { font-size: 56px; margin-bottom: 8px; }
+#result-title { font-family: 'Baloo 2', cursive; font-size: 28px; font-weight: 900; margin-bottom: 6px; }
+#result-sub { font-size: 15px; color: var(--text-light); font-weight: 600; margin-bottom: 20px; }
+#result-score { font-family: 'Baloo 2', cursive; font-size: 52px; font-weight: 900; color: var(--dec-clr); }
+#result-label { font-size: 14px; color: var(--text-light); font-weight: 600; margin-bottom: 20px; }
+#result-play-again {
+  width: 100%; padding: 14px; border-radius: 14px; border: none;
+  background: var(--dec-clr); color: white;
+  font-family: 'Nunito', sans-serif; font-size: 17px; font-weight: 800;
+  cursor: pointer;
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ── NAV ── -->
+<div id="nav">
+  <span id="nav-title">Unidades y Decenas</span>
+  <button class="nav-tab active" data-tab="learn">Aprender</button>
+  <button class="nav-tab" data-tab="ejercicios">Ejercicios</button>
+  <button class="nav-tab" data-tab="contar">Contar</button>
+  <button class="nav-tab" data-tab="desafio">Desafío</button>
+  <div id="score-area">
+    <div class="score-chip right">✓ <span id="sc-right">0</span></div>
+    <div class="score-chip wrong">✗ <span id="sc-wrong">0</span></div>
+  </div>
+</div>
+
+<!-- ── CONTENT ── -->
+<div id="content">
+
+  <!-- ═══ APRENDER ═══ -->
+  <div id="tab-learn">
+
+    <div class="learn-card">
+      <h2>¿Qué son las posiciones?</h2>
+      <div class="pos-table">
+        <div class="pos-cell dec">
+          <div class="pos-label">Decenas</div>
+          <div class="pos-digit">3</div>
+          <div class="pos-value">vale 30</div>
+        </div>
+        <div class="pos-cell uni">
+          <div class="pos-label">Unidades</div>
+          <div class="pos-digit">7</div>
+          <div class="pos-value">vale 7</div>
+        </div>
+      </div>
+      <div class="example-row">
+        <span class="ex-number">37</span>
+        <span class="ex-eq">=</span>
+        <span class="ex-part dec">30</span>
+        <span class="ex-plus">+</span>
+        <span class="ex-part uni">7</span>
+      </div>
+      <p style="font-size:14px;color:var(--text-light);font-weight:600;line-height:1.5;">
+        Todo número tiene dos partes: las <strong style="color:var(--dec-clr)">decenas</strong> (grupos de 10) y las <strong style="color:var(--unit-clr)">unidades</strong> (los que sobran).
+      </p>
+    </div>
+
+    <div class="learn-card">
+      <h2>Juega con los números</h2>
+      <div id="demo-slider-wrap">
+        <div id="demo-number-display">
+          <span id="demo-tens-digit">3</span><span id="demo-units-digit">7</span>
+        </div>
+        <div class="demo-breakdown">
+          <span class="ex-part dec" id="demo-dec-val">30</span>
+          <span class="ex-plus">+</span>
+          <span class="ex-part uni" id="demo-uni-val">7</span>
+        </div>
+        <div class="slider-row">
+          <span class="slider-label dec">Decenas</span>
+          <input type="range" class="dec-range" id="dec-slider" min="0" max="9" value="3">
+          <span class="slider-val dec" id="dec-slider-val">3</span>
+        </div>
+        <div class="slider-row">
+          <span class="slider-label uni">Unidades</span>
+          <input type="range" class="uni-range" id="uni-slider" min="0" max="9" value="7">
+          <span class="slider-val uni" id="uni-slider-val">7</span>
+        </div>
+        <div id="blocks-area" aria-hidden="true">
+          <div class="block-group" id="tens-blocks">
+            <div class="block-group-label dec">Decenas</div>
+            <div class="blocks-row" id="tens-blocks-row"></div>
+          </div>
+          <div class="block-group" id="units-blocks">
+            <div class="block-group-label uni">Unidades</div>
+            <div class="blocks-row" id="units-blocks-row"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="learn-card">
+      <h2>Ejemplos</h2>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div class="example-row"><span class="ex-number">15</span><span class="ex-eq">=</span><span class="ex-part dec">10</span><span class="ex-plus">+</span><span class="ex-part uni">5</span></div>
+        <div class="example-row"><span class="ex-number">42</span><span class="ex-eq">=</span><span class="ex-part dec">40</span><span class="ex-plus">+</span><span class="ex-part uni">2</span></div>
+        <div class="example-row"><span class="ex-number">80</span><span class="ex-eq">=</span><span class="ex-part dec">80</span><span class="ex-plus">+</span><span class="ex-part uni">0</span></div>
+        <div class="example-row"><span class="ex-number">9</span><span class="ex-eq">=</span><span class="ex-part dec">0</span><span class="ex-plus">+</span><span class="ex-part uni">9</span></div>
+      </div>
+    </div>
+
+  </div><!-- /tab-learn -->
+
+  <!-- ═══ EJERCICIOS ═══ -->
+  <div id="tab-ejercicios" style="display:none">
+    <div id="exercise-card">
+      <div id="ex-mode-tabs">
+        <button class="ex-mode-btn active" data-mode="identify">Identificar dígitos</button>
+        <button class="ex-mode-btn" data-mode="compose">Componer número</button>
+        <button class="ex-mode-btn" data-mode="decompose">Descomponer</button>
+      </div>
+
+      <div id="question-area">
+        <div id="question-prompt">¿Cuántas decenas y unidades tiene?</div>
+        <div id="question-number">47</div>
+        <div id="question-blocks-display"></div>
+        <div id="question-decomp" style="display:none"></div>
+      </div>
+
+      <div id="answer-area">
+        <div class="answer-group" id="ag-dec">
+          <div class="answer-label-badge dec">Decenas</div>
+          <input class="answer-input" id="ans-dec" type="text" inputmode="none" readonly placeholder="?">
+        </div>
+        <div class="answer-group" id="ag-uni">
+          <div class="answer-label-badge uni">Unidades</div>
+          <input class="answer-input" id="ans-uni" type="text" inputmode="none" readonly placeholder="?">
+        </div>
+        <div class="answer-group" id="ag-num" style="display:none">
+          <div class="answer-label-badge" style="background:var(--bg);color:var(--text)">Número</div>
+          <input class="answer-input" id="ans-num" type="text" inputmode="none" readonly placeholder="??" style="font-size:32px">
+        </div>
+      </div>
+
+      <div id="feedback-bar"></div>
+
+      <div id="numpad">
+        <button class="np-btn" data-n="1">1</button>
+        <button class="np-btn" data-n="2">2</button>
+        <button class="np-btn" data-n="3">3</button>
+        <button class="np-btn" data-n="4">4</button>
+        <button class="np-btn" data-n="5">5</button>
+        <button class="np-btn" data-n="6">6</button>
+        <button class="np-btn" data-n="7">7</button>
+        <button class="np-btn" data-n="8">8</button>
+        <button class="np-btn" data-n="9">9</button>
+        <button class="np-btn np-del" data-n="del">⌫</button>
+        <button class="np-btn" data-n="0">0</button>
+        <button class="np-btn np-ok" id="np-check">✓</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ CONTAR ═══ -->
+  <div id="tab-contar" style="display:none">
+    <div class="count-card">
+      <div id="count-challenge">
+        <div id="count-instruction">¿Cuántos grupos y unidades ves?</div>
+        <div id="count-blocks-area"></div>
+        <div id="count-answer-row">
+          <span class="answer-label-badge dec" style="width:auto;padding:6px 10px;font-size:12px">Dec.</span>
+          <input class="count-input dec" id="cnt-dec" type="text" inputmode="none" readonly placeholder="?">
+          <span class="count-sep">y</span>
+          <span class="answer-label-badge uni" style="width:auto;padding:6px 10px;font-size:12px">Uni.</span>
+          <input class="count-input uni" id="cnt-uni" type="text" inputmode="none" readonly placeholder="?">
+        </div>
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+          <button id="count-check-btn">Verificar</button>
+          <button id="count-new-btn">Nuevo ↺</button>
+        </div>
+      </div>
+    </div>
+    <div class="count-card" style="padding:14px">
+      <div id="numpad2" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+        <button class="np-btn" data-n2="1">1</button>
+        <button class="np-btn" data-n2="2">2</button>
+        <button class="np-btn" data-n2="3">3</button>
+        <button class="np-btn" data-n2="4">4</button>
+        <button class="np-btn" data-n2="5">5</button>
+        <button class="np-btn" data-n2="6">6</button>
+        <button class="np-btn" data-n2="7">7</button>
+        <button class="np-btn" data-n2="8">8</button>
+        <button class="np-btn" data-n2="9">9</button>
+        <button class="np-btn np-del" data-n2="del">⌫</button>
+        <button class="np-btn" data-n2="0">0</button>
+        <button class="np-btn np-ok" id="cnt-ok-btn">✓</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ DESAFÍO ═══ -->
+  <div id="tab-desafio" style="display:none">
+    <div id="challenge-card">
+      <div id="challenge-score-row">
+        <div class="ch-stat time">⏱ <span id="ch-time">60</span>s</div>
+        <div class="ch-stat pts">⭐ <span id="ch-pts">0</span> pts</div>
+        <div class="ch-stat streak">🔥 <span id="ch-streak">0</span> seguidas</div>
+      </div>
+      <div id="timer-bar-wrap"><div id="timer-bar" style="width:100%"></div></div>
+      <div id="challenge-q">¡Toca Iniciar para comenzar!</div>
+      <div id="challenge-options" style="visibility:hidden">
+        <div class="ch-option" data-idx="0">—</div>
+        <div class="ch-option" data-idx="1">—</div>
+        <div class="ch-option" data-idx="2">—</div>
+        <div class="ch-option" data-idx="3">—</div>
+      </div>
+      <button id="challenge-start">🚀 Iniciar desafío (60 segundos)</button>
+    </div>
+  </div>
+
+</div><!-- /content -->
+</div><!-- /app -->
+
+<!-- result overlay -->
+<div id="result-overlay">
+  <div id="result-box">
+    <div id="result-emoji">🎉</div>
+    <div id="result-title">¡Tiempo!</div>
+    <div id="result-sub">Puntuación final</div>
+    <div id="result-score">0</div>
+    <div id="result-label">puntos en 60 segundos</div>
+    <button id="result-play-again">Jugar de nuevo</button>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════
+   GLOBAL STATE
+═══════════════════════════════ */
+let scoreRight = 0, scoreWrong = 0;
+function addScore(correct) {
+  if (correct) { scoreRight++; document.getElementById('sc-right').textContent = scoreRight; }
+  else { scoreWrong++; document.getElementById('sc-wrong').textContent = scoreWrong; }
+}
+
+/* ═══════════════════════════════
+   NAV TABS
+═══════════════════════════════ */
+const TABS = ['learn','ejercicios','contar','desafio'];
+document.querySelectorAll('.nav-tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const t = btn.dataset.tab;
+    document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    TABS.forEach(id => {
+      const el = document.getElementById('tab-' + id);
+      el.style.display = id === t ? (id==='ejercicios'||id==='contar'||id==='desafio' ? 'flex' : 'flex') : 'none';
+    });
+    if (t === 'contar') genCountChallenge();
+    if (t === 'desafio') resetChallenge();
+  });
+});
+
+/* ═══════════════════════════════
+   APRENDER — SLIDER DEMO
+═══════════════════════════════ */
+function updateDemo() {
+  const t = parseInt(document.getElementById('dec-slider').value);
+  const u = parseInt(document.getElementById('uni-slider').value);
+  document.getElementById('demo-tens-digit').textContent  = t;
+  document.getElementById('demo-units-digit').textContent = u;
+  document.getElementById('dec-slider-val').textContent = t;
+  document.getElementById('uni-slider-val').textContent = u;
+  document.getElementById('demo-dec-val').textContent = t * 10;
+  document.getElementById('demo-uni-val').textContent = u;
+
+  // blocks
+  const tr = document.getElementById('tens-blocks-row');
+  const ur = document.getElementById('units-blocks-row');
+  tr.innerHTML = ''; ur.innerHTML = '';
+  for (let i = 0; i < t; i++) {
+    const b = document.createElement('div');
+    b.className = 'block-ten';
+    for (let j = 0; j < 10; j++) {
+      const s = document.createElement('div'); s.className = 'block-ten-seg'; b.appendChild(s);
+    }
+    tr.appendChild(b);
+  }
+  for (let i = 0; i < u; i++) {
+    const b = document.createElement('div'); b.className = 'block-one'; ur.appendChild(b);
+  }
+}
+document.getElementById('dec-slider').addEventListener('input', updateDemo);
+document.getElementById('uni-slider').addEventListener('input', updateDemo);
+updateDemo();
+
+/* ═══════════════════════════════
+   EJERCICIOS
+═══════════════════════════════ */
+let exMode = 'identify';
+let exNumber = 0, exTens = 0, exUnits = 0;
+let activeInput = 'dec'; // which input is focused
+let answered = false;
+
+function rand(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+
+function genExercise() {
+  answered = false;
+  clearInputStyles();
+  document.getElementById('feedback-bar').className = '';
+  document.getElementById('feedback-bar').style.display = 'none';
+  document.getElementById('np-check').className = 'np-btn np-ok';
+  document.getElementById('np-check').textContent = '✓';
+
+  exNumber = rand(0, 99);
+  exTens   = Math.floor(exNumber / 10);
+  exUnits  = exNumber % 10;
+
+  const numEl = document.getElementById('question-number');
+  const decompEl = document.getElementById('question-decomp');
+  const blocksEl = document.getElementById('question-blocks-display');
+  const agDec = document.getElementById('ag-dec');
+  const agUni = document.getElementById('ag-uni');
+  const agNum = document.getElementById('ag-num');
+  const prompt = document.getElementById('question-prompt');
+
+  // reset inputs
+  document.getElementById('ans-dec').value = '';
+  document.getElementById('ans-uni').value = '';
+  document.getElementById('ans-num').value = '';
+
+  if (exMode === 'identify') {
+    prompt.textContent = '¿Cuántas decenas y unidades tiene?';
+    numEl.textContent = exNumber;
+    numEl.style.display = 'block';
+    blocksEl.style.display = 'none';
+    decompEl.style.display = 'none';
+    agDec.style.display = 'flex'; agUni.style.display = 'flex'; agNum.style.display = 'none';
+    activeInput = 'dec';
+    highlightActive();
+
+  } else if (exMode === 'compose') {
+    prompt.textContent = '¿Qué número forman estas partes?';
+    numEl.style.display = 'none';
+    blocksEl.style.display = 'none';
+    decompEl.style.display = 'block';
+    decompEl.innerHTML = `<span style="color:var(--dec-clr)">${exTens * 10}</span> + <span style="color:var(--unit-clr)">${exUnits}</span>`;
+    agDec.style.display = 'none'; agUni.style.display = 'none'; agNum.style.display = 'flex';
+    activeInput = 'num';
+    highlightActive();
+
+  } else if (exMode === 'decompose') {
+    prompt.textContent = 'Escribe la descomposición';
+    numEl.textContent = exNumber;
+    numEl.style.display = 'block';
+    blocksEl.style.display = 'none';
+    decompEl.style.display = 'none';
+    agDec.style.display = 'flex'; agUni.style.display = 'flex'; agNum.style.display = 'none';
+    // change labels for decompose
+    document.querySelector('#ag-dec .answer-label-badge').textContent = exTens + ' dec.';
+    activeInput = 'dec';
+    highlightActive();
+  }
+
+  // reset labels
+  if (exMode !== 'decompose') {
+    document.querySelector('#ag-dec .answer-label-badge').textContent = 'Decenas';
+  }
+}
+
+function highlightActive() {
+  ['ans-dec','ans-uni','ans-num'].forEach(id => {
+    document.getElementById(id).style.border = '2.5px solid var(--border)';
+    document.getElementById(id).style.background = 'var(--bg)';
+  });
+  const map = { dec: 'ans-dec', uni: 'ans-uni', num: 'ans-num' };
+  const el = document.getElementById(map[activeInput]);
+  if (el && el.closest('.answer-group').style.display !== 'none') {
+    el.style.border = '2.5px solid var(--dec-clr)';
+    el.style.background = 'white';
+  }
+}
+
+function clearInputStyles() {
+  ['ans-dec','ans-uni','ans-num'].forEach(id => {
+    const el = document.getElementById(id);
+    el.className = 'answer-input';
+    el.style.border = ''; el.style.background = '';
+  });
+}
+
+// tap input to focus
+['ans-dec','ans-uni','ans-num'].forEach(id => {
+  document.getElementById(id).addEventListener('click', () => {
+    if (answered) return;
+    activeInput = id === 'ans-dec' ? 'dec' : id === 'ans-uni' ? 'uni' : 'num';
+    highlightActive();
+  });
+});
+
+// numpad
+document.querySelectorAll('[data-n]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (answered) return;
+    const n = btn.dataset.n;
+    if (n === 'del') {
+      const map = { dec:'ans-dec', uni:'ans-uni', num:'ans-num' };
+      const el = document.getElementById(map[activeInput]);
+      el.value = el.value.slice(0, -1);
+    } else {
+      checkInput(n);
+    }
+  });
+});
+
+document.getElementById('np-check').addEventListener('click', () => {
+  if (answered) { genExercise(); return; }
+  checkAnswer();
+});
+
+function checkInput(n) {
+  const map = { dec:'ans-dec', uni:'ans-uni', num:'ans-num' };
+  const el = document.getElementById(map[activeInput]);
+  const maxLen = activeInput === 'num' ? 2 : 1;
+  if (el.value.length < maxLen) {
+    el.value += n;
+    // auto-advance for identify/decompose modes
+    if (exMode !== 'compose' && activeInput === 'dec' && el.value.length === 1) {
+      activeInput = 'uni'; highlightActive();
+    }
+  }
+}
+
+function checkAnswer() {
+  let correct = false;
+  if (exMode === 'identify' || exMode === 'decompose') {
+    const userDec = parseInt(document.getElementById('ans-dec').value);
+    const userUni = parseInt(document.getElementById('ans-uni').value);
+    correct = userDec === exTens && userUni === exUnits;
+    const decEl = document.getElementById('ans-dec');
+    const uniEl = document.getElementById('ans-uni');
+    decEl.className = 'answer-input ' + (userDec === exTens ? 'correct' : 'wrong');
+    uniEl.className = 'answer-input ' + (userUni === exUnits ? 'correct' : 'wrong');
+  } else {
+    const userNum = parseInt(document.getElementById('ans-num').value);
+    correct = userNum === exNumber;
+    document.getElementById('ans-num').className = 'answer-input ' + (correct ? 'correct' : 'wrong');
+  }
+
+  answered = true;
+  addScore(correct);
+  const fb = document.getElementById('feedback-bar');
+  if (correct) {
+    fb.textContent = '¡Correcto! 🎉  ' + exNumber + ' = ' + exTens + ' decenas y ' + exUnits + ' unidades';
+    fb.className = 'correct';
+  } else {
+    fb.textContent = '¡Casi! La respuesta: ' + exNumber + ' → ' + exTens + ' dec. y ' + exUnits + ' uni.';
+    fb.className = 'wrong';
+  }
+  fb.style.display = 'block';
+
+  const btn = document.getElementById('np-check');
+  btn.className = 'np-btn np-next';
+  btn.textContent = 'Siguiente →';
+}
+
+// mode buttons
+document.querySelectorAll('.ex-mode-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    exMode = btn.dataset.mode;
+    document.querySelectorAll('.ex-mode-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    genExercise();
+  });
+});
+
+genExercise();
+
+/* ═══════════════════════════════
+   CONTAR BLOQUES
+═══════════════════════════════ */
+let cntTens = 0, cntUnits = 0, cntActive = 'dec';
+
+function genCountChallenge() {
+  cntTens  = rand(0, 9);
+  cntUnits = rand(0, 9);
+  const area = document.getElementById('count-blocks-area');
+  area.innerHTML = '';
+
+  // tens
+  if (cntTens > 0) {
+    const tg = document.createElement('div');
+    tg.className = 'block-group';
+    const lbl = document.createElement('div'); lbl.className = 'block-group-label dec'; lbl.textContent = 'Grupos de 10';
+    const row = document.createElement('div'); row.className = 'blocks-row';
+    for (let i = 0; i < cntTens; i++) {
+      const b = document.createElement('div'); b.className = 'block-ten';
+      for (let j = 0; j < 10; j++) {
+        const s = document.createElement('div'); s.className = 'block-ten-seg'; b.appendChild(s);
+      }
+      row.appendChild(b);
+    }
+    tg.appendChild(lbl); tg.appendChild(row); area.appendChild(tg);
+  }
+  // units
+  if (cntUnits > 0) {
+    const ug = document.createElement('div'); ug.className = 'block-group';
+    const lbl = document.createElement('div'); lbl.className = 'block-group-label uni'; lbl.textContent = 'Unidades';
+    const row = document.createElement('div'); row.className = 'blocks-row';
+    for (let i = 0; i < cntUnits; i++) {
+      const b = document.createElement('div'); b.className = 'block-one'; row.appendChild(b);
+    }
+    ug.appendChild(lbl); ug.appendChild(row); area.appendChild(ug);
+  }
+  if (cntTens === 0 && cntUnits === 0) {
+    area.innerHTML = '<span style="font-size:32px;color:var(--text-light)">0</span>';
+  }
+
+  document.getElementById('cnt-dec').value = '';
+  document.getElementById('cnt-uni').value = '';
+  document.getElementById('cnt-dec').className = 'count-input dec';
+  document.getElementById('cnt-uni').className = 'count-input uni';
+  cntActive = 'dec';
+  highlightCount();
+}
+
+function highlightCount() {
+  document.getElementById('cnt-dec').style.border = cntActive==='dec' ? '2.5px solid var(--dec-clr)' : '2.5px solid var(--border)';
+  document.getElementById('cnt-uni').style.border = cntActive==='uni' ? '2.5px solid var(--unit-clr)' : '2.5px solid var(--border)';
+}
+
+document.getElementById('cnt-dec').addEventListener('click', () => { cntActive='dec'; highlightCount(); });
+document.getElementById('cnt-uni').addEventListener('click', () => { cntActive='uni'; highlightCount(); });
+
+document.querySelectorAll('[data-n2]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const n = btn.dataset.n2;
+    if (n === 'del') {
+      const el = document.getElementById('cnt-' + cntActive);
+      el.value = el.value.slice(0, -1);
+    } else {
+      const el = document.getElementById('cnt-' + cntActive);
+      if (el.value.length < 1) {
+        el.value = n;
+        if (cntActive === 'dec') { cntActive = 'uni'; highlightCount(); }
+      }
+    }
+  });
+});
+
+document.getElementById('cnt-ok-btn').addEventListener('click', checkCount);
+document.getElementById('count-check-btn').addEventListener('click', checkCount);
+document.getElementById('count-new-btn').addEventListener('click', genCountChallenge);
+
+function checkCount() {
+  const userDec = parseInt(document.getElementById('cnt-dec').value) || 0;
+  const userUni = parseInt(document.getElementById('cnt-uni').value) || 0;
+  const dOk = userDec === cntTens, uOk = userUni === cntUnits;
+  document.getElementById('cnt-dec').className = 'count-input dec ' + (dOk ? 'correct' : 'wrong');
+  document.getElementById('cnt-uni').className = 'count-input uni ' + (uOk ? 'correct' : 'wrong');
+  addScore(dOk && uOk);
+  setTimeout(() => { if (dOk && uOk) genCountChallenge(); }, 1200);
+}
+
+genCountChallenge();
+
+/* ═══════════════════════════════
+   DESAFÍO — TIMED QUIZ
+═══════════════════════════════ */
+let chPts = 0, chStreak = 0, chTime = 60, chTimer = null;
+let chAnswer = 0, chRunning = false;
+const CH_TYPES = ['whichTens','whichUnits','whatNumber','compose'];
+
+function resetChallenge() {
+  chPts = 0; chStreak = 0; chTime = 60; chRunning = false;
+  clearInterval(chTimer);
+  document.getElementById('ch-time').textContent = 60;
+  document.getElementById('ch-pts').textContent = 0;
+  document.getElementById('ch-streak').textContent = 0;
+  document.getElementById('timer-bar').style.width = '100%';
+  document.getElementById('timer-bar').style.background = 'var(--dec-clr)';
+  document.getElementById('challenge-options').style.visibility = 'hidden';
+  document.getElementById('challenge-q').textContent = '¡Toca Iniciar para comenzar!';
+  document.getElementById('challenge-start').style.display = 'block';
+}
+
+function startChallenge() {
+  chPts = 0; chStreak = 0; chTime = 60; chRunning = true;
+  document.getElementById('challenge-start').style.display = 'none';
+  document.getElementById('challenge-options').style.visibility = 'visible';
+  genChallengeQ();
+  chTimer = setInterval(() => {
+    chTime--;
+    document.getElementById('ch-time').textContent = chTime;
+    const pct = (chTime / 60) * 100;
+    document.getElementById('timer-bar').style.width = pct + '%';
+    if (chTime <= 15) document.getElementById('timer-bar').style.background = '#DC2626';
+    else if (chTime <= 30) document.getElementById('timer-bar').style.background = '#D97706';
+    if (chTime <= 0) endChallenge();
+  }, 1000);
+}
+
+function genChallengeQ() {
+  const type = CH_TYPES[rand(0, CH_TYPES.length - 1)];
+  const n = rand(10, 99);
+  const t = Math.floor(n / 10), u = n % 10;
+  let qText = '', opts = [], correctIdx = 0;
+
+  if (type === 'whichTens') {
+    qText = `¿Cuántas decenas tiene el ${n}?`;
+    chAnswer = t;
+    opts = shuffleWithCorrect(t, 0, 9, 4);
+  } else if (type === 'whichUnits') {
+    qText = `¿Cuántas unidades tiene el ${n}?`;
+    chAnswer = u;
+    opts = shuffleWithCorrect(u, 0, 9, 4);
+  } else if (type === 'whatNumber') {
+    qText = `${t * 10} + ${u} = ?`;
+    chAnswer = n;
+    opts = shuffleWithCorrect(n, 10, 99, 4);
+  } else {
+    qText = `¿Cuál número tiene ${t} decenas y ${u} unidades?`;
+    chAnswer = n;
+    opts = shuffleWithCorrect(n, 10, 99, 4);
+  }
+
+  document.getElementById('challenge-q').textContent = qText;
+  const optEls = document.querySelectorAll('.ch-option');
+  optEls.forEach((el, i) => {
+    el.textContent = opts[i];
+    el.className = 'ch-option';
+    el.dataset.val = opts[i];
+  });
+}
+
+function shuffleWithCorrect(correct, min, max, count) {
+  const set = new Set([correct]);
+  let attempts = 0;
+  while (set.size < count && attempts < 200) {
+    const v = rand(min, max);
+    if (v !== correct) set.add(v);
+    attempts++;
+  }
+  return [...set].sort(() => Math.random() - 0.5);
+}
+
+document.querySelectorAll('.ch-option').forEach(el => {
+  el.addEventListener('click', () => {
+    if (!chRunning) return;
+    const val = parseInt(el.dataset.val);
+    const correct = val === chAnswer;
+    el.className = 'ch-option ' + (correct ? 'correct' : 'wrong');
+    if (!correct) {
+      // show correct
+      document.querySelectorAll('.ch-option').forEach(o => {
+        if (parseInt(o.dataset.val) === chAnswer) o.className = 'ch-option correct';
+      });
+    }
+    if (correct) { chPts += 10 + chStreak * 2; chStreak++; }
+    else { chStreak = 0; chPts = Math.max(0, chPts - 2); }
+    document.getElementById('ch-pts').textContent = chPts;
+    document.getElementById('ch-streak').textContent = chStreak;
+    addScore(correct);
+    setTimeout(genChallengeQ, 600);
+  });
+});
+
+document.getElementById('challenge-start').addEventListener('click', startChallenge);
+
+function endChallenge() {
+  chRunning = false; clearInterval(chTimer);
+  document.getElementById('ch-time').textContent = 0;
+  document.getElementById('timer-bar').style.width = '0%';
+  // show result
+  const emoji = chPts >= 100 ? '🏆' : chPts >= 60 ? '🎉' : chPts >= 30 ? '👍' : '💪';
+  const title = chPts >= 100 ? '¡Increíble!' : chPts >= 60 ? '¡Excelente!' : chPts >= 30 ? '¡Bien hecho!' : '¡Sigue practicando!';
+  document.getElementById('result-emoji').textContent = emoji;
+  document.getElementById('result-title').textContent = title;
+  document.getElementById('result-score').textContent = chPts;
+  document.getElementById('result-overlay').classList.add('show');
+}
+
+document.getElementById('result-play-again').addEventListener('click', () => {
+  document.getElementById('result-overlay').classList.remove('show');
+  resetChallenge();
+});
+</script>
+</body>
+</html>
