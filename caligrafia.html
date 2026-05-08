@@ -6,134 +6,209 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Caligrafía</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,500;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
-  --paper: #faf9f6; --paper-alt: #f2f0e8;
+  --paper: #fdfcf8;
+  --paper-line: #faf8f3;
   --accent: #534AB7; --accent-light: #EEEDFE; --accent-mid: #AFA9EC;
-  --border: rgba(0,0,0,0.1); --border-strong: rgba(0,0,0,0.2);
-  --text: #1a1a2e; --muted: #777;
+  --border: rgba(0,0,0,0.08); --border-strong: rgba(0,0,0,0.18);
+  --text: #1a1a2e; --muted: #888;
   --green: #1a7a4a; --green-bg: #e8f7ee;
   --yellow: #7a5f00; --yellow-bg: #fffae0;
   --red: #9b2335; --red-bg: #fdeaea;
+  --row-h: 110px;
+  --guide-blue: rgba(180,190,230,0.55);
+  --guide-red: rgba(220,100,100,0.35);
+  --guide-faint: rgba(180,190,230,0.22);
 }
 html, body { width:100%; height:100%; overflow:hidden; background:var(--paper);
   font-family:'DM Sans',sans-serif; color:var(--text); -webkit-font-smoothing:antialiased; }
 #app { display:flex; flex-direction:column; height:100vh; width:100vw; }
 
-/* tabs */
+/* ── top mode tabs ── */
 #mode-tabs { display:flex; border-bottom:1px solid var(--border); background:var(--paper); flex-shrink:0; }
 .mode-tab { flex:1; padding:10px 0; font-size:13px; font-weight:500; color:var(--muted);
-  text-align:center; cursor:pointer; border-bottom:2px solid transparent;
-  transition:color .15s,border-color .15s; user-select:none; }
+  text-align:center; cursor:pointer; border-bottom:2px solid transparent; transition:color .15s,border-color .15s; user-select:none; }
 .mode-tab.active { color:var(--accent); border-bottom-color:var(--accent); }
 
-/* toolbar */
-#header { display:flex; align-items:center; gap:10px; padding:8px 14px;
+/* ── toolbar ── */
+#header { display:flex; align-items:center; gap:8px; padding:7px 12px;
   background:var(--paper); border-bottom:1px solid var(--border); flex-shrink:0; flex-wrap:wrap; }
-.sep { width:1px; height:26px; background:var(--border); flex-shrink:0; }
-.cg { display:flex; align-items:center; gap:6px; }
+.sep { width:1px; height:24px; background:var(--border); flex-shrink:0; }
+.cg { display:flex; align-items:center; gap:5px; }
 .cl { font-size:11px; color:var(--muted); white-space:nowrap; }
 input[type=range] { -webkit-appearance:none; height:3px; border-radius:2px;
   background:var(--border-strong); outline:none; cursor:pointer; }
-input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:16px; height:16px;
+input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:18px; height:18px;
   border-radius:50%; background:var(--accent); cursor:pointer; }
-#size-slider { width:80px; } #opacity-slider { width:66px; }
-#size-val { font-size:11px; color:var(--muted); min-width:18px; }
+#size-slider { width:80px; } #opacity-slider { width:60px; }
+#size-val { font-size:11px; color:var(--muted); min-width:16px; }
 .cdot { width:20px; height:20px; border-radius:50%; border:2px solid transparent;
   cursor:pointer; transition:transform .1s,border-color .1s; flex-shrink:0; }
 .cdot.active { border-color:#1a1a2e; transform:scale(1.2); }
 .ibtn { width:32px; height:32px; border-radius:7px; border:1px solid var(--border-strong);
   background:transparent; cursor:pointer; display:flex; align-items:center;
   justify-content:center; font-size:14px; color:var(--text); transition:background .12s; flex-shrink:0; }
-.ibtn:active { background:var(--paper-alt); }
+.ibtn:active { background:var(--accent-light); }
 .ibtn.active { background:var(--accent-light); border-color:var(--accent-mid); color:var(--accent); }
+#evbtn { padding:6px 14px; border-radius:8px; border:1px solid var(--accent);
+  background:var(--accent); color:white; font-size:12px; font-family:'DM Sans',sans-serif;
+  cursor:pointer; font-weight:500; white-space:nowrap; }
+#evbtn:active { opacity:.85; }
+#sbadge { display:none; align-items:center; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:500; border:1px solid; white-space:nowrap; }
+#sbadge.good  { background:var(--green-bg); color:var(--green); border-color:#a3d9b8; }
+#sbadge.ok    { background:var(--yellow-bg); color:var(--yellow); border-color:#f0d87a; }
+#sbadge.retry { background:var(--red-bg);   color:var(--red);   border-color:#f5b8c0; }
 
-/* body */
+/* ── LETTER VIEW body ── */
 #body { display:flex; flex:1; overflow:hidden; }
 
-/* letter panel */
-#lpanel { width:108px; flex-shrink:0; border-right:1px solid var(--border);
+/* ── letter panel ── */
+#lpanel { width:96px; flex-shrink:0; border-right:1px solid var(--border);
   background:var(--paper); display:flex; flex-direction:column; overflow:hidden; }
 #ptabs { display:flex; border-bottom:1px solid var(--border); }
 .ptab { flex:1; padding:6px 0; font-size:10px; font-weight:500; color:var(--muted);
   text-align:center; cursor:pointer; border-bottom:2px solid transparent; }
 .ptab.active { color:var(--accent); border-bottom-color:var(--accent); }
-#lscroll { flex:1; overflow-y:auto; padding:5px; -webkit-overflow-scrolling:touch; }
-#lscroll::-webkit-scrollbar { width:3px; }
+#lscroll { flex:1; overflow-y:auto; padding:4px; -webkit-overflow-scrolling:touch; }
+#lscroll::-webkit-scrollbar { width:2px; }
 #lscroll::-webkit-scrollbar-thumb { background:var(--border-strong); border-radius:2px; }
 .lgrid { display:grid; grid-template-columns:1fr 1fr; gap:3px; }
 .lbtn { aspect-ratio:1; border-radius:7px; border:1px solid var(--border); background:transparent;
-  cursor:pointer; font-family:'Cormorant Garamond',serif; font-size:20px; font-weight:300;
+  cursor:pointer; font-family:'Caveat',cursive; font-size:22px; font-weight:500;
   color:var(--text); display:flex; align-items:center; justify-content:center; transition:background .1s; }
 .lbtn.active { background:var(--accent-light); border-color:var(--accent-mid); color:var(--accent); }
 
-/* canvas */
-#cwrap { flex:1; position:relative; overflow:hidden; background:var(--paper); touch-action:none; }
-#gcv,#gucv,#dcv { position:absolute; top:0; left:0; touch-action:none; }
-#gcv  { z-index:0; } #gucv { z-index:1; pointer-events:none; } #dcv { z-index:2; }
+/* ══ NOTEBOOK CANVAS WRAP ══ */
+#notebook-wrap {
+  flex:1;
+  position:relative;
+  overflow:hidden;
+  background: var(--paper);
+}
 
-/* bottom bar */
-#bbar { display:flex; align-items:center; gap:6px; padding:7px 14px;
-  border-top:1px solid var(--border); background:var(--paper); flex-shrink:0; flex-wrap:wrap; }
-.gbtn { padding:4px 10px; border-radius:7px; border:1px solid var(--border-strong);
-  background:transparent; font-size:11px; font-family:'DM Sans',sans-serif;
-  color:var(--muted); cursor:pointer; white-space:nowrap; transition:background .1s; }
-.gbtn.active { background:var(--accent-light); border-color:var(--accent-mid); color:var(--accent); font-weight:500; }
-#evbtn { margin-left:auto; padding:6px 16px; border-radius:8px; border:1px solid var(--accent);
-  background:var(--accent); color:white; font-size:13px; font-family:'DM Sans',sans-serif;
-  cursor:pointer; font-weight:500; transition:opacity .15s; }
-#evbtn:active { opacity:.85; }
+/* The actual scrollable notebook */
+#notebook-scroll {
+  position:absolute; inset:0;
+  overflow-y:auto; overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+}
+#notebook-scroll::-webkit-scrollbar { width:3px; }
+#notebook-scroll::-webkit-scrollbar-thumb { background:rgba(83,74,183,0.25); border-radius:2px; }
 
-/* score */
-#sbadge { display:none; align-items:center; gap:5px; padding:4px 11px;
-  border-radius:20px; font-size:12px; font-weight:500; border:1px solid; }
-#sbadge.good  { background:var(--green-bg);  color:var(--green);  border-color:#a3d9b8; }
-#sbadge.ok    { background:var(--yellow-bg); color:var(--yellow); border-color:#f0d87a; }
-#sbadge.retry { background:var(--red-bg);    color:var(--red);    border-color:#f5b8c0; }
+/* The paper itself — tall enough for all rows */
+#notebook-paper {
+  position:relative;
+  width:100%;
+  background: var(--paper);
+}
 
-/* score detail */
-#sdetail { display:none; position:absolute; bottom:52px; right:12px; z-index:20;
+/* Red margin line */
+#notebook-paper::before {
+  content:'';
+  position:absolute;
+  top:0; bottom:0;
+  left:56px;
+  width:1px;
+  background: var(--guide-red);
+  z-index:1;
+  pointer-events:none;
+}
+
+/* Guide canvas behind — lines */
+#guide-canvas {
+  position:absolute;
+  top:0; left:0;
+  width:100%; 
+  pointer-events:none;
+  z-index:1;
+}
+
+/* Ghost canvas — repeating letter guide */
+#ghost-canvas {
+  position:absolute;
+  top:0; left:0;
+  width:100%;
+  pointer-events:none;
+  z-index:2;
+}
+
+/* Draw canvas — user strokes */
+#draw-canvas {
+  position:absolute;
+  top:0; left:0;
+  width:100%;
+  touch-action:none;
+  z-index:3;
+  cursor:crosshair;
+}
+
+/* Row number labels */
+.row-num {
+  position:absolute;
+  left:0; width:52px;
+  font-size:10px; color:rgba(83,74,183,0.4);
+  text-align:right; padding-right:6px;
+  font-family:'DM Sans',sans-serif;
+  pointer-events:none;
+  z-index:4;
+}
+
+/* ── score detail popup ── */
+#sdetail { display:none; position:absolute; top:8px; right:8px; z-index:20;
   background:white; border:1px solid var(--border-strong); border-radius:12px;
-  padding:14px 16px; width:230px; box-shadow:0 6px 24px rgba(0,0,0,.1); font-size:13px; }
-#sdetail h4 { font-size:14px; font-weight:500; margin-bottom:10px; }
-.mrow { display:flex; justify-content:space-between; margin-bottom:7px; align-items:center; }
-.mlb { color:var(--muted); font-size:12px; }
-.mbar-w { width:80px; height:6px; background:var(--paper-alt); border-radius:3px; overflow:hidden; }
+  padding:14px 16px; width:220px; font-size:13px; box-shadow:0 6px 24px rgba(0,0,0,.1); }
+#sdetail h4 { font-size:13px; font-weight:500; margin-bottom:10px; }
+.mrow { display:flex; justify-content:space-between; margin-bottom:6px; align-items:center; }
+.mlb { color:var(--muted); font-size:11px; }
+.mbar-w { width:72px; height:5px; background:#f0eeea; border-radius:3px; overflow:hidden; }
 .mbar { height:100%; border-radius:3px; transition:width .4s; }
-.mscore { font-weight:500; font-size:12px; min-width:28px; text-align:right; }
-#closedtl { margin-top:10px; width:100%; padding:5px; border-radius:7px;
-  border:1px solid var(--border-strong); background:transparent; font-size:12px; cursor:pointer; color:var(--muted); }
+.mscore { font-weight:500; font-size:11px; min-width:26px; text-align:right; }
+#closedtl { margin-top:8px; width:100%; padding:5px; border-radius:7px;
+  border:1px solid var(--border-strong); background:transparent; font-size:11px; cursor:pointer; color:var(--muted); }
+
+/* ── bottom bar ── */
+#bbar { display:flex; align-items:center; gap:5px; padding:6px 12px;
+  border-top:1px solid var(--border); background:var(--paper); flex-shrink:0; flex-wrap:wrap; }
+.gbtn { padding:4px 9px; border-radius:7px; border:1px solid var(--border-strong);
+  background:transparent; font-size:11px; font-family:'DM Sans',sans-serif;
+  color:var(--muted); cursor:pointer; white-space:nowrap; }
+.gbtn.active { background:var(--accent-light); border-color:var(--accent-mid); color:var(--accent); font-weight:500; }
+#rows-ctrl { display:flex; align-items:center; gap:5px; margin-left:auto; }
+#rows-label { font-size:11px; color:var(--muted); }
+.rows-btn { width:26px; height:26px; border-radius:6px; border:1px solid var(--border-strong);
+  background:transparent; font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--text); }
 
 /* ══ SENTENCE MODE ══ */
 #sview { display:none; flex-direction:column; flex:1; overflow:hidden; }
-#ssetup { padding:14px; border-bottom:1px solid var(--border); background:var(--paper);
-  flex-shrink:0; display:flex; flex-direction:column; gap:9px; }
+#ssetup { padding:12px; border-bottom:1px solid var(--border); background:var(--paper);
+  flex-shrink:0; display:flex; flex-direction:column; gap:8px; }
 #ssetup label { font-size:12px; color:var(--muted); font-weight:500; }
-#sinput { width:100%; padding:9px 12px; border:1px solid var(--border-strong); border-radius:9px;
-  background:white; font-size:16px; font-family:'Cormorant Garamond',serif; font-weight:300;
-  color:var(--text); resize:none; outline:none; line-height:1.5; min-height:54px; }
+#sinput { width:100%; padding:8px 11px; border:1px solid var(--border-strong); border-radius:9px;
+  background:white; font-size:17px; font-family:'Caveat',cursive; font-weight:400;
+  color:var(--text); resize:none; outline:none; line-height:1.5; min-height:52px; }
 #sinput:focus { border-color:var(--accent-mid); }
-#scontrols { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
-#btnset { padding:7px 18px; border-radius:8px; background:var(--accent); border:none;
+#scontrols { display:flex; gap:7px; align-items:center; flex-wrap:wrap; }
+#btnset { padding:7px 16px; border-radius:8px; background:var(--accent); border:none;
   color:white; font-size:13px; font-family:'DM Sans',sans-serif; font-weight:500; cursor:pointer; }
 #sarea { flex:1; position:relative; overflow:hidden; background:var(--paper); touch-action:none; }
 #sg,#sgu,#sd { position:absolute; top:0; left:0; touch-action:none; }
 #sg { z-index:0; } #sgu { z-index:1; pointer-events:none; } #sd { z-index:2; }
-#sbbar { display:flex; align-items:center; gap:7px; padding:7px 14px;
+#sbbar { display:flex; align-items:center; gap:6px; padding:6px 12px;
   border-top:1px solid var(--border); background:var(--paper); flex-shrink:0; flex-wrap:wrap; }
-.act-btn { padding:6px 14px; border-radius:8px; background:var(--accent); border:none;
-  color:white; font-size:13px; font-family:'DM Sans',sans-serif; font-weight:500; cursor:pointer; }
-.ghost-btn { padding:5px 12px; border-radius:8px; border:1px solid var(--border-strong);
-  background:transparent; font-size:12px; font-family:'DM Sans',sans-serif; cursor:pointer; color:var(--muted); }
+.act-btn { padding:6px 13px; border-radius:8px; background:var(--accent); border:none;
+  color:white; font-size:12px; font-family:'DM Sans',sans-serif; font-weight:500; cursor:pointer; }
+.ghost-btn { padding:5px 11px; border-radius:8px; border:1px solid var(--border-strong);
+  background:transparent; font-size:11px; font-family:'DM Sans',sans-serif; cursor:pointer; color:var(--muted); }
 
 /* toast */
-#toast { position:fixed; top:56px; right:14px; z-index:200; background:white;
-  border:1px solid var(--border-strong); border-radius:11px; padding:9px 16px;
-  font-size:13px; font-family:'DM Sans',sans-serif; box-shadow:0 4px 18px rgba(0,0,0,.09);
+#toast { position:fixed; top:54px; right:12px; z-index:200; background:white;
+  border:1px solid var(--border-strong); border-radius:11px; padding:9px 14px;
+  font-size:13px; font-family:'DM Sans',sans-serif; box-shadow:0 4px 16px rgba(0,0,0,.09);
   opacity:0; transform:translateY(-6px); transition:opacity .18s,transform .18s;
-  pointer-events:none; max-width:260px; }
+  pointer-events:none; max-width:250px; }
 #toast.show { opacity:1; transform:translateY(0); }
 </style>
 </head>
@@ -166,7 +241,6 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:16px; h
       <div class="cdot" style="background:#1A5276" data-color="#1A5276"></div>
       <div class="cdot" style="background:#1E8449" data-color="#1E8449"></div>
       <div class="cdot" style="background:#7D3C98" data-color="#7D3C98"></div>
-      <div class="cdot" style="background:#784212" data-color="#784212"></div>
     </div>
     <div class="sep"></div>
     <div class="cg">
@@ -174,9 +248,13 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:16px; h
       <button class="ibtn" id="btnclear">🗑</button>
       <button class="ibtn active" id="btnguide">☰</button>
     </div>
+    <div class="sep"></div>
+    <button id="evbtn">✓ Evaluar</button>
+    <div id="sbadge" style="margin-left:4px"></div>
   </div>
 
   <div id="body">
+    <!-- letter panel -->
     <div id="lpanel">
       <div id="ptabs">
         <div class="ptab active" data-tab="abc">ABC</div>
@@ -184,31 +262,25 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:16px; h
       </div>
       <div id="lscroll"><div class="lgrid" id="lgrid"></div></div>
     </div>
-    <div id="cwrap">
-      <canvas id="gcv"></canvas>
-      <canvas id="gucv"></canvas>
-      <canvas id="dcv"></canvas>
+
+    <!-- notebook -->
+    <div id="notebook-wrap">
+      <div id="notebook-scroll">
+        <div id="notebook-paper">
+          <canvas id="guide-canvas"></canvas>
+          <canvas id="ghost-canvas"></canvas>
+          <canvas id="draw-canvas"></canvas>
+          <!-- row labels injected by JS -->
+        </div>
+      </div>
+
+      <!-- score detail -->
       <div id="sdetail">
         <h4>Análisis del trazo</h4>
-        <div class="mrow">
-          <span class="mlb">Cobertura</span>
-          <div class="mbar-w"><div class="mbar" id="bcov" style="background:#534AB7;width:0%"></div></div>
-          <span class="mscore" id="vcov">—</span>
-        </div>
-        <div class="mrow">
-          <span class="mlb">Centrado</span>
-          <div class="mbar-w"><div class="mbar" id="bcen" style="background:#1a7a4a;width:0%"></div></div>
-          <span class="mscore" id="vcen">—</span>
-        </div>
-        <div class="mrow">
-          <span class="mlb">Proporción</span>
-          <div class="mbar-w"><div class="mbar" id="bpro" style="background:#7a5f00;width:0%"></div></div>
-          <span class="mscore" id="vpro">—</span>
-        </div>
-        <div class="mrow" style="margin-bottom:0">
-          <span class="mlb">Puntuación total</span>
-          <span class="mscore" id="vtot" style="font-size:15px">—</span>
-        </div>
+        <div class="mrow"><span class="mlb">Cobertura</span><div class="mbar-w"><div class="mbar" id="bcov" style="background:#534AB7;width:0%"></div></div><span class="mscore" id="vcov">—</span></div>
+        <div class="mrow"><span class="mlb">Centrado</span><div class="mbar-w"><div class="mbar" id="bcen" style="background:#1a7a4a;width:0%"></div></div><span class="mscore" id="vcen">—</span></div>
+        <div class="mrow"><span class="mlb">Proporción</span><div class="mbar-w"><div class="mbar" id="bpro" style="background:#7a5f00;width:0%"></div></div><span class="mscore" id="vpro">—</span></div>
+        <div class="mrow" style="margin-bottom:0"><span class="mlb">Puntuación total</span><span class="mscore" id="vtot" style="font-size:14px">—</span></div>
         <button id="closedtl">Cerrar</button>
       </div>
     </div>
@@ -216,56 +288,53 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:16px; h
 
   <div id="bbar">
     <span class="cl">Guías:</span>
-    <button class="gbtn active" data-guide="lines">Renglones</button>
-    <button class="gbtn" data-guide="grid">Cuadrícula</button>
-    <button class="gbtn" data-guide="slant">Cursiva</button>
+    <button class="gbtn active" data-guide="notebook">Cuaderno</button>
+    <button class="gbtn" data-guide="lines">Renglones</button>
     <button class="gbtn" data-guide="none">Libre</button>
-    <span style="font-size:11px;color:var(--muted)">Trazos: <span id="stval">0</span></span>
-    <div id="sbadge"></div>
-    <button id="evbtn">✓ Evaluar</button>
+    <div id="rows-ctrl">
+      <span id="rows-label" class="cl">Filas: <span id="rows-val">4</span></span>
+      <button class="rows-btn" id="rows-minus">−</button>
+      <button class="rows-btn" id="rows-plus">+</button>
+    </div>
   </div>
 
 </div>
 
 <!-- ══ SENTENCE VIEW ══ -->
 <div id="sview">
-
   <div id="ssetup">
     <label>Escribe la oración que quieres practicar:</label>
     <textarea id="sinput" placeholder="Ej: La caligrafía es un arte hermoso..." rows="2"></textarea>
     <div id="scontrols">
       <button id="btnset">Practicar →</button>
-      <div class="sep" style="height:22px"></div>
+      <div class="sep" style="height:20px"></div>
       <div class="cg">
-        <span class="cl">Tamaño guía</span>
-        <input type="range" id="sfsize" min="18" max="80" value="42" step="2" style="width:80px">
-        <span id="sfval" style="font-size:11px;color:var(--muted);min-width:20px">42</span>
+        <span class="cl">Tamaño</span>
+        <input type="range" id="sfsize" min="20" max="110" value="60" step="2" style="width:80px">
+        <span id="sfval" style="font-size:11px;color:var(--muted);min-width:22px">60</span>
       </div>
-      <div class="sep" style="height:22px"></div>
+      <div class="sep" style="height:20px"></div>
       <div class="cg">
         <span class="cl">Opacidad guía</span>
-        <input type="range" id="sfopacity" min="5" max="40" value="18" step="1" style="width:66px">
+        <input type="range" id="sfopacity" min="5" max="40" value="18" step="1" style="width:60px">
       </div>
     </div>
   </div>
-
   <div id="sarea">
     <canvas id="sg"></canvas>
     <canvas id="sgu"></canvas>
     <canvas id="sd"></canvas>
   </div>
-
   <div id="sbbar">
     <span class="cl">Grosor</span>
     <input type="range" id="sssize" min="1" max="32" value="7" step="1" style="width:80px">
-    <span id="ssval" style="font-size:11px;color:var(--muted);min-width:18px">7</span>
+    <span id="ssval" style="font-size:11px;color:var(--muted);min-width:16px">7</span>
     <div class="sep"></div>
     <div class="cg">
       <div class="cdot active" style="background:#1a1a2e" data-color="#1a1a2e" data-s="1"></div>
       <div class="cdot" style="background:#C0392B" data-color="#C0392B" data-s="1"></div>
       <div class="cdot" style="background:#1A5276" data-color="#1A5276" data-s="1"></div>
       <div class="cdot" style="background:#1E8449" data-color="#1E8449" data-s="1"></div>
-      <div class="cdot" style="background:#7D3C98" data-color="#7D3C98" data-s="1"></div>
     </div>
     <div class="sep"></div>
     <button class="ibtn" id="sundo">↩</button>
@@ -275,7 +344,6 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:16px; h
     <button class="act-btn" id="sevbtn" style="margin-left:auto">✓ Evaluar</button>
     <button class="ghost-btn" id="snewbtn">← Cambiar</button>
   </div>
-
 </div>
 
 </div>
@@ -287,433 +355,495 @@ const DPR = window.devicePixelRatio || 1;
 /* ── Letter state ── */
 const LABC = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz'.split('');
 const LNUM = '0123456789+−×÷=.,;:!?'.split('');
-let letter = 'A', ltab = 'abc', gmode = 'lines', showG = true;
+let letter = 'A', ltab = 'abc', gmode = 'notebook', showG = true;
 let lcolor = '#1a1a2e', lsize = 7, lopacity = 0.9;
 let lsc = 0, ldraw = false, lx = 0, ly = 0, lundo = [];
+let numRows = 4;
 
 /* ── Sentence state ── */
 let scolor = '#1a1a2e', ssize = 7, sopacity = 0.9;
 let ssg = true, ssc = 0, sdraw = false, sx = 0, sy = 0, sundo = [];
-let sentence = '', sfsize = 42, sfopacity = 0.18;
+let sentence = '', sfsize = 60, sfopacity = 0.18;
 
-/* ════════════════════════
-   LETTER CANVASES
-════════════════════════ */
-const gcv  = document.getElementById('gcv');
-const gucv = document.getElementById('gucv');
-const dcv  = document.getElementById('dcv');
-const gx   = gcv.getContext('2d');
-const gux  = gucv.getContext('2d');
-const dx   = dcv.getContext('2d');
-const cwrap = document.getElementById('cwrap');
+/* ══════════════════════════════════
+   NOTEBOOK — multi-row letter canvas
+══════════════════════════════════ */
+const guideCanvas  = document.getElementById('guide-canvas');
+const ghostCanvas  = document.getElementById('ghost-canvas');
+const drawCanvas   = document.getElementById('draw-canvas');
+const guCtx = guideCanvas.getContext('2d');
+const ghCtx = ghostCanvas.getContext('2d');
+const dCtx  = drawCanvas.getContext('2d');
+const notebookWrap   = document.getElementById('notebook-wrap');
+const notebookScroll = document.getElementById('notebook-scroll');
+const notebookPaper  = document.getElementById('notebook-paper');
 
-function resizeL() {
-  const w = cwrap.offsetWidth, h = cwrap.offsetHeight;
-  [gcv, gucv, dcv].forEach(c => {
-    c.width = w*DPR; c.height = h*DPR;
-    c.style.width = w+'px'; c.style.height = h+'px';
+const MARGIN_LEFT = 60; // px — left margin space
+const ROW_H = 110;      // px per row
+const ASCENT  = 0.72;   // baseline at 72% of row height
+const FONT_SZ = 72;     // ghost letter size px
+
+function notebookHeight() { return numRows * ROW_H; }
+
+function setCanvasSizes() {
+  const w = notebookWrap.offsetWidth;
+  const h = notebookHeight();
+  notebookPaper.style.height = h + 'px';
+  [guideCanvas, ghostCanvas, drawCanvas].forEach(c => {
+    c.width  = w * DPR;
+    c.height = h * DPR;
+    c.style.width  = w + 'px';
+    c.style.height = h + 'px';
   });
-  gx.scale(DPR,DPR); gux.scale(DPR,DPR); dx.scale(DPR,DPR);
-  drawLGuide(); drawGhost();
+  guCtx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  ghCtx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  dCtx.setTransform(DPR, 0, 0, DPR, 0, 0);
 }
 
-function drawLGuide() {
-  const w = cwrap.offsetWidth, h = cwrap.offsetHeight;
-  gux.clearRect(0,0,w,h);
-  if (!showG || gmode==='none') return;
-  gux.save();
-  if (gmode==='lines') {
-    const lh=72;
-    for (let y=lh; y<h; y+=lh) {
-      const b = Math.round(y/lh)%2===0;
-      gux.strokeStyle = b?'rgba(83,74,183,0.28)':'rgba(83,74,183,0.10)';
-      gux.lineWidth = b?0.8:0.5;
-      gux.beginPath(); gux.moveTo(0,y); gux.lineTo(w,y); gux.stroke();
+function drawNotebookGuide() {
+  const w = notebookWrap.offsetWidth;
+  const h = notebookHeight();
+  guCtx.clearRect(0, 0, w, h);
+  if (!showG || gmode === 'none') return;
+
+  guCtx.save();
+
+  if (gmode === 'notebook' || gmode === 'lines') {
+    for (let row = 0; row < numRows; row++) {
+      const y0 = row * ROW_H;
+
+      if (gmode === 'notebook') {
+        /* top line */
+        guCtx.strokeStyle = 'rgba(180,190,230,0.30)';
+        guCtx.lineWidth = 0.6;
+        guCtx.beginPath(); guCtx.moveTo(0, y0); guCtx.lineTo(w, y0); guCtx.stroke();
+
+        /* x-height line (cap line ~28% from top) */
+        const xh = y0 + ROW_H * 0.28;
+        guCtx.strokeStyle = 'rgba(180,190,230,0.20)';
+        guCtx.lineWidth = 0.5;
+        guCtx.setLineDash([4, 6]);
+        guCtx.beginPath(); guCtx.moveTo(MARGIN_LEFT, xh); guCtx.lineTo(w, xh); guCtx.stroke();
+        guCtx.setLineDash([]);
+
+        /* baseline */
+        const base = y0 + ROW_H * ASCENT;
+        guCtx.strokeStyle = 'rgba(180,190,230,0.55)';
+        guCtx.lineWidth = 0.8;
+        guCtx.beginPath(); guCtx.moveTo(0, base); guCtx.lineTo(w, base); guCtx.stroke();
+
+        /* descender line */
+        const desc = y0 + ROW_H * 0.90;
+        guCtx.strokeStyle = 'rgba(180,190,230,0.18)';
+        guCtx.lineWidth = 0.4;
+        guCtx.beginPath(); guCtx.moveTo(MARGIN_LEFT, desc); guCtx.lineTo(w, desc); guCtx.stroke();
+
+        /* margin vertical */
+        guCtx.strokeStyle = 'rgba(220,100,100,0.30)';
+        guCtx.lineWidth = 0.8;
+        guCtx.beginPath(); guCtx.moveTo(MARGIN_LEFT, y0); guCtx.lineTo(MARGIN_LEFT, y0 + ROW_H); guCtx.stroke();
+
+        /* row divider bottom */
+        guCtx.strokeStyle = 'rgba(180,190,230,0.30)';
+        guCtx.lineWidth = 0.6;
+        guCtx.beginPath(); guCtx.moveTo(0, y0 + ROW_H); guCtx.lineTo(w, y0 + ROW_H); guCtx.stroke();
+
+      } else {
+        /* simple lines mode */
+        guCtx.strokeStyle = 'rgba(83,74,183,0.20)';
+        guCtx.lineWidth = 0.6;
+        guCtx.beginPath(); guCtx.moveTo(0, y0); guCtx.lineTo(w, y0); guCtx.stroke();
+        const base = y0 + ROW_H * ASCENT;
+        guCtx.strokeStyle = 'rgba(83,74,183,0.35)';
+        guCtx.lineWidth = 0.7;
+        guCtx.beginPath(); guCtx.moveTo(0, base); guCtx.lineTo(w, base); guCtx.stroke();
+      }
     }
-  } else if (gmode==='grid') {
-    const c=48; gux.strokeStyle='rgba(83,74,183,0.10)'; gux.lineWidth=0.5;
-    for (let x=0;x<w;x+=c){gux.beginPath();gux.moveTo(x,0);gux.lineTo(x,h);gux.stroke();}
-    for (let y=0;y<h;y+=c){gux.beginPath();gux.moveTo(0,y);gux.lineTo(w,y);gux.stroke();}
-  } else if (gmode==='slant') {
-    const lh=72;
-    for (let y=lh;y<h;y+=lh){gux.strokeStyle='rgba(83,74,183,0.20)';gux.lineWidth=0.5;gux.beginPath();gux.moveTo(0,y);gux.lineTo(w,y);gux.stroke();}
-    const rad=52*Math.PI/180; gux.strokeStyle='rgba(100,140,220,0.13)'; gux.lineWidth=0.5;
-    for (let x=-h*2;x<w+h*2;x+=56){const dx2=h/Math.tan(rad);gux.beginPath();gux.moveTo(x,h);gux.lineTo(x+dx2,0);gux.stroke();}
   }
-  gux.restore();
+
+  /* row numbers */
+  document.querySelectorAll('.row-num').forEach(e => e.remove());
+  for (let row = 0; row < numRows; row++) {
+    const el = document.createElement('div');
+    el.className = 'row-num';
+    el.textContent = row + 1;
+    el.style.top = (row * ROW_H + ROW_H * ASCENT - 8) + 'px';
+    notebookPaper.appendChild(el);
+  }
+
+  guCtx.restore();
 }
 
-function drawGhost() {
-  const w = cwrap.offsetWidth, h = cwrap.offsetHeight;
-  gx.clearRect(0,0,w,h);
-  const sz = Math.min(w,h)*0.52;
-  gx.save();
-  gx.font = `300 ${sz}px 'Cormorant Garamond',serif`;
-  gx.textAlign='center'; gx.textBaseline='middle';
-  gx.fillStyle='rgba(83,74,183,0.07)';
-  gx.fillText(letter,w/2,h/2);
-  gx.restore();
+function drawNotebookGhost() {
+  const w = notebookWrap.offsetWidth;
+  const h = notebookHeight();
+  ghCtx.clearRect(0, 0, w, h);
+  if (!showG) return;
+
+  ghCtx.save();
+  ghCtx.font = `600 ${FONT_SZ}px 'Caveat', cursive`;
+  ghCtx.textBaseline = 'alphabetic';
+  ghCtx.fillStyle = 'rgba(83,74,183,0.10)';
+
+  const cellW = 80; // width of each ghost cell
+  const baseline_offset = ROW_H * ASCENT;
+
+  for (let row = 0; row < numRows; row++) {
+    const baseY = row * ROW_H + baseline_offset;
+    let x = MARGIN_LEFT + 10;
+    /* fill row with repeated ghost letters */
+    while (x + cellW < w) {
+      ghCtx.fillText(letter, x, baseY);
+      /* measure actual advance */
+      const adv = ghCtx.measureText(letter).width + 12;
+      x += adv;
+    }
+  }
+
+  ghCtx.restore();
 }
 
-/* letter drawing */
-function lpos(e){const r=dcv.getBoundingClientRect(),s=e.touches?e.touches[0]:e;return[s.clientX-r.left,s.clientY-r.top];}
-function lsnap(){if(lundo.length>=40)lundo.shift();lundo.push(dx.getImageData(0,0,dcv.width,dcv.height));}
-function lstart(e){e.preventDefault();lsnap();ldraw=true;[lx,ly]=lpos(e);}
-function lmove(e){
-  if(!ldraw)return;e.preventDefault();
-  const[x,y]=lpos(e);
-  dx.save();dx.lineCap='round';dx.lineJoin='round';
-  dx.lineWidth=lsize;dx.strokeStyle=lcolor;dx.globalAlpha=lopacity;
-  dx.beginPath();dx.moveTo(lx,ly);dx.lineTo(x,y);dx.stroke();
-  dx.restore();lx=x;ly=y;
-}
-function lend(){if(!ldraw)return;ldraw=false;lsc++;document.getElementById('stval').textContent=lsc;}
-dcv.addEventListener('pointerdown',lstart);
-dcv.addEventListener('pointermove',lmove);
-dcv.addEventListener('pointerup',lend);
-dcv.addEventListener('pointerleave',lend);
-dcv.addEventListener('touchstart',e=>e.preventDefault(),{passive:false});
-dcv.addEventListener('touchmove',e=>e.preventDefault(),{passive:false});
-
-function clearL(){
-  dx.clearRect(0,0,dcv.width,dcv.height);
-  lundo=[];lsc=0;document.getElementById('stval').textContent='0';
-  hideBadge();hideDetail();
+/* ── resize ── */
+function resizeNotebook() {
+  setCanvasSizes();
+  drawNotebookGuide();
+  drawNotebookGhost();
 }
 
-/* ════════════════════════
-   REAL EVALUATOR
-════════════════════════ */
+/* ── drawing on notebook ── */
+function nbPos(e) {
+  const rect = drawCanvas.getBoundingClientRect();
+  const src = e.touches ? e.touches[0] : e;
+  return [src.clientX - rect.left, src.clientY - rect.top];
+}
+function nbSnap() {
+  if (lundo.length >= 40) lundo.shift();
+  lundo.push(dCtx.getImageData(0, 0, drawCanvas.width, drawCanvas.height));
+}
+function nbStart(e) { e.preventDefault(); nbSnap(); ldraw = true; [lx, ly] = nbPos(e); }
+function nbMove(e) {
+  if (!ldraw) return; e.preventDefault();
+  const [x, y] = nbPos(e);
+  dCtx.save();
+  dCtx.lineCap = 'round'; dCtx.lineJoin = 'round';
+  dCtx.lineWidth = lsize; dCtx.strokeStyle = lcolor; dCtx.globalAlpha = lopacity;
+  dCtx.beginPath(); dCtx.moveTo(lx, ly); dCtx.lineTo(x, y); dCtx.stroke();
+  dCtx.restore();
+  lx = x; ly = y;
+}
+function nbEnd() {
+  if (!ldraw) return; ldraw = false;
+  lsc++; document.getElementById('stval') && (document.getElementById('stval').textContent = lsc);
+}
+
+drawCanvas.addEventListener('pointerdown', nbStart);
+drawCanvas.addEventListener('pointermove', nbMove);
+drawCanvas.addEventListener('pointerup', nbEnd);
+drawCanvas.addEventListener('pointerleave', nbEnd);
+drawCanvas.addEventListener('touchstart', e => e.preventDefault(), { passive: false });
+drawCanvas.addEventListener('touchmove',  e => e.preventDefault(), { passive: false });
+
+function clearL() {
+  dCtx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
+  lundo = []; lsc = 0;
+  hideBadge(); hideDetail();
+}
+
+/* ══════════════════════════════════
+   EVALUATOR — compare first row only
+══════════════════════════════════ */
 function evaluate() {
-  if (lsc===0){showToast('Dibuja la letra primero','#9b2335');return;}
-  const w=cwrap.offsetWidth, h=cwrap.offsetHeight;
+  if (lsc === 0) { showToast('Dibuja algo primero', '#9b2335'); return; }
+  const w = notebookWrap.offsetWidth;
+  const h = ROW_H; // evaluate first row only
 
-  /* render reference letter on offscreen canvas */
-  const rc=document.createElement('canvas');
-  rc.width=w*DPR; rc.height=h*DPR;
-  const rx=rc.getContext('2d');
-  rx.scale(DPR,DPR);
-  const sz=Math.min(w,h)*0.52;
-  rx.font=`300 ${sz}px 'Cormorant Garamond',serif`;
-  rx.textAlign='center'; rx.textBaseline='middle';
-  rx.fillStyle='black';
-  rx.fillText(letter,w/2,h/2);
-
-  const rdata=rx.getImageData(0,0,rc.width,rc.height).data;
-  const udata=dx.getImageData(0,0,dcv.width,dcv.height).data;
-  const tot=rc.width*rc.height;
-
-  let rn=0,un=0,ov=0;
-  let rsx=0,rsy=0,usx=0,usy=0;
-  let rrows=new Array(rc.height).fill(0), urows=new Array(rc.height).fill(0);
-  let rtop=rc.height,rbot=0,utop=rc.height,ubot=0;
-
-  for(let i=0;i<tot;i++){
-    const ar=rdata[i*4+3], au=udata[i*4+3];
-    const px=i%rc.width, py=Math.floor(i/rc.width);
-    const ir=ar>25, iu=au>25;
-    if(ir){rn++;rsx+=px;rsy+=py;rrows[py]++;if(py<rtop)rtop=py;if(py>rbot)rbot=py;}
-    if(iu){un++;usx+=px;usy+=py;urows[py]++;if(py<utop)utop=py;if(py>ubot)ubot=py;}
-    if(ir&&iu)ov++;
+  /* render reference — same ghost as first row */
+  const rc = document.createElement('canvas');
+  rc.width = w * DPR; rc.height = h * DPR;
+  const rx = rc.getContext('2d');
+  rx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  rx.font = `600 ${FONT_SZ}px 'Caveat', cursive`;
+  rx.textBaseline = 'alphabetic';
+  rx.fillStyle = 'black';
+  const baseY = ROW_H * ASCENT;
+  let x2 = MARGIN_LEFT + 10;
+  while (x2 + 80 < w) {
+    rx.fillText(letter, x2, baseY);
+    x2 += rx.measureText(letter).width + 12;
   }
 
-  /* 1. Coverage: overlap / reference, penalized by overdraw */
-  const covRaw = rn>0 ? ov/rn : 0;
-  const precision = un>0 ? ov/un : 0;
-  /* Good score needs both: covering the letter AND not going way outside */
-  const coverage = covRaw * Math.min(1, precision*3);
+  /* grab first row from user draw canvas */
+  const rowData = dCtx.getImageData(0, 0, drawCanvas.width, Math.round(h * DPR));
+  const refData = rx.getImageData(0, 0, rc.width, rc.height).data;
+  const uData   = rowData.data;
+  const tot = rc.width * Math.round(h * DPR);
 
-  /* 2. Centering: centroid distance */
-  let centering=0;
-  if(rn>0&&un>0){
-    const rcx=rsx/rn*DPR, rcy=rsy/rn*DPR; // already in DPR space? no — pixel coords
-    const ucx=usx/un, ucy=usy/un;
-    const rcxN=rsx/rn, rcyN=rsy/rn; // pixels in DPR space, normalize by DPR
-    const dist=Math.sqrt((rcxN-ucx)**2+(rcyN-ucy)**2);
-    const maxD=Math.sqrt((rc.width)**2+(rc.height)**2)*0.2;
-    centering=Math.max(0,1-dist/maxD);
+  let rn=0, un=0, ov=0, rsx=0, rsy=0, usx=0, usy=0;
+  let rtop=h*DPR, rbot=0, utop=h*DPR, ubot=0;
+  for (let i = 0; i < tot; i++) {
+    const ar = refData[i*4+3], au = uData[i*4+3];
+    const px = i % rc.width, py = Math.floor(i / rc.width);
+    const ir = ar > 25, iu = au > 25;
+    if (ir) { rn++; rsx+=px; rsy+=py; if(py<rtop)rtop=py; if(py>rbot)rbot=py; }
+    if (iu) { un++; usx+=px; usy+=py; if(py<utop)utop=py; if(py>ubot)ubot=py; }
+    if (ir && iu) ov++;
   }
-
-  /* 3. Proportion: vertical bounding box similarity */
-  let proportion=0;
-  const rh=rbot-rtop, uh=ubot-utop;
-  if(rh>0&&uh>0){
-    const hRatio=Math.min(rh,uh)/Math.max(rh,uh);
-    const topDiff=Math.abs(utop-rtop);
-    const topAlign=Math.max(0,1-topDiff/(rh*0.6||1));
-    proportion=hRatio*0.55+topAlign*0.45;
+  const covRaw = rn > 0 ? ov/rn : 0;
+  const prec   = un > 0 ? ov/un : 0;
+  const cov    = covRaw * Math.min(1, prec * 3);
+  let cen = 0;
+  if (rn > 0 && un > 0) {
+    const dist = Math.sqrt((rsx/rn - usx/un)**2 + (rsy/rn - usy/un)**2);
+    cen = Math.max(0, 1 - dist / (Math.sqrt(rc.width**2 + (h*DPR)**2) * 0.18));
   }
+  let prop = 0;
+  const rh = rbot-rtop, uh = ubot-utop;
+  if (rh > 0 && uh > 0) {
+    const hRatio = Math.min(rh,uh)/Math.max(rh,uh);
+    const topAlign = Math.max(0, 1 - Math.abs(utop-rtop)/(rh*0.6||1));
+    prop = hRatio*0.55 + topAlign*0.45;
+  }
+  const score = Math.round(cov*0.50*100 + cen*0.25*100 + prop*0.25*100);
 
-  const score=Math.round(coverage*0.50*100+centering*0.25*100+proportion*0.25*100);
+  const badge = document.getElementById('sbadge');
+  badge.style.display = 'flex';
+  if (score >= 70) { badge.className = 'good'; badge.textContent = score+'/100 — ¡Excelente!'; }
+  else if (score >= 45) { badge.className = 'ok'; badge.textContent = score+'/100 — Bien, sigue'; }
+  else { badge.className = 'retry'; badge.textContent = score+'/100 — Inténtalo de nuevo'; }
 
-  /* badge */
-  const badge=document.getElementById('sbadge');
-  badge.style.display='flex';
-  if(score>=72){badge.className='good';badge.textContent=`${score}/100 — ¡Excelente!`;}
-  else if(score>=48){badge.className='ok';badge.textContent=`${score}/100 — Bien, sigue`;}
-  else{badge.className='retry';badge.textContent=`${score}/100 — Inténtalo de nuevo`;}
-
-  /* detail */
-  const p=v=>Math.round(v*100)+'%';
-  document.getElementById('vcov').textContent=p(coverage);
-  document.getElementById('vcen').textContent=p(centering);
-  document.getElementById('vpro').textContent=p(proportion);
-  document.getElementById('vtot').textContent=score+'/100';
-  document.getElementById('bcov').style.width=p(coverage);
-  document.getElementById('bcen').style.width=p(centering);
-  document.getElementById('bpro').style.width=p(proportion);
-  document.getElementById('sdetail').style.display='block';
+  const p = v => Math.round(v*100)+'%';
+  document.getElementById('vcov').textContent = p(cov);
+  document.getElementById('vcen').textContent = p(cen);
+  document.getElementById('vpro').textContent = p(prop);
+  document.getElementById('vtot').textContent = score+'/100';
+  document.getElementById('bcov').style.width = p(cov);
+  document.getElementById('bcen').style.width = p(cen);
+  document.getElementById('bpro').style.width = p(prop);
+  document.getElementById('sdetail').style.display = 'block';
 }
 
-function hideBadge(){document.getElementById('sbadge').style.display='none';}
-function hideDetail(){document.getElementById('sdetail').style.display='none';}
-document.getElementById('closedtl').addEventListener('click',hideDetail);
-document.getElementById('evbtn').addEventListener('click',evaluate);
+function hideBadge() { document.getElementById('sbadge').style.display = 'none'; }
+function hideDetail() { document.getElementById('sdetail').style.display = 'none'; }
+document.getElementById('closedtl').addEventListener('click', hideDetail);
+document.getElementById('evbtn').addEventListener('click', evaluate);
 
-/* ── Letter panel ── */
-function buildGrid(letters){
-  const g=document.getElementById('lgrid'); g.innerHTML='';
-  letters.forEach(l=>{
-    const b=document.createElement('button');
-    b.className='lbtn'+(l===letter?' active':'');
-    b.textContent=l; b.dataset.letter=l;
-    b.addEventListener('pointerdown',e=>{e.stopPropagation();selLetter(l);});
+/* ── letter grid ── */
+function buildGrid(arr) {
+  const g = document.getElementById('lgrid'); g.innerHTML = '';
+  arr.forEach(l => {
+    const b = document.createElement('button');
+    b.className = 'lbtn' + (l === letter ? ' active' : '');
+    b.textContent = l; b.dataset.letter = l;
+    b.addEventListener('pointerdown', e => { e.stopPropagation(); selLetter(l); });
     g.appendChild(b);
   });
 }
-function selLetter(l){
-  letter=l;
-  document.querySelectorAll('.lbtn').forEach(b=>b.classList.toggle('active',b.dataset.letter===l));
-  clearL(); drawGhost();
+function selLetter(l) {
+  letter = l;
+  document.querySelectorAll('.lbtn').forEach(b => b.classList.toggle('active', b.dataset.letter === l));
+  clearL();
+  drawNotebookGhost();
 }
-document.querySelectorAll('.ptab').forEach(t=>{
-  t.addEventListener('click',()=>{
-    ltab=t.dataset.tab;
-    document.querySelectorAll('.ptab').forEach(x=>x.classList.remove('active'));
+document.querySelectorAll('.ptab').forEach(t => {
+  t.addEventListener('click', () => {
+    ltab = t.dataset.tab;
+    document.querySelectorAll('.ptab').forEach(x => x.classList.remove('active'));
     t.classList.add('active');
-    buildGrid(ltab==='abc'?LABC:LNUM);
+    buildGrid(ltab === 'abc' ? LABC : LNUM);
   });
 });
 
-document.getElementById('btnundo').addEventListener('click',()=>{
-  if(!lundo.length)return;
-  dx.putImageData(lundo.pop(),0,0);
-  lsc=Math.max(0,lsc-1); document.getElementById('stval').textContent=lsc;
+/* ── toolbar controls ── */
+document.getElementById('btnundo').addEventListener('click', () => {
+  if (!lundo.length) return;
+  dCtx.putImageData(lundo.pop(), 0, 0);
+  lsc = Math.max(0, lsc - 1);
   hideBadge(); hideDetail();
 });
-document.getElementById('btnclear').addEventListener('click',clearL);
-document.getElementById('btnguide').addEventListener('click',()=>{
-  showG=!showG; document.getElementById('btnguide').classList.toggle('active',showG); drawLGuide();
+document.getElementById('btnclear').addEventListener('click', clearL);
+document.getElementById('btnguide').addEventListener('click', () => {
+  showG = !showG;
+  document.getElementById('btnguide').classList.toggle('active', showG);
+  drawNotebookGuide(); drawNotebookGhost();
 });
-document.getElementById('size-slider').addEventListener('input',function(){
-  lsize=parseInt(this.value); document.getElementById('size-val').textContent=lsize;
+document.getElementById('size-slider').addEventListener('input', function() {
+  lsize = parseInt(this.value); document.getElementById('size-val').textContent = lsize;
 });
-document.getElementById('opacity-slider').addEventListener('input',function(){lopacity=parseInt(this.value)/100;});
-document.querySelectorAll('.cdot:not([data-s])').forEach(d=>{
-  d.addEventListener('click',()=>{
-    document.querySelectorAll('.cdot:not([data-s])').forEach(x=>x.classList.remove('active'));
-    d.classList.add('active'); lcolor=d.dataset.color;
+document.getElementById('opacity-slider').addEventListener('input', function() { lopacity = parseInt(this.value)/100; });
+document.querySelectorAll('.cdot:not([data-s])').forEach(d => {
+  d.addEventListener('click', () => {
+    document.querySelectorAll('.cdot:not([data-s])').forEach(x => x.classList.remove('active'));
+    d.classList.add('active'); lcolor = d.dataset.color;
   });
 });
-document.querySelectorAll('[data-guide]').forEach(b=>{
-  b.addEventListener('click',()=>{
-    document.querySelectorAll('[data-guide]').forEach(x=>x.classList.remove('active'));
-    b.classList.add('active'); gmode=b.dataset.guide; drawLGuide();
+document.querySelectorAll('[data-guide]').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('[data-guide]').forEach(x => x.classList.remove('active'));
+    b.classList.add('active'); gmode = b.dataset.guide; drawNotebookGuide();
   });
 });
 
-/* ════════════════════════
-   SENTENCE CANVASES
-════════════════════════ */
-const sgcv=document.getElementById('sg');
-const sgucv=document.getElementById('sgu');
-const sdcv=document.getElementById('sd');
-const sgx=sgcv.getContext('2d');
-const sgux=sgucv.getContext('2d');
-const sdx=sdcv.getContext('2d');
-const sarea=document.getElementById('sarea');
+/* rows +/- */
+document.getElementById('rows-minus').addEventListener('click', () => {
+  if (numRows <= 1) return;
+  numRows--;
+  document.getElementById('rows-val').textContent = numRows;
+  clearL(); resizeNotebook();
+});
+document.getElementById('rows-plus').addEventListener('click', () => {
+  if (numRows >= 12) return;
+  numRows++;
+  document.getElementById('rows-val').textContent = numRows;
+  resizeNotebook();
+});
 
-function resizeS(){
-  const w=sarea.offsetWidth, h=sarea.offsetHeight;
-  [sgcv,sgucv,sdcv].forEach(c=>{
-    c.width=w*DPR; c.height=h*DPR;
-    c.style.width=w+'px'; c.style.height=h+'px';
+/* ══════════════════════════════════
+   SENTENCE MODE
+══════════════════════════════════ */
+const sgcv  = document.getElementById('sg');
+const sgucv = document.getElementById('sgu');
+const sdcv  = document.getElementById('sd');
+const sgx  = sgcv.getContext('2d');
+const sgux = sgucv.getContext('2d');
+const sdx  = sdcv.getContext('2d');
+const sarea = document.getElementById('sarea');
+
+function resizeS() {
+  const w = sarea.offsetWidth, h = sarea.offsetHeight;
+  [sgcv, sgucv, sdcv].forEach(c => {
+    c.width = w*DPR; c.height = h*DPR;
+    c.style.width = w+'px'; c.style.height = h+'px';
   });
-  sgx.scale(DPR,DPR); sgux.scale(DPR,DPR); sdx.scale(DPR,DPR);
+  sgx.setTransform(DPR,0,0,DPR,0,0);
+  sgux.setTransform(DPR,0,0,DPR,0,0);
+  sdx.setTransform(DPR,0,0,DPR,0,0);
   drawSGuide(); drawSGhost();
 }
-
-function drawSGuide(){
-  const w=sarea.offsetWidth, h=sarea.offsetHeight;
+function drawSGuide() {
+  const w = sarea.offsetWidth, h = sarea.offsetHeight;
   sgux.clearRect(0,0,w,h);
-  if(!ssg)return;
-  const lh=sfsize*1.7;
+  if (!ssg) return;
+  const lh = sfsize * 1.75;
   sgux.save();
-  for(let y=lh;y<h+lh;y+=lh){
-    sgux.strokeStyle='rgba(83,74,183,0.18)'; sgux.lineWidth=0.6;
+  for (let y = lh; y < h + lh; y += lh) {
+    sgux.strokeStyle = 'rgba(180,190,230,0.50)'; sgux.lineWidth = 0.7;
     sgux.beginPath(); sgux.moveTo(0,y); sgux.lineTo(w,y); sgux.stroke();
-    sgux.strokeStyle='rgba(83,74,183,0.07)'; sgux.lineWidth=0.4;
-    sgux.beginPath(); sgux.moveTo(0,y-lh*0.35); sgux.lineTo(w,y-lh*0.35); sgux.stroke();
+    sgux.strokeStyle = 'rgba(180,190,230,0.22)'; sgux.lineWidth = 0.4;
+    sgux.setLineDash([4,6]);
+    sgux.beginPath(); sgux.moveTo(0, y - lh*0.44); sgux.lineTo(w, y - lh*0.44); sgux.stroke();
+    sgux.setLineDash([]);
   }
   sgux.restore();
 }
-
 function wrapText(ctx, text, maxW) {
-  const words=text.split(' '); let lines=[], cur='';
-  words.forEach(w=>{
-    const test=cur?cur+' '+w:w;
-    if(ctx.measureText(test).width>maxW&&cur){lines.push(cur);cur=w;}
-    else{cur=test;}
+  const words = text.split(' '); let lines = [], cur = '';
+  words.forEach(w => {
+    const test = cur ? cur+' '+w : w;
+    if (ctx.measureText(test).width > maxW && cur) { lines.push(cur); cur = w; }
+    else cur = test;
   });
-  if(cur)lines.push(cur);
-  return lines;
+  if (cur) lines.push(cur); return lines;
 }
-
-function drawSGhost(){
-  const w=sarea.offsetWidth, h=sarea.offsetHeight;
+function drawSGhost() {
+  const w = sarea.offsetWidth, h = sarea.offsetHeight;
   sgx.clearRect(0,0,w,h);
-  if(!sentence)return;
+  if (!sentence) return;
   sgx.save();
-  sgx.font=`300 ${sfsize}px 'Cormorant Garamond',serif`;
-  sgx.fillStyle=`rgba(83,74,183,${sfopacity})`;
-  sgx.textBaseline='alphabetic';
-  const lh=sfsize*1.7, maxW=w-32;
-  const lines=wrapText(sgx,sentence,maxW);
-  lines.forEach((line,i)=>sgx.fillText(line,16,lh+i*lh));
+  sgx.font = `500 ${sfsize}px 'Caveat', cursive`;
+  sgx.fillStyle = `rgba(83,74,183,${sfopacity})`;
+  sgx.textBaseline = 'alphabetic';
+  const lh = sfsize * 1.75, maxW = w - 24;
+  wrapText(sgx, sentence, maxW).forEach((line, i) => sgx.fillText(line, 12, lh + i*lh));
   sgx.restore();
 }
-
-/* sentence drawing */
-function spos(e){const r=sdcv.getBoundingClientRect(),s=e.touches?e.touches[0]:e;return[s.clientX-r.left,s.clientY-r.top];}
-function ssnap(){if(sundo.length>=40)sundo.shift();sundo.push(sdx.getImageData(0,0,sdcv.width,sdcv.height));}
-function sstart(e){e.preventDefault();ssnap();sdraw=true;[sx,sy]=spos(e);}
-function smove(e){
-  if(!sdraw)return;e.preventDefault();
+function spos(e) { const r=sdcv.getBoundingClientRect(),s=e.touches?e.touches[0]:e; return[s.clientX-r.left,s.clientY-r.top]; }
+function ssnap() { if(sundo.length>=40)sundo.shift(); sundo.push(sdx.getImageData(0,0,sdcv.width,sdcv.height)); }
+function sstart(e) { e.preventDefault(); ssnap(); sdraw=true; [sx,sy]=spos(e); }
+function smove(e) {
+  if(!sdraw)return; e.preventDefault();
   const[x,y]=spos(e);
-  sdx.save();sdx.lineCap='round';sdx.lineJoin='round';
-  sdx.lineWidth=ssize;sdx.strokeStyle=scolor;sdx.globalAlpha=sopacity;
-  sdx.beginPath();sdx.moveTo(sx,sy);sdx.lineTo(x,y);sdx.stroke();
-  sdx.restore();sx=x;sy=y;
+  sdx.save(); sdx.lineCap='round'; sdx.lineJoin='round';
+  sdx.lineWidth=ssize; sdx.strokeStyle=scolor; sdx.globalAlpha=sopacity;
+  sdx.beginPath(); sdx.moveTo(sx,sy); sdx.lineTo(x,y); sdx.stroke();
+  sdx.restore(); sx=x; sy=y;
 }
-function send_(){if(!sdraw)return;sdraw=false;ssc++;document.getElementById('sscount').textContent=ssc;}
-sdcv.addEventListener('pointerdown',sstart);
-sdcv.addEventListener('pointermove',smove);
-sdcv.addEventListener('pointerup',send_);
-sdcv.addEventListener('pointerleave',send_);
+function send_() { if(!sdraw)return; sdraw=false; ssc++; document.getElementById('sscount').textContent=ssc; }
+sdcv.addEventListener('pointerdown',sstart); sdcv.addEventListener('pointermove',smove);
+sdcv.addEventListener('pointerup',send_); sdcv.addEventListener('pointerleave',send_);
 sdcv.addEventListener('touchstart',e=>e.preventDefault(),{passive:false});
 sdcv.addEventListener('touchmove',e=>e.preventDefault(),{passive:false});
+function clearS() { sdx.clearRect(0,0,sdcv.width,sdcv.height); sundo=[]; ssc=0; document.getElementById('sscount').textContent='0'; }
 
-function clearS(){
-  sdx.clearRect(0,0,sdcv.width,sdcv.height);
-  sundo=[];ssc=0;document.getElementById('sscount').textContent='0';
-}
-
-/* sentence evaluate */
-function evalSentence(){
+function evalSentence() {
   if(ssc===0){showToast('Escribe la oración primero','#9b2335');return;}
-  const w=sarea.offsetWidth, h=sarea.offsetHeight;
-
-  const rc2=document.createElement('canvas');
-  rc2.width=w*DPR; rc2.height=h*DPR;
-  const rx2=rc2.getContext('2d');
-  rx2.scale(DPR,DPR);
-  rx2.font=`300 ${sfsize}px 'Cormorant Garamond',serif`;
-  rx2.fillStyle='black'; rx2.textBaseline='alphabetic';
-  const lh=sfsize*1.7, maxW=w-32;
-  const lines=wrapText(rx2,sentence,maxW);
-  lines.forEach((line,i)=>rx2.fillText(line,16,lh+i*lh));
-
-  const rdata=rx2.getImageData(0,0,rc2.width,rc2.height).data;
-  const udata=sdx.getImageData(0,0,sdcv.width,sdcv.height).data;
-  const tot=rc2.width*rc2.height;
-
+  const w=sarea.offsetWidth,h=sarea.offsetHeight;
+  const rc=document.createElement('canvas'); rc.width=w*DPR; rc.height=h*DPR;
+  const rx=rc.getContext('2d'); rx.setTransform(DPR,0,0,DPR,0,0);
+  rx.font=`500 ${sfsize}px 'Caveat',cursive`; rx.fillStyle='black'; rx.textBaseline='alphabetic';
+  const lh=sfsize*1.75;
+  wrapText(rx,sentence||'...',w-24).forEach((l,i)=>rx.fillText(l,12,lh+i*lh));
+  const rd=rx.getImageData(0,0,rc.width,rc.height).data;
+  const ud=sdx.getImageData(0,0,sdcv.width,sdcv.height).data;
+  const tot=rc.width*rc.height;
   let rn=0,un=0,ov=0;
-  for(let i=0;i<tot;i++){
-    const ar=rdata[i*4+3], au=udata[i*4+3];
-    if(ar>25)rn++;
-    if(au>25)un++;
-    if(ar>25&&au>25)ov++;
-  }
-  const cov=rn>0?ov/rn:0;
-  const prec=un>0?ov/un:0;
+  for(let i=0;i<tot;i++){if(rd[i*4+3]>25)rn++;if(ud[i*4+3]>25)un++;if(rd[i*4+3]>25&&ud[i*4+3]>25)ov++;}
+  const cov=rn>0?ov/rn:0, prec=un>0?ov/un:0;
   const score=Math.round(cov*0.55*100+Math.min(1,prec*2.5)*0.45*100);
-
-  let msg,color;
-  if(score>=68){msg=`${score}/100 — ¡Excelente escritura! 🎉`;color='#1a7a4a';}
-  else if(score>=42){msg=`${score}/100 — Buen intento, sigue practicando 💪`;color='#7a5f00';}
-  else{msg=`${score}/100 — Intenta seguir mejor la guía ✏️`;color='#9b2335';}
-  showToast(msg,color);
+  let msg,clr;
+  if(score>=68){msg=`${score}/100 — ¡Excelente escritura!`;clr='#1a7a4a';}
+  else if(score>=42){msg=`${score}/100 — Buen intento, sigue`;clr='#7a5f00';}
+  else{msg=`${score}/100 — Intenta cubrir mejor la guía`;clr='#9b2335';}
+  showToast(msg,clr);
 }
 
-/* sentence controls */
 document.getElementById('btnset').addEventListener('click',()=>{
   const v=document.getElementById('sinput').value.trim();
   if(!v){showToast('Escribe una oración primero','#9b2335');return;}
-  sentence=v; clearS();
-  setTimeout(resizeS,50);
+  sentence=v; clearS(); setTimeout(resizeS,50);
 });
-document.getElementById('snewbtn').addEventListener('click',()=>{
-  sentence=''; clearS(); drawSGhost();
-  document.getElementById('sinput').value='';
-});
-document.getElementById('sundo').addEventListener('click',()=>{
-  if(!sundo.length)return;
-  sdx.putImageData(sundo.pop(),0,0);
-  ssc=Math.max(0,ssc-1); document.getElementById('sscount').textContent=ssc;
-});
+document.getElementById('snewbtn').addEventListener('click',()=>{sentence='';clearS();drawSGhost();document.getElementById('sinput').value='';});
+document.getElementById('sundo').addEventListener('click',()=>{if(!sundo.length)return;sdx.putImageData(sundo.pop(),0,0);ssc=Math.max(0,ssc-1);document.getElementById('sscount').textContent=ssc;});
 document.getElementById('sclear').addEventListener('click',clearS);
-document.getElementById('sgtoggle').addEventListener('click',()=>{
-  ssg=!ssg; document.getElementById('sgtoggle').classList.toggle('active',ssg); drawSGuide();
-});
-document.getElementById('sssize').addEventListener('input',function(){
-  ssize=parseInt(this.value); document.getElementById('ssval').textContent=ssize;
-});
-document.getElementById('sfsize').addEventListener('input',function(){
-  sfsize=parseInt(this.value); document.getElementById('sfval').textContent=sfsize;
-  drawSGuide(); drawSGhost();
-});
-document.getElementById('sfopacity').addEventListener('input',function(){
-  sfopacity=parseInt(this.value)/100; drawSGhost();
-});
+document.getElementById('sgtoggle').addEventListener('click',()=>{ssg=!ssg;document.getElementById('sgtoggle').classList.toggle('active',ssg);drawSGuide();});
+document.getElementById('sssize').addEventListener('input',function(){ssize=parseInt(this.value);document.getElementById('ssval').textContent=ssize;});
+document.getElementById('sfsize').addEventListener('input',function(){sfsize=parseInt(this.value);document.getElementById('sfval').textContent=sfsize;drawSGuide();drawSGhost();});
+document.getElementById('sfopacity').addEventListener('input',function(){sfopacity=parseInt(this.value)/100;drawSGhost();});
 document.querySelectorAll('.cdot[data-s]').forEach(d=>{
-  d.addEventListener('click',()=>{
-    document.querySelectorAll('.cdot[data-s]').forEach(x=>x.classList.remove('active'));
-    d.classList.add('active'); scolor=d.dataset.color;
-  });
+  d.addEventListener('click',()=>{document.querySelectorAll('.cdot[data-s]').forEach(x=>x.classList.remove('active'));d.classList.add('active');scolor=d.dataset.color;});
 });
 document.getElementById('sevbtn').addEventListener('click',evalSentence);
 
 /* ── top tabs ── */
-document.querySelectorAll('.mode-tab').forEach(tab=>{
-  tab.addEventListener('click',()=>{
-    const v=tab.dataset.view;
-    document.querySelectorAll('.mode-tab').forEach(t=>t.classList.remove('active'));
+document.querySelectorAll('.mode-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    const v = tab.dataset.view;
+    document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
     tab.classList.add('active');
-    document.getElementById('lview').style.display=v==='letter'?'flex':'none';
-    document.getElementById('sview').style.display=v==='sentence'?'flex':'none';
-    if(v==='sentence')setTimeout(resizeS,60);
-    if(v==='letter')setTimeout(resizeL,60);
+    document.getElementById('lview').style.display = v==='letter' ? 'flex' : 'none';
+    document.getElementById('sview').style.display = v==='sentence' ? 'flex' : 'none';
+    if (v==='sentence') setTimeout(resizeS, 60);
+    if (v==='letter')   setTimeout(resizeNotebook, 60);
   });
 });
 
 /* ── toast ── */
-const toastEl=document.getElementById('toast');
-function showToast(msg,color){
-  toastEl.textContent=msg;
-  toastEl.style.borderColor=color||'rgba(0,0,0,0.15)';
+const toastEl = document.getElementById('toast');
+function showToast(msg, color) {
+  toastEl.textContent = msg;
+  toastEl.style.borderColor = color || 'rgba(0,0,0,0.15)';
   toastEl.classList.add('show');
   clearTimeout(toastEl._t);
-  toastEl._t=setTimeout(()=>toastEl.classList.remove('show'),3200);
+  toastEl._t = setTimeout(() => toastEl.classList.remove('show'), 3200);
 }
 
 /* ── init ── */
 buildGrid(LABC);
-const ro=new ResizeObserver(()=>{
-  resizeL();
-  if(document.getElementById('sview').style.display!=='none')resizeS();
+const ro = new ResizeObserver(() => {
+  resizeNotebook();
+  if (document.getElementById('sview').style.display !== 'none') resizeS();
 });
-ro.observe(cwrap); ro.observe(sarea);
-resizeL();
+ro.observe(notebookWrap); ro.observe(sarea);
+resizeNotebook();
 </script>
 </body>
 </html>
