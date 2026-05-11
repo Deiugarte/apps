@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Sílabas</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #FFFBF5;
+  --surface: #FFFFFF;
+  --sil-a: #EA580C;
+  --sil-light: #FED7AA;
+  --sil-bg: #FFF7ED;
+  --correct: #16A34A;
+  --correct-bg: #DCFCE7;
+  --wrong: #DC2626;
+  --wrong-bg: #FEE2E2;
+  --text: #1E293B;
+  --text-light: #64748B;
+  --border: rgba(0,0,0,0.08);
+  --shadow: 0 2px 12px rgba(0,0,0,0.06);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.10);
+  --radius: 16px;
+  --radius-sm: 10px;
+  /* colors per syllable position */
+  --s0-bg: #DCFCE7; --s0-text: #15803D; --s0-border: #86EFAC;
+  --s1-bg: #DBEAFE; --s1-text: #1D4ED8; --s1-border: #93C5FD;
+  --s2-bg: #FEF3C7; --s2-text: #B45309; --s2-border: #FDE68A;
+  --s3-bg: #F3E8FF; --s3-text: #7C3AED; --s3-border: #D8B4FE;
+}
+
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  font-family: 'Nunito', sans-serif;
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  touch-action: manipulation;
+}
+
+#app { display: flex; flex-direction: column; height: 100vh; width: 100vw; }
+
+/* ── NAV ── */
+#nav {
+  display: flex; align-items: center;
+  padding: 0 12px; height: 56px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  gap: 6px; flex-shrink: 0;
+  overflow-x: auto; -webkit-overflow-scrolling: touch;
+}
+#nav-title {
+  font-family: 'Baloo 2', cursive;
+  font-size: 20px; font-weight: 800;
+  color: var(--sil-a);
+  margin-right: 6px; white-space: nowrap; flex-shrink: 0;
+}
+.nav-tab {
+  padding: 6px 12px; border-radius: 20px;
+  border: 2px solid transparent;
+  font-size: 13px; font-weight: 700;
+  cursor: pointer; transition: all .15s;
+  white-space: nowrap; user-select: none;
+  background: transparent; color: var(--text-light);
+  font-family: 'Nunito', sans-serif; flex-shrink: 0;
+}
+.nav-tab.active { background: var(--text); color: white; border-color: var(--text); }
+#score-area {
+  margin-left: auto; display: flex; align-items: center; gap: 6px; flex-shrink: 0;
+}
+.score-chip {
+  display: flex; align-items: center; gap: 4px;
+  padding: 4px 10px; border-radius: 20px;
+  font-size: 13px; font-weight: 800;
+}
+.score-chip.right { background: var(--correct-bg); color: var(--correct); }
+.score-chip.wrong { background: var(--wrong-bg); color: var(--wrong); }
+
+/* ── CONTENT ── */
+#content {
+  flex: 1; overflow-y: auto; overflow-x: hidden;
+  padding: 20px 16px 40px;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ════════════════════════
+   APRENDER
+════════════════════════ */
+#tab-aprender { display: flex; flex-direction: column; gap: 16px; }
+
+.learn-card {
+  background: var(--surface); border-radius: var(--radius);
+  padding: 20px; box-shadow: var(--shadow);
+}
+.learn-card h2 {
+  font-family: 'Baloo 2', cursive;
+  font-size: 18px; font-weight: 800; margin-bottom: 12px;
+}
+.learn-card p {
+  font-size: 14px; color: var(--text-light); font-weight: 600; line-height: 1.6;
+}
+.concept-box {
+  background: var(--sil-bg); border: 1.5px solid var(--sil-light);
+  border-radius: var(--radius-sm); padding: 14px 16px;
+  margin-bottom: 14px; display: flex; align-items: flex-start; gap: 12px;
+}
+.concept-icon { font-size: 28px; flex-shrink: 0; margin-top: 2px; }
+.concept-text { font-size: 14px; font-weight: 700; color: var(--sil-a); line-height: 1.6; }
+
+/* syllable demo boxes */
+.syl-word-demo {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  padding: 14px 0;
+}
+.syl-word-demo + .syl-word-demo { border-top: 1px solid var(--border); }
+.syl-emoji-lg { font-size: 38px; line-height: 1; }
+.syl-boxes-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: center; }
+.syl-box {
+  padding: 10px 18px; border-radius: 12px;
+  font-family: 'Baloo 2', cursive; font-size: 26px; font-weight: 800;
+  border: 2px solid transparent;
+  cursor: pointer; user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.syl-box.s0 { background: var(--s0-bg); color: var(--s0-text); border-color: var(--s0-border); }
+.syl-box.s1 { background: var(--s1-bg); color: var(--s1-text); border-color: var(--s1-border); }
+.syl-box.s2 { background: var(--s2-bg); color: var(--s2-text); border-color: var(--s2-border); }
+.syl-box.s3 { background: var(--s3-bg); color: var(--s3-text); border-color: var(--s3-border); }
+@keyframes syl-bounce {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.22) translateY(-5px); }
+  60% { transform: scale(0.94); }
+  100% { transform: scale(1); }
+}
+.syl-box.bouncing { animation: syl-bounce 0.38s ease forwards; }
+.syl-count-label {
+  font-size: 13px; font-weight: 700; color: var(--text-light);
+}
+
+/* examples grid */
+.learn-examples-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 4px;
+}
+.learn-ex-item {
+  background: var(--bg); border-radius: var(--radius-sm);
+  padding: 12px; display: flex; flex-direction: column;
+  align-items: center; gap: 6px;
+}
+.ex-item-emoji { font-size: 28px; }
+.ex-item-syls { display: flex; gap: 4px; flex-wrap: wrap; justify-content: center; }
+.ex-syl-chip {
+  font-family: 'Baloo 2', cursive; font-size: 15px; font-weight: 800;
+  padding: 4px 10px; border-radius: 8px;
+}
+.ex-syl-chip.s0 { background: var(--s0-bg); color: var(--s0-text); }
+.ex-syl-chip.s1 { background: var(--s1-bg); color: var(--s1-text); }
+.ex-syl-chip.s2 { background: var(--s2-bg); color: var(--s2-text); }
+.ex-syl-chip.s3 { background: var(--s3-bg); color: var(--s3-text); }
+.ex-item-word { font-size: 12px; font-weight: 700; color: var(--text-light); }
+
+/* ════════════════════════
+   DIVIDIR
+════════════════════════ */
+#tab-dividir { display: flex; flex-direction: column; }
+#div-card {
+  background: var(--surface); border-radius: var(--radius);
+  padding: 28px 20px 24px; box-shadow: var(--shadow-lg);
+  display: flex; flex-direction: column; gap: 16px; align-items: center;
+}
+#div-emoji { font-size: 60px; line-height: 1; }
+#div-word {
+  font-family: 'Baloo 2', cursive;
+  font-size: 54px; font-weight: 900; color: var(--text);
+  line-height: 1; text-align: center; transition: color .3s;
+}
+#div-word.divided { color: var(--sil-a); font-size: 42px; }
+#div-instruction {
+  font-size: 13px; font-weight: 700; color: var(--text-light);
+  text-transform: uppercase; letter-spacing: .06em; text-align: center;
+}
+#div-syl-buttons { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+
+.div-syl-btn {
+  padding: 14px 20px; border-radius: 14px;
+  font-family: 'Baloo 2', cursive; font-size: 28px; font-weight: 800;
+  border: 3px solid; cursor: pointer; user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  min-width: 60px; text-align: center;
+}
+/* idle (waiting) */
+.div-syl-btn.idle.s0 { background: #F2FFF5; color: var(--s0-text); border-color: var(--s0-border); opacity: .55; }
+.div-syl-btn.idle.s1 { background: #F2F8FF; color: var(--s1-text); border-color: var(--s1-border); opacity: .55; }
+.div-syl-btn.idle.s2 { background: #FFFDF2; color: var(--s2-text); border-color: var(--s2-border); opacity: .55; }
+.div-syl-btn.idle.s3 { background: #FDF5FF; color: var(--s3-text); border-color: var(--s3-border); opacity: .55; }
+/* expected (pulsing) */
+.div-syl-btn.expected.s0 { background: var(--s0-bg); color: var(--s0-text); border-color: var(--s0-text); animation: btn-pulse 1.1s infinite; }
+.div-syl-btn.expected.s1 { background: var(--s1-bg); color: var(--s1-text); border-color: var(--s1-text); animation: btn-pulse 1.1s infinite; }
+.div-syl-btn.expected.s2 { background: var(--s2-bg); color: var(--s2-text); border-color: var(--s2-text); animation: btn-pulse 1.1s infinite; }
+.div-syl-btn.expected.s3 { background: var(--s3-bg); color: var(--s3-text); border-color: var(--s3-text); animation: btn-pulse 1.1s infinite; }
+/* tapped (done) */
+.div-syl-btn.tapped.s0 { background: var(--s0-bg); color: var(--s0-text); border-color: var(--s0-text); }
+.div-syl-btn.tapped.s1 { background: var(--s1-bg); color: var(--s1-text); border-color: var(--s1-text); }
+.div-syl-btn.tapped.s2 { background: var(--s2-bg); color: var(--s2-text); border-color: var(--s2-text); }
+.div-syl-btn.tapped.s3 { background: var(--s3-bg); color: var(--s3-text); border-color: var(--s3-text); }
+@keyframes btn-pulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0,0,0,.1); }
+  50% { transform: scale(1.06); box-shadow: 0 6px 20px rgba(0,0,0,.12); }
+}
+@keyframes btn-tap {
+  0% { transform: scale(1); }
+  25% { transform: scale(1.2) translateY(-4px); }
+  65% { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+.div-syl-btn.tapping { animation: btn-tap 0.36s ease forwards !important; }
+@keyframes btn-shake {
+  0%,100% { transform: translateX(0); }
+  20% { transform: translateX(-5px); }
+  40% { transform: translateX(5px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+.div-syl-btn.shaking { animation: btn-shake 0.35s ease forwards !important; }
+
+#div-progress { display: flex; gap: 8px; align-items: center; justify-content: center; min-height: 18px; }
+.div-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: #E2E8F0; transition: background .2s, transform .2s;
+}
+.div-dot.done { background: var(--correct); transform: scale(1.2); }
+#div-feedback {
+  font-family: 'Baloo 2', cursive;
+  font-size: 22px; font-weight: 800; color: var(--correct);
+  text-align: center; display: none;
+}
+#div-next-btn {
+  padding: 14px 36px; border-radius: 14px; border: none;
+  background: var(--sil-a); color: white;
+  font-family: 'Nunito', sans-serif; font-size: 17px; font-weight: 800;
+  cursor: pointer; display: none;
+  -webkit-tap-highlight-color: transparent;
+}
+#div-next-btn:active { opacity: .85; }
+
+/* ════════════════════════
+   CONTAR
+════════════════════════ */
+#tab-contar { display: flex; flex-direction: column; }
+#cnt-card {
+  background: var(--surface); border-radius: var(--radius);
+  padding: 28px 20px 24px; box-shadow: var(--shadow-lg);
+  display: flex; flex-direction: column; gap: 16px; align-items: center;
+}
+#cnt-emoji { font-size: 60px; line-height: 1; }
+#cnt-word {
+  font-family: 'Baloo 2', cursive;
+  font-size: 48px; font-weight: 900; color: var(--text); line-height: 1;
+  text-align: center;
+}
+#cnt-question {
+  font-size: 14px; font-weight: 700; color: var(--text-light);
+  text-transform: uppercase; letter-spacing: .06em; text-align: center;
+}
+#cnt-options { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 100%; }
+.cnt-opt {
+  padding: 18px 8px; border-radius: 14px;
+  border: 2.5px solid var(--border); background: white;
+  font-family: 'Baloo 2', cursive; font-size: 30px; font-weight: 900;
+  cursor: pointer; text-align: center;
+  transition: transform .1s;
+  color: var(--text); user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.cnt-opt:active { transform: scale(.95); }
+.cnt-opt.correct { background: var(--correct-bg); border-color: var(--correct); color: var(--correct); }
+.cnt-opt.wrong   { background: var(--wrong-bg); border-color: var(--wrong); color: var(--wrong); }
+#cnt-feedback {
+  padding: 12px 16px; border-radius: 12px;
+  font-size: 15px; font-weight: 800; text-align: center;
+  display: none; width: 100%;
+}
+#cnt-feedback.correct { background: var(--correct-bg); color: var(--correct); display: block; }
+#cnt-feedback.wrong   { background: var(--wrong-bg); color: var(--wrong); display: block; }
+#cnt-next-btn {
+  padding: 12px 32px; border-radius: 12px; border: none;
+  background: var(--sil-a); color: white;
+  font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 800;
+  cursor: pointer; display: none;
+  -webkit-tap-highlight-color: transparent;
+}
+#cnt-next-btn:active { opacity: .85; }
+
+/* ════════════════════════
+   DESAFÍO
+════════════════════════ */
+#tab-desafio { display: flex; flex-direction: column; gap: 16px; }
+#challenge-card {
+  background: var(--surface); border-radius: var(--radius);
+  padding: 20px; box-shadow: var(--shadow-lg);
+  display: flex; flex-direction: column; gap: 14px;
+}
+#ch-score-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.ch-stat { padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 800; }
+.ch-stat.time { background: var(--sil-bg); color: var(--sil-a); }
+.ch-stat.pts  { background: var(--s1-bg); color: var(--s1-text); }
+.ch-stat.streak { background: #FEF9C3; color: #854D0E; }
+#timer-bar-wrap { height: 8px; background: var(--bg); border-radius: 4px; overflow: hidden; }
+#timer-bar { height: 100%; background: var(--sil-a); border-radius: 4px; transition: width .1s linear; }
+#challenge-q {
+  text-align: center; min-height: 80px;
+  display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 6px;
+  font-family: 'Baloo 2', cursive; font-size: 26px; font-weight: 800;
+}
+#challenge-q .ch-q-emoji { font-size: 40px; }
+#challenge-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.ch-option {
+  padding: 16px 12px; border-radius: 14px;
+  border: 2.5px solid var(--border); background: white;
+  font-family: 'Baloo 2', cursive; font-size: 22px; font-weight: 800;
+  cursor: pointer; text-align: center;
+  transition: transform .1s; color: var(--text);
+  user-select: none; -webkit-tap-highlight-color: transparent;
+}
+.ch-option:active { transform: scale(.96); }
+.ch-option.correct { background: var(--correct-bg); border-color: var(--correct); color: var(--correct); }
+.ch-option.wrong   { background: var(--wrong-bg); border-color: var(--wrong); color: var(--wrong); }
+#challenge-start {
+  padding: 14px; border-radius: 14px; border: none;
+  background: var(--sil-a); color: white;
+  font-family: 'Nunito', sans-serif; font-size: 17px; font-weight: 800;
+  cursor: pointer;
+}
+#challenge-start:active { opacity: .85; }
+
+/* result overlay */
+#result-overlay {
+  display: none; position: fixed; inset: 0; z-index: 100;
+  background: rgba(0,0,0,0.4); align-items: center; justify-content: center;
+}
+#result-overlay.show { display: flex; }
+#result-box {
+  background: white; border-radius: 24px; padding: 32px 28px;
+  text-align: center; max-width: 320px; width: 90%;
+  box-shadow: 0 20px 60px rgba(0,0,0,.2);
+}
+#result-emoji-big { font-size: 56px; margin-bottom: 8px; }
+#result-title { font-family: 'Baloo 2', cursive; font-size: 28px; font-weight: 900; margin-bottom: 6px; }
+#result-sub { font-size: 15px; color: var(--text-light); font-weight: 600; margin-bottom: 16px; }
+#result-score-big { font-family: 'Baloo 2', cursive; font-size: 52px; font-weight: 900; color: var(--sil-a); }
+#result-score-label { font-size: 14px; color: var(--text-light); font-weight: 600; margin-bottom: 20px; }
+#result-play-again {
+  width: 100%; padding: 14px; border-radius: 14px; border: none;
+  background: var(--sil-a); color: white;
+  font-family: 'Nunito', sans-serif; font-size: 17px; font-weight: 800;
+  cursor: pointer;
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ── NAV ── -->
+<div id="nav">
+  <span id="nav-title">🔤 Sílabas</span>
+  <button class="nav-tab active" data-tab="aprender">Aprender</button>
+  <button class="nav-tab" data-tab="dividir">Dividir</button>
+  <button class="nav-tab" data-tab="contar">Contar</button>
+  <button class="nav-tab" data-tab="desafio">Desafío</button>
+  <div id="score-area">
+    <div class="score-chip right">✓ <span id="sc-right">0</span></div>
+    <div class="score-chip wrong">✗ <span id="sc-wrong">0</span></div>
+  </div>
+</div>
+
+<!-- ── CONTENT ── -->
+<div id="content">
+
+  <!-- ═══ APRENDER ═══ -->
+  <div id="tab-aprender">
+
+    <div class="learn-card">
+      <h2>¿Qué es una sílaba?</h2>
+      <div class="concept-box">
+        <div class="concept-icon">👏</div>
+        <div class="concept-text">Una sílaba es cada "golpe de voz" cuando decís una palabra. Decí "ca-sa" y dá dos palmadas: ¡cada palmada es una sílaba!</div>
+      </div>
+      <p>Las palabras se dividen en partes llamadas sílabas. Toca cada caja de colores para verlas:</p>
+    </div>
+
+    <div class="learn-card">
+      <h2>Toca las sílabas 👇</h2>
+      <div id="learn-demos"></div>
+    </div>
+
+    <div class="learn-card">
+      <h2>Más ejemplos</h2>
+      <div class="learn-examples-grid" id="learn-examples-grid"></div>
+    </div>
+
+  </div><!-- /aprender -->
+
+  <!-- ═══ DIVIDIR ═══ -->
+  <div id="tab-dividir" style="display:none">
+    <div id="div-card">
+      <div id="div-emoji">🦋</div>
+      <div id="div-word">mariposa</div>
+      <div id="div-instruction">Toca cada sílaba en orden →</div>
+      <div id="div-syl-buttons"></div>
+      <div id="div-progress"></div>
+      <div id="div-feedback"></div>
+      <button id="div-next-btn">Siguiente →</button>
+    </div>
+  </div>
+
+  <!-- ═══ CONTAR ═══ -->
+  <div id="tab-contar" style="display:none">
+    <div id="cnt-card">
+      <div id="cnt-emoji">⚽</div>
+      <div id="cnt-word">pelota</div>
+      <div id="cnt-question">¿Cuántas sílabas tiene esta palabra?</div>
+      <div id="cnt-options">
+        <div class="cnt-opt" data-val="1">1</div>
+        <div class="cnt-opt" data-val="2">2</div>
+        <div class="cnt-opt" data-val="3">3</div>
+        <div class="cnt-opt" data-val="4">4</div>
+      </div>
+      <div id="cnt-feedback"></div>
+      <button id="cnt-next-btn">Siguiente →</button>
+    </div>
+  </div>
+
+  <!-- ═══ DESAFÍO ═══ -->
+  <div id="tab-desafio" style="display:none">
+    <div id="challenge-card">
+      <div id="ch-score-row">
+        <div class="ch-stat time">⏱ <span id="ch-time">60</span>s</div>
+        <div class="ch-stat pts">⭐ <span id="ch-pts">0</span> pts</div>
+        <div class="ch-stat streak">🔥 <span id="ch-streak">0</span> seguidas</div>
+      </div>
+      <div id="timer-bar-wrap"><div id="timer-bar" style="width:100%"></div></div>
+      <div id="challenge-q"><span>¡Toca Iniciar para comenzar!</span></div>
+      <div id="challenge-options" style="visibility:hidden">
+        <div class="ch-option" data-idx="0">—</div>
+        <div class="ch-option" data-idx="1">—</div>
+        <div class="ch-option" data-idx="2">—</div>
+        <div class="ch-option" data-idx="3">—</div>
+      </div>
+      <button id="challenge-start">🚀 Iniciar desafío (60 segundos)</button>
+    </div>
+  </div>
+
+</div><!-- /content -->
+</div><!-- /app -->
+
+<!-- ── RESULT OVERLAY ── -->
+<div id="result-overlay">
+  <div id="result-box">
+    <div id="result-emoji-big">🎉</div>
+    <div id="result-title">¡Tiempo!</div>
+    <div id="result-sub">Puntuación final</div>
+    <div id="result-score-big">0</div>
+    <div id="result-score-label">puntos en 60 segundos</div>
+    <button id="result-play-again">Jugar de nuevo</button>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════
+   WORD DATA
+═══════════════════════════════════ */
+const WORDS = [
+  // 2 sílabas
+  { word: 'casa',    syls: ['ca','sa'],      emoji: '🏠' },
+  { word: 'perro',   syls: ['pe','rro'],     emoji: '🐶' },
+  { word: 'gato',    syls: ['ga','to'],      emoji: '🐱' },
+  { word: 'luna',    syls: ['lu','na'],      emoji: '🌙' },
+  { word: 'mesa',    syls: ['me','sa'],      emoji: '🍽️' },
+  { word: 'mano',    syls: ['ma','no'],      emoji: '✋' },
+  { word: 'libro',   syls: ['li','bro'],     emoji: '📚' },
+  { word: 'árbol',   syls: ['ár','bol'],     emoji: '🌳' },
+  { word: 'fresa',   syls: ['fre','sa'],     emoji: '🍓' },
+  { word: 'nube',    syls: ['nu','be'],      emoji: '☁️' },
+  { word: 'pato',    syls: ['pa','to'],      emoji: '🦆' },
+  { word: 'lobo',    syls: ['lo','bo'],      emoji: '🐺' },
+  { word: 'globo',   syls: ['glo','bo'],     emoji: '🎈' },
+  { word: 'avión',   syls: ['a','vión'],     emoji: '✈️' },
+  { word: 'flor',    syls: ['flor'],         emoji: '🌸' },
+  { word: 'oso',     syls: ['o','so'],       emoji: '🐻' },
+  // 3 sílabas
+  { word: 'pelota',  syls: ['pe','lo','ta'],    emoji: '⚽' },
+  { word: 'paloma',  syls: ['pa','lo','ma'],    emoji: '🕊️' },
+  { word: 'abeja',   syls: ['a','be','ja'],     emoji: '🐝' },
+  { word: 'pájaro',  syls: ['pá','ja','ro'],    emoji: '🐦' },
+  { word: 'muñeca',  syls: ['mu','ñe','ca'],    emoji: '🪆' },
+  { word: 'zapato',  syls: ['za','pa','to'],    emoji: '👟' },
+  { word: 'bombero', syls: ['bom','be','ro'],   emoji: '👨‍🚒' },
+  { word: 'girasol', syls: ['gi','ra','sol'],   emoji: '🌻' },
+  { word: 'naranja', syls: ['na','ran','ja'],   emoji: '🍊' },
+  { word: 'manzana', syls: ['man','za','na'],   emoji: '🍎' },
+  { word: 'princesa',syls: ['prin','ce','sa'],  emoji: '👸' },
+  { word: 'banana',  syls: ['ba','na','na'],    emoji: '🍌' },
+  { word: 'caballo', syls: ['ca','ba','llo'],   emoji: '🐴' },
+  { word: 'camino',  syls: ['ca','mi','no'],    emoji: '🛣️' },
+  { word: 'tomate',  syls: ['to','ma','te'],    emoji: '🍅' },
+  // 4 sílabas
+  { word: 'mariposa', syls: ['ma','ri','po','sa'],   emoji: '🦋' },
+  { word: 'elefante', syls: ['e','le','fan','te'],   emoji: '🐘' },
+  { word: 'cocodrilo',syls: ['co','co','dri','lo'],  emoji: '🐊' },
+  { word: 'jitomate', syls: ['ji','to','ma','te'],   emoji: '🍅' },
+  { word: 'dinosaurio',syls: ['di','no','sau','rio'],emoji: '🦕' },
+];
+
+/* ═══════════════════════════════════
+   HELPERS
+═══════════════════════════════════ */
+function rand(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+function pickRand(arr) { return arr[rand(0, arr.length - 1)]; }
+function pickRandExcept(arr, word) {
+  if (arr.length <= 1) return arr[0];
+  let w;
+  do { w = pickRand(arr); } while (w.word === word);
+  return w;
+}
+
+/* ═══════════════════════════════════
+   SCORE
+═══════════════════════════════════ */
+let scoreRight = 0, scoreWrong = 0;
+function addScore(correct) {
+  if (correct) { scoreRight++; document.getElementById('sc-right').textContent = scoreRight; }
+  else         { scoreWrong++; document.getElementById('sc-wrong').textContent = scoreWrong; }
+}
+
+/* ═══════════════════════════════════
+   NAV
+═══════════════════════════════════ */
+const TABS = ['aprender','dividir','contar','desafio'];
+document.querySelectorAll('.nav-tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const t = btn.dataset.tab;
+    document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    TABS.forEach(id => {
+      document.getElementById('tab-' + id).style.display = id === t ? 'flex' : 'none';
+    });
+    if (t === 'dividir') genDividir();
+    if (t === 'contar')  genContar();
+    if (t === 'desafio') resetChallenge();
+  });
+});
+
+/* ═══════════════════════════════════
+   APRENDER
+═══════════════════════════════════ */
+const DEMO_WORDS = [
+  { word: 'casa',     syls: ['ca','sa'],           emoji: '🏠' },
+  { word: 'pelota',   syls: ['pe','lo','ta'],       emoji: '⚽' },
+  { word: 'mariposa', syls: ['ma','ri','po','sa'],  emoji: '🦋' },
+];
+const EXAMPLE_GRID = [
+  { word: 'gato',    syls: ['ga','to'],        emoji: '🐱' },
+  { word: 'árbol',   syls: ['ár','bol'],        emoji: '🌳' },
+  { word: 'muñeca',  syls: ['mu','ñe','ca'],    emoji: '🪆' },
+  { word: 'elefante',syls: ['e','le','fan','te'],emoji: '🐘' },
+  { word: 'globo',   syls: ['glo','bo'],        emoji: '🎈' },
+  { word: 'naranja', syls: ['na','ran','ja'],   emoji: '🍊' },
+];
+
+(function buildLearnDemos() {
+  const container = document.getElementById('learn-demos');
+  DEMO_WORDS.forEach(w => {
+    const wrap = document.createElement('div');
+    wrap.className = 'syl-word-demo';
+
+    const emojiEl = document.createElement('div');
+    emojiEl.className = 'syl-emoji-lg';
+    emojiEl.textContent = w.emoji;
+
+    const boxRow = document.createElement('div');
+    boxRow.className = 'syl-boxes-row';
+    w.syls.forEach((syl, i) => {
+      const box = document.createElement('div');
+      box.className = `syl-box s${i}`;
+      box.textContent = syl;
+      box.addEventListener('click', () => {
+        box.classList.remove('bouncing');
+        void box.offsetWidth;
+        box.classList.add('bouncing');
+        box.addEventListener('animationend', () => box.classList.remove('bouncing'), {once: true});
+      });
+      boxRow.appendChild(box);
+    });
+
+    const countEl = document.createElement('div');
+    countEl.className = 'syl-count-label';
+    countEl.textContent = `${w.syls.length} sílaba${w.syls.length !== 1 ? 's' : ''}`;
+
+    wrap.appendChild(emojiEl);
+    wrap.appendChild(boxRow);
+    wrap.appendChild(countEl);
+    container.appendChild(wrap);
+  });
+})();
+
+(function buildExamplesGrid() {
+  const grid = document.getElementById('learn-examples-grid');
+  EXAMPLE_GRID.forEach(w => {
+    const item = document.createElement('div');
+    item.className = 'learn-ex-item';
+
+    const emojiEl = document.createElement('div');
+    emojiEl.className = 'ex-item-emoji';
+    emojiEl.textContent = w.emoji;
+
+    const sylsEl = document.createElement('div');
+    sylsEl.className = 'ex-item-syls';
+    w.syls.forEach((syl, i) => {
+      const chip = document.createElement('span');
+      chip.className = `ex-syl-chip s${i}`;
+      chip.textContent = syl;
+      sylsEl.appendChild(chip);
+    });
+
+    const wordEl = document.createElement('div');
+    wordEl.className = 'ex-item-word';
+    wordEl.textContent = w.word;
+
+    item.appendChild(emojiEl);
+    item.appendChild(sylsEl);
+    item.appendChild(wordEl);
+    grid.appendChild(item);
+  });
+})();
+
+/* ═══════════════════════════════════
+   DIVIDIR
+═══════════════════════════════════ */
+let divWord = null;
+let divTapped = 0;
+
+function genDividir() {
+  divWord = pickRand(WORDS);
+  divTapped = 0;
+
+  document.getElementById('div-emoji').textContent = divWord.emoji;
+  const wordEl = document.getElementById('div-word');
+  wordEl.textContent = divWord.word;
+  wordEl.classList.remove('divided');
+
+  document.getElementById('div-instruction').style.display = 'block';
+  document.getElementById('div-feedback').style.display = 'none';
+  document.getElementById('div-next-btn').style.display = 'none';
+
+  // build syllable buttons
+  const btnContainer = document.getElementById('div-syl-buttons');
+  btnContainer.innerHTML = '';
+  divWord.syls.forEach((syl, i) => {
+    const btn = document.createElement('button');
+    btn.className = `div-syl-btn ${i === 0 ? 'expected' : 'idle'} s${i}`;
+    btn.textContent = syl;
+    btn.dataset.idx = i;
+    btn.addEventListener('click', () => onDivSylTap(i, btn));
+    btnContainer.appendChild(btn);
+  });
+
+  // build progress dots
+  const dotContainer = document.getElementById('div-progress');
+  dotContainer.innerHTML = '';
+  divWord.syls.forEach((_, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'div-dot';
+    dot.id = `div-dot-${i}`;
+    dotContainer.appendChild(dot);
+  });
+}
+
+function onDivSylTap(idx, btn) {
+  if (idx !== divTapped) {
+    // wrong order — shake the expected button to guide
+    const expectedBtn = document.querySelector('.div-syl-btn.expected');
+    if (expectedBtn) {
+      expectedBtn.classList.remove('shaking');
+      void expectedBtn.offsetWidth;
+      expectedBtn.classList.add('shaking');
+      expectedBtn.addEventListener('animationend', () => expectedBtn.classList.remove('shaking'), {once: true});
+    }
+    return;
+  }
+
+  // correct tap
+  btn.classList.remove('expected', 'idle');
+  btn.classList.add('tapping');
+  btn.addEventListener('animationend', () => {
+    btn.classList.remove('tapping');
+    btn.classList.add('tapped');
+  }, {once: true});
+
+  document.getElementById(`div-dot-${idx}`).classList.add('done');
+  divTapped++;
+
+  if (divTapped < divWord.syls.length) {
+    const allBtns = document.querySelectorAll('.div-syl-btn');
+    allBtns[divTapped].classList.remove('idle');
+    allBtns[divTapped].classList.add('expected');
+  } else {
+    // all done!
+    setTimeout(() => {
+      const wordEl = document.getElementById('div-word');
+      wordEl.textContent = divWord.syls.join(' · ');
+      wordEl.classList.add('divided');
+      document.getElementById('div-instruction').style.display = 'none';
+      const fb = document.getElementById('div-feedback');
+      fb.textContent = '¡Muy bien! 🎉';
+      fb.style.display = 'block';
+      document.getElementById('div-next-btn').style.display = 'block';
+      addScore(true);
+    }, 250);
+  }
+}
+
+document.getElementById('div-next-btn').addEventListener('click', genDividir);
+
+/* ═══════════════════════════════════
+   CONTAR
+═══════════════════════════════════ */
+let cntWord = null;
+let cntAnswered = false;
+
+function genContar() {
+  cntWord = pickRand(WORDS);
+  cntAnswered = false;
+  document.getElementById('cnt-emoji').textContent = cntWord.emoji;
+  document.getElementById('cnt-word').textContent = cntWord.word;
+  const fb = document.getElementById('cnt-feedback');
+  fb.className = '';
+  fb.style.display = 'none';
+  document.getElementById('cnt-next-btn').style.display = 'none';
+  document.querySelectorAll('.cnt-opt').forEach(o => {
+    o.className = 'cnt-opt';
+    o.style.pointerEvents = '';
+  });
+}
+
+document.querySelectorAll('.cnt-opt').forEach(opt => {
+  opt.addEventListener('click', () => {
+    if (cntAnswered) return;
+    cntAnswered = true;
+    const val = parseInt(opt.dataset.val);
+    const correct = val === cntWord.syls.length;
+    opt.className = 'cnt-opt ' + (correct ? 'correct' : 'wrong');
+    if (!correct) {
+      document.querySelectorAll('.cnt-opt').forEach(o => {
+        if (parseInt(o.dataset.val) === cntWord.syls.length) o.className = 'cnt-opt correct';
+      });
+    }
+    const fb = document.getElementById('cnt-feedback');
+    const divided = cntWord.syls.join(' - ');
+    if (correct) {
+      fb.textContent = `¡Correcto! ${cntWord.word} = ${divided} (${cntWord.syls.length} sílabas)`;
+      fb.className = 'correct';
+    } else {
+      fb.textContent = `Tiene ${cntWord.syls.length}: ${divided}`;
+      fb.className = 'wrong';
+    }
+    fb.style.display = 'block';
+    document.getElementById('cnt-next-btn').style.display = 'block';
+    document.querySelectorAll('.cnt-opt').forEach(o => o.style.pointerEvents = 'none');
+    addScore(correct);
+  });
+});
+
+document.getElementById('cnt-next-btn').addEventListener('click', genContar);
+
+/* ═══════════════════════════════════
+   DESAFÍO
+═══════════════════════════════════ */
+let chPts = 0, chStreak = 0, chTime = 60, chTimer = null;
+let chAnswer = null, chRunning = false;
+
+function resetChallenge() {
+  chPts = 0; chStreak = 0; chTime = 60; chRunning = false;
+  clearInterval(chTimer);
+  document.getElementById('ch-time').textContent = 60;
+  document.getElementById('ch-pts').textContent = 0;
+  document.getElementById('ch-streak').textContent = 0;
+  document.getElementById('timer-bar').style.width = '100%';
+  document.getElementById('timer-bar').style.background = 'var(--sil-a)';
+  document.getElementById('challenge-options').style.visibility = 'hidden';
+  document.getElementById('challenge-q').innerHTML = '<span>¡Toca Iniciar para comenzar!</span>';
+  document.getElementById('challenge-start').style.display = 'block';
+}
+
+function startChallenge() {
+  chPts = 0; chStreak = 0; chTime = 60; chRunning = true;
+  document.getElementById('challenge-start').style.display = 'none';
+  document.getElementById('challenge-options').style.visibility = 'visible';
+  genChallengeQ();
+  chTimer = setInterval(() => {
+    chTime--;
+    document.getElementById('ch-time').textContent = chTime;
+    document.getElementById('timer-bar').style.width = (chTime / 60 * 100) + '%';
+    if (chTime <= 15) document.getElementById('timer-bar').style.background = '#DC2626';
+    else if (chTime <= 30) document.getElementById('timer-bar').style.background = '#D97706';
+    if (chTime <= 0) endChallenge();
+  }, 1000);
+}
+
+function genChallengeQ() {
+  const type = rand(0, 1);
+  const optEls = document.querySelectorAll('.ch-option');
+  optEls.forEach(o => { o.className = 'ch-option'; o.style.pointerEvents = ''; });
+
+  if (type === 0) {
+    // Count syllables
+    const w = pickRand(WORDS);
+    chAnswer = w.syls.length;
+    document.getElementById('challenge-q').innerHTML =
+      `<span class="ch-q-emoji">${w.emoji}</span><span>${w.word}</span>`;
+    const opts = shuffleWithCorrect(w.syls.length, 1, 4, 4);
+    optEls.forEach((el, i) => {
+      el.textContent = opts[i];
+      el.dataset.val = opts[i];
+      el.dataset.type = 'count';
+    });
+  } else {
+    // Which word has MORE syllables? Guarantee unique max.
+    const words4 = WORDS.filter(w => w.syls.length === 4);
+    const words3 = WORDS.filter(w => w.syls.length === 3);
+    const words2 = WORDS.filter(w => w.syls.length === 2);
+    const winner = pickRand(words4.length ? words4 : words3);
+    const d1 = pickRand(words3);
+    let d2 = pickRand(words2);
+    let d3 = pickRandExcept(words2, d2.word);
+    const four = [winner, d1, d2, d3].sort(() => Math.random() - 0.5);
+    chAnswer = winner.word;
+    document.getElementById('challenge-q').innerHTML = '<span>¿Cuál tiene MÁS sílabas?</span>';
+    optEls.forEach((el, i) => {
+      el.innerHTML = `${four[i].emoji} ${four[i].word}`;
+      el.dataset.val = four[i].word;
+      el.dataset.type = 'word';
+    });
+  }
+}
+
+function shuffleWithCorrect(correct, min, max, count) {
+  const set = new Set([correct]);
+  let tries = 0;
+  while (set.size < count && tries++ < 300) {
+    const v = rand(min, max);
+    if (v !== correct) set.add(v);
+  }
+  return [...set].sort(() => Math.random() - 0.5);
+}
+
+document.querySelectorAll('.ch-option').forEach(el => {
+  el.addEventListener('click', () => {
+    if (!chRunning) return;
+    const raw = el.dataset.val;
+    const val = el.dataset.type === 'count' ? parseInt(raw) : raw;
+    const correct = val == chAnswer;
+    el.className = 'ch-option ' + (correct ? 'correct' : 'wrong');
+    if (!correct) {
+      document.querySelectorAll('.ch-option').forEach(o => {
+        const ov = o.dataset.type === 'count' ? parseInt(o.dataset.val) : o.dataset.val;
+        if (ov == chAnswer) o.className = 'ch-option correct';
+      });
+    }
+    if (correct) { chPts += 10 + chStreak * 2; chStreak++; }
+    else { chStreak = 0; chPts = Math.max(0, chPts - 2); }
+    document.getElementById('ch-pts').textContent = chPts;
+    document.getElementById('ch-streak').textContent = chStreak;
+    addScore(correct);
+    document.querySelectorAll('.ch-option').forEach(o => o.style.pointerEvents = 'none');
+    setTimeout(genChallengeQ, 700);
+  });
+});
+
+document.getElementById('challenge-start').addEventListener('click', startChallenge);
+
+function endChallenge() {
+  chRunning = false; clearInterval(chTimer);
+  document.getElementById('timer-bar').style.width = '0%';
+  document.getElementById('ch-time').textContent = 0;
+  const emoji = chPts >= 100 ? '🏆' : chPts >= 60 ? '🎉' : chPts >= 30 ? '👍' : '💪';
+  const title = chPts >= 100 ? '¡Increíble!' : chPts >= 60 ? '¡Excelente!' : chPts >= 30 ? '¡Bien hecho!' : '¡Sigue practicando!';
+  document.getElementById('result-emoji-big').textContent = emoji;
+  document.getElementById('result-title').textContent = title;
+  document.getElementById('result-score-big').textContent = chPts;
+  document.getElementById('result-overlay').classList.add('show');
+}
+
+document.getElementById('result-play-again').addEventListener('click', () => {
+  document.getElementById('result-overlay').classList.remove('show');
+  resetChallenge();
+});
+
+/* ═══════════════════════════════════
+   INIT
+═══════════════════════════════════ */
+genDividir();
+genContar();
+</script>
+</body>
+</html>

@@ -19,6 +19,9 @@
   --dec-clr: #2563EB;
   --dec-light: #DBEAFE;
   --dec-mid: #93C5FD;
+  --cen-clr: #059669;
+  --cen-light: #D1FAE5;
+  --cen-mid: #6EE7B7;
   --correct: #16A34A;
   --correct-bg: #DCFCE7;
   --wrong: #DC2626;
@@ -191,6 +194,7 @@ input[type=range].uni-range::-webkit-slider-thumb { background: var(--unit-clr);
 }
 .block-group { display: flex; flex-direction: column; align-items: center; gap: 4px; }
 .block-group-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
+.block-group-label.cen { color: var(--cen-clr); }
 .block-group-label.dec { color: var(--dec-clr); }
 .block-group-label.uni { color: var(--unit-clr); }
 .blocks-row { display: flex; gap: 3px; flex-wrap: wrap; max-width: 220px; }
@@ -444,6 +448,119 @@ input[type=range].uni-range::-webkit-slider-thumb { background: var(--unit-clr);
   font-family: 'Nunito', sans-serif; font-size: 17px; font-weight: 800;
   cursor: pointer;
 }
+
+/* ════════════════════════════
+   TAB: CENTENAS (Caja de Valores)
+════════════════════════════ */
+#tab-centenas { display: flex; flex-direction: column; gap: 16px; }
+
+/* 3-column place value chart */
+.pos-table-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.pos-cell3 {
+  border-radius: var(--radius-sm);
+  padding: 12px 8px;
+  text-align: center;
+}
+.pos-cell3.cen { background: var(--cen-light); }
+.pos-cell3.dec { background: var(--dec-light); }
+.pos-cell3.uni { background: var(--unit-light); }
+.pos-cell3 .pos-label3 {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .06em; margin-bottom: 4px;
+}
+.pos-cell3.cen .pos-label3 { color: var(--cen-clr); }
+.pos-cell3.dec .pos-label3 { color: var(--dec-clr); }
+.pos-cell3.uni .pos-label3 { color: var(--unit-clr); }
+.pos-cell3 .pos-digit3 {
+  font-family: 'Baloo 2', cursive; font-size: 40px; font-weight: 800; line-height: 1;
+}
+.pos-cell3.cen .pos-digit3 { color: var(--cen-clr); }
+.pos-cell3.dec .pos-digit3 { color: var(--dec-clr); }
+.pos-cell3.uni .pos-digit3 { color: var(--unit-clr); }
+.pos-cell3 .pos-val3 {
+  font-size: 12px; font-weight: 600; color: var(--text-light); margin-top: 2px;
+}
+
+/* big number display */
+#cen-number-display {
+  font-family: 'Baloo 2', cursive;
+  font-size: 72px; font-weight: 900;
+  text-align: center; line-height: 1; margin: 8px 0;
+}
+#cen-hundreds-digit { color: var(--cen-clr); }
+#cen-tens-digit     { color: var(--dec-clr); }
+#cen-units-digit    { color: var(--unit-clr); }
+
+.cen-decomp-row {
+  display: flex; align-items: center; justify-content: center;
+  gap: 8px; flex-wrap: wrap; margin-bottom: 8px;
+}
+.ex-part.cen { background: var(--cen-light); color: var(--cen-clr); }
+
+/* numpad input for caja */
+#cen-input-display {
+  font-family: 'Baloo 2', cursive;
+  font-size: 40px; font-weight: 800;
+  text-align: center; color: var(--text-light);
+  min-height: 56px; display: flex; align-items: center; justify-content: center;
+  background: var(--bg); border-radius: 12px; padding: 8px 16px;
+  border: 2px solid var(--border); letter-spacing: 4px;
+}
+#cen-input-display.has-value { color: var(--text); }
+
+#cen-numpad {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+}
+
+/* blocks visual for cen */
+#cen-blocks-area {
+  display: flex; gap: 12px; align-items: flex-end;
+  min-height: 80px; padding: 8px 0; flex-wrap: wrap;
+}
+.block-hundred {
+  width: 52px; height: 52px;
+  background: var(--cen-clr);
+  border-radius: 6px;
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px;
+  padding: 4px;
+}
+.block-hundred-cell {
+  background: rgba(255,255,255,0.3);
+  border-radius: 2px;
+}
+
+/* ── exercise area (CDU) ── */
+#cen-ex-card {
+  background: var(--surface); border-radius: var(--radius);
+  padding: 24px 20px 20px; box-shadow: var(--shadow-lg);
+  display: flex; flex-direction: column; gap: 16px;
+}
+#cen-ex-number {
+  font-family: 'Baloo 2', cursive; font-size: 80px; font-weight: 900;
+  line-height: 1; color: var(--text); text-align: center;
+}
+.answer-group3 { display: flex; align-items: center; gap: 12px; }
+.answer-label-badge3 {
+  width: 90px; flex-shrink: 0;
+  padding: 8px 0; border-radius: 10px;
+  text-align: center; font-size: 12px; font-weight: 800;
+}
+.answer-label-badge3.cen { background: var(--cen-light); color: var(--cen-clr); }
+.answer-label-badge3.dec { background: var(--dec-light); color: var(--dec-clr); }
+.answer-label-badge3.uni { background: var(--unit-light); color: var(--unit-clr); }
+
+#cen-np { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+#cen-feedback {
+  padding: 12px 16px; border-radius: 12px;
+  font-size: 15px; font-weight: 800; text-align: center; display: none;
+}
+#cen-feedback.correct { background: var(--correct-bg); color: var(--correct); display: block; }
+#cen-feedback.wrong   { background: var(--wrong-bg); color: var(--wrong); display: block; }
 </style>
 </head>
 <body>
@@ -456,6 +573,7 @@ input[type=range].uni-range::-webkit-slider-thumb { background: var(--unit-clr);
   <button class="nav-tab" data-tab="ejercicios">Ejercicios</button>
   <button class="nav-tab" data-tab="contar">Contar</button>
   <button class="nav-tab" data-tab="desafio">Desafío</button>
+  <button class="nav-tab" data-tab="centenas">C·D·U</button>
   <div id="score-area">
     <div class="score-chip right">✓ <span id="sc-right">0</span></div>
     <div class="score-chip wrong">✗ <span id="sc-wrong">0</span></div>
@@ -647,6 +765,117 @@ input[type=range].uni-range::-webkit-slider-thumb { background: var(--unit-clr);
     </div>
   </div>
 
+  <!-- ═══ CENTENAS ═══ -->
+  <div id="tab-centenas" style="display:none">
+
+    <!-- ── Caja de Valores ── -->
+    <div class="learn-card">
+      <h2>Caja de Valores</h2>
+
+      <!-- 3-column place value chart -->
+      <div class="pos-table-3">
+        <div class="pos-cell3 cen">
+          <div class="pos-label3">Centenas</div>
+          <div class="pos-digit3" id="cen-d3-cen">3</div>
+          <div class="pos-val3">vale <span id="cen-val-cen">300</span></div>
+        </div>
+        <div class="pos-cell3 dec">
+          <div class="pos-label3">Decenas</div>
+          <div class="pos-digit3" id="cen-d3-dec">4</div>
+          <div class="pos-val3">vale <span id="cen-val-dec">40</span></div>
+        </div>
+        <div class="pos-cell3 uni">
+          <div class="pos-label3">Unidades</div>
+          <div class="pos-digit3" id="cen-d3-uni">7</div>
+          <div class="pos-val3">vale <span id="cen-val-uni">7</span></div>
+        </div>
+      </div>
+
+      <!-- big number + decomposition -->
+      <div id="cen-number-display">
+        <span id="cen-hundreds-digit">3</span><span id="cen-tens-digit">4</span><span id="cen-units-digit">7</span>
+      </div>
+      <div class="cen-decomp-row">
+        <span class="ex-part cen" id="cen-dp-cen">300</span>
+        <span class="ex-plus">+</span>
+        <span class="ex-part dec" id="cen-dp-dec">40</span>
+        <span class="ex-plus">+</span>
+        <span class="ex-part uni" id="cen-dp-uni">7</span>
+      </div>
+
+      <!-- blocks visual -->
+      <div id="cen-blocks-area" style="justify-content:center"></div>
+
+      <p style="font-size:14px;color:var(--text-light);font-weight:600;line-height:1.5;margin-top:8px;">
+        Todo número de 3 cifras tiene <strong style="color:var(--cen-clr)">centenas</strong>
+        (grupos de 100), <strong style="color:var(--dec-clr)">decenas</strong> (grupos de 10)
+        y <strong style="color:var(--unit-clr)">unidades</strong> (los que sobran).
+      </p>
+
+      <!-- numpad to explore any number -->
+      <div style="margin-top:16px">
+        <div style="font-size:12px;font-weight:700;color:var(--text-light);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">Probá un número (0–999)</div>
+        <div id="cen-input-display">—</div>
+        <div style="height:10px"></div>
+        <div id="cen-numpad">
+          <button class="np-btn" data-cn="1">1</button>
+          <button class="np-btn" data-cn="2">2</button>
+          <button class="np-btn" data-cn="3">3</button>
+          <button class="np-btn" data-cn="4">4</button>
+          <button class="np-btn" data-cn="5">5</button>
+          <button class="np-btn" data-cn="6">6</button>
+          <button class="np-btn" data-cn="7">7</button>
+          <button class="np-btn" data-cn="8">8</button>
+          <button class="np-btn" data-cn="9">9</button>
+          <button class="np-btn np-del" data-cn="del">⌫</button>
+          <button class="np-btn" data-cn="0">0</button>
+          <button class="np-btn np-ok" data-cn="ok">✓</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Ejercicio CDU ── -->
+    <div id="cen-ex-card">
+      <div style="font-size:13px;font-weight:700;color:var(--text-light);text-transform:uppercase;letter-spacing:.06em;">
+        ¿Cuántas centenas, decenas y unidades tiene?
+      </div>
+      <div id="cen-ex-number">347</div>
+
+      <div style="display:flex;flex-direction:column;gap:12px" id="cen-answers">
+        <div class="answer-group3">
+          <div class="answer-label-badge3 cen">Centenas</div>
+          <input class="answer-input" id="cen-ans-cen" type="text" inputmode="none" readonly placeholder="?">
+        </div>
+        <div class="answer-group3">
+          <div class="answer-label-badge3 dec">Decenas</div>
+          <input class="answer-input" id="cen-ans-dec" type="text" inputmode="none" readonly placeholder="?">
+        </div>
+        <div class="answer-group3">
+          <div class="answer-label-badge3 uni">Unidades</div>
+          <input class="answer-input" id="cen-ans-uni" type="text" inputmode="none" readonly placeholder="?">
+        </div>
+      </div>
+
+      <div id="cen-feedback"></div>
+
+      <div id="cen-np">
+        <button class="np-btn" data-np3="1">1</button>
+        <button class="np-btn" data-np3="2">2</button>
+        <button class="np-btn" data-np3="3">3</button>
+        <button class="np-btn" data-np3="4">4</button>
+        <button class="np-btn" data-np3="5">5</button>
+        <button class="np-btn" data-np3="6">6</button>
+        <button class="np-btn" data-np3="7">7</button>
+        <button class="np-btn" data-np3="8">8</button>
+        <button class="np-btn" data-np3="9">9</button>
+        <button class="np-btn np-del" data-np3="del">⌫</button>
+        <button class="np-btn" data-np3="0">0</button>
+        <button class="np-btn np-ok" id="cen-check-btn">✓</button>
+      </div>
+    </div>
+
+  </div><!-- /centenas -->
+
 </div><!-- /content -->
 </div><!-- /app -->
 
@@ -675,7 +904,7 @@ function addScore(correct) {
 /* ═══════════════════════════════
    NAV TABS
 ═══════════════════════════════ */
-const TABS = ['learn','ejercicios','contar','desafio'];
+const TABS = ['learn','ejercicios','contar','desafio','centenas'];
 document.querySelectorAll('.nav-tab').forEach(btn => {
   btn.addEventListener('click', () => {
     const t = btn.dataset.tab;
@@ -683,10 +912,11 @@ document.querySelectorAll('.nav-tab').forEach(btn => {
     btn.classList.add('active');
     TABS.forEach(id => {
       const el = document.getElementById('tab-' + id);
-      el.style.display = id === t ? (id==='ejercicios'||id==='contar'||id==='desafio' ? 'flex' : 'flex') : 'none';
+      el.style.display = id === t ? 'flex' : 'none';
     });
-    if (t === 'contar') genCountChallenge();
-    if (t === 'desafio') resetChallenge();
+    if (t === 'contar')   genCountChallenge();
+    if (t === 'desafio')  resetChallenge();
+    if (t === 'centenas') { cenUpdateDisplay(347); cenGenExercise(); }
   });
 });
 
@@ -1113,6 +1343,215 @@ document.getElementById('result-play-again').addEventListener('click', () => {
   document.getElementById('result-overlay').classList.remove('show');
   resetChallenge();
 });
+
+/* ═══════════════════════════════
+   CENTENAS — CAJA DE VALORES
+═══════════════════════════════ */
+
+// ── Display updater ──
+function cenUpdateDisplay(n) {
+  n = Math.max(0, Math.min(999, n));
+  const c = Math.floor(n / 100);
+  const d = Math.floor((n % 100) / 10);
+  const u = n % 10;
+
+  // place value chart
+  document.getElementById('cen-d3-cen').textContent = c;
+  document.getElementById('cen-d3-dec').textContent = d;
+  document.getElementById('cen-d3-uni').textContent = u;
+  document.getElementById('cen-val-cen').textContent = c * 100;
+  document.getElementById('cen-val-dec').textContent = d * 10;
+  document.getElementById('cen-val-uni').textContent = u;
+
+  // big number display
+  document.getElementById('cen-hundreds-digit').textContent = c;
+  document.getElementById('cen-tens-digit').textContent = d;
+  document.getElementById('cen-units-digit').textContent = u;
+
+  // decomposition
+  document.getElementById('cen-dp-cen').textContent = c * 100;
+  document.getElementById('cen-dp-dec').textContent = d * 10;
+  document.getElementById('cen-dp-uni').textContent = u;
+
+  // visual blocks
+  const area = document.getElementById('cen-blocks-area');
+  area.innerHTML = '';
+
+  function makeGroup(count, label, colorClass, makeBlock) {
+    if (count === 0) return;
+    const g = document.createElement('div');
+    g.className = 'block-group';
+    const lbl = document.createElement('div');
+    lbl.className = 'block-group-label ' + colorClass;
+    lbl.textContent = label;
+    const row = document.createElement('div');
+    row.className = 'blocks-row';
+    for (let i = 0; i < count; i++) row.appendChild(makeBlock());
+    g.appendChild(lbl); g.appendChild(row); area.appendChild(g);
+  }
+
+  // hundreds: green flat 4×4 grid squares
+  makeGroup(c, 'Centenas (×100)', 'cen', () => {
+    const b = document.createElement('div');
+    b.className = 'block-hundred';
+    for (let i = 0; i < 16; i++) {
+      const cell = document.createElement('div');
+      cell.className = 'block-hundred-cell';
+      b.appendChild(cell);
+    }
+    return b;
+  });
+
+  // tens: existing tall blocks (blue)
+  makeGroup(d, 'Decenas (×10)', 'dec', () => {
+    const b = document.createElement('div');
+    b.className = 'block-ten';
+    for (let j = 0; j < 10; j++) {
+      const s = document.createElement('div'); s.className = 'block-ten-seg'; b.appendChild(s);
+    }
+    return b;
+  });
+
+  // units: small pink squares
+  makeGroup(u, 'Unidades', 'uni', () => {
+    const b = document.createElement('div');
+    b.className = 'block-one';
+    return b;
+  });
+
+  if (c === 0 && d === 0 && u === 0) {
+    area.innerHTML = '<span style="font-size:32px;color:var(--text-light)">0</span>';
+  }
+}
+
+// ── Numpad for exploration ──
+let cenInputStr = '';
+
+document.querySelectorAll('[data-cn]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const v = btn.dataset.cn;
+    if (v === 'del') {
+      cenInputStr = cenInputStr.slice(0, -1);
+    } else if (v === 'ok') {
+      if (cenInputStr !== '') {
+        const n = Math.min(999, parseInt(cenInputStr) || 0);
+        cenUpdateDisplay(n);
+        cenInputStr = String(n);
+      }
+    } else {
+      if (cenInputStr.length < 3) cenInputStr += v;
+    }
+    const disp = document.getElementById('cen-input-display');
+    if (cenInputStr) {
+      disp.textContent = cenInputStr;
+      disp.classList.add('has-value');
+      // live update as you type
+      cenUpdateDisplay(parseInt(cenInputStr) || 0);
+    } else {
+      disp.textContent = '—';
+      disp.classList.remove('has-value');
+    }
+  });
+});
+
+// ── Exercise CDU ──
+let cenExNum = 0, cenExActive = 'cen', cenExAnswered = false;
+
+function cenGenExercise() {
+  cenExNum = rand(100, 999);
+  cenExAnswered = false;
+  document.getElementById('cen-ex-number').textContent = cenExNum;
+  ['cen','dec','uni'].forEach(k => {
+    const el = document.getElementById('cen-ans-' + k);
+    el.value = '';
+    el.className = 'answer-input';
+    el.style.border = '';
+    el.style.background = '';
+  });
+  document.getElementById('cen-feedback').className = '';
+  document.getElementById('cen-feedback').style.display = 'none';
+  document.getElementById('cen-check-btn').className = 'np-btn np-ok';
+  document.getElementById('cen-check-btn').textContent = '✓';
+  cenExActive = 'cen';
+  cenHighlightEx();
+}
+
+function cenHighlightEx() {
+  ['cen','dec','uni'].forEach(k => {
+    const el = document.getElementById('cen-ans-' + k);
+    el.style.border = '';
+    el.style.background = '';
+  });
+  const colorMap = { cen: 'var(--cen-clr)', dec: 'var(--dec-clr)', uni: 'var(--unit-clr)' };
+  const el = document.getElementById('cen-ans-' + cenExActive);
+  el.style.border = '2.5px solid ' + colorMap[cenExActive];
+  el.style.background = 'white';
+}
+
+['cen','dec','uni'].forEach(k => {
+  document.getElementById('cen-ans-' + k).addEventListener('click', () => {
+    if (cenExAnswered) return;
+    cenExActive = k;
+    cenHighlightEx();
+  });
+});
+
+document.querySelectorAll('[data-np3]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (cenExAnswered) return;
+    const v = btn.dataset.np3;
+    const el = document.getElementById('cen-ans-' + cenExActive);
+    if (v === 'del') {
+      el.value = el.value.slice(0, -1);
+    } else {
+      if (el.value.length < 1) {
+        el.value = v;
+        // auto-advance
+        if (cenExActive === 'cen') { cenExActive = 'dec'; cenHighlightEx(); }
+        else if (cenExActive === 'dec') { cenExActive = 'uni'; cenHighlightEx(); }
+      }
+    }
+  });
+});
+
+document.getElementById('cen-check-btn').addEventListener('click', () => {
+  if (cenExAnswered) { cenGenExercise(); return; }
+
+  const c = Math.floor(cenExNum / 100);
+  const d = Math.floor((cenExNum % 100) / 10);
+  const u = cenExNum % 10;
+  const userC = parseInt(document.getElementById('cen-ans-cen').value);
+  const userD = parseInt(document.getElementById('cen-ans-dec').value);
+  const userU = parseInt(document.getElementById('cen-ans-uni').value);
+
+  const cOk = userC === c, dOk = userD === d, uOk = userU === u;
+  const allOk = cOk && dOk && uOk;
+
+  document.getElementById('cen-ans-cen').className = 'answer-input ' + (cOk ? 'correct' : 'wrong');
+  document.getElementById('cen-ans-dec').className = 'answer-input ' + (dOk ? 'correct' : 'wrong');
+  document.getElementById('cen-ans-uni').className = 'answer-input ' + (uOk ? 'correct' : 'wrong');
+
+  cenExAnswered = true;
+  addScore(allOk);
+
+  const fb = document.getElementById('cen-feedback');
+  if (allOk) {
+    fb.textContent = `¡Correcto! 🎉  ${cenExNum} = ${c} centenas + ${d} decenas + ${u} unidades`;
+    fb.className = 'correct';
+  } else {
+    fb.textContent = `${cenExNum} → ${c} cent. | ${d} dec. | ${u} uni.`;
+    fb.className = 'wrong';
+  }
+  fb.style.display = 'block';
+
+  const ck = document.getElementById('cen-check-btn');
+  ck.className = 'np-btn np-next';
+  ck.textContent = 'Siguiente →';
+});
+
+// init centenas display
+cenUpdateDisplay(347);
+cenGenExercise();
 </script>
 </body>
 </html>

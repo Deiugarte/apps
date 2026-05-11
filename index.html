@@ -19,6 +19,9 @@
   --num-bg: #E6F1FB;
   --dec-a: #993556;
   --dec-bg: #FBEAF0;
+  --sil-a: #EA580C;
+  --sil-b: #FED7AA;
+  --sil-bg: #FFF7ED;
   --text: #1a1a2e;
   --muted: #64748B;
   --bg: #F8F7F4;
@@ -121,6 +124,7 @@ html, body {
 
 .card-icon.cal { background: var(--cal-bg); }
 .card-icon.num { background: var(--num-bg); }
+.card-icon.sil { background: var(--sil-bg); }
 
 .card-info { flex: 1; }
 
@@ -137,6 +141,7 @@ html, body {
 
 .card-tag.cal { background: var(--cal-bg); color: var(--cal-a); }
 .card-tag.num { background: var(--num-bg); color: var(--num-a); }
+.card-tag.sil { background: var(--sil-bg); color: var(--sil-a); }
 
 .card-title {
   font-size: 20px;
@@ -173,6 +178,7 @@ html, body {
 .feat-pill.cal-f { background: var(--cal-bg); color: var(--cal-a); border-color: var(--cal-b); }
 .feat-pill.num-f { background: var(--num-bg); color: var(--num-a); border-color: var(--num-b); }
 .feat-pill.dec-f { background: var(--dec-bg); color: var(--dec-a); border-color: #F4C0D1; }
+.feat-pill.sil-f { background: var(--sil-bg); color: var(--sil-a); border-color: var(--sil-b); }
 
 /* cta button */
 .card-btn {
@@ -187,6 +193,7 @@ html, body {
 
 .card-btn.cal { background: var(--cal-a); color: #EEEDFE; }
 .card-btn.num { background: var(--num-a); color: #E6F1FB; }
+.card-btn.sil { background: var(--sil-a); color: #FFF7ED; }
 
 .btn-arrow {
   font-size: 18px;
@@ -273,6 +280,29 @@ html, body {
       </div>
       <div class="card-btn cal">
         <span>Abrir Caligrafía</span>
+        <span class="btn-arrow">→</span>
+      </div>
+    </a>
+
+    <!-- Sílabas -->
+    <a class="app-card" href="silabas.html">
+      <div class="card-top">
+        <div class="card-icon sil">🔤</div>
+        <div class="card-info">
+          <span class="card-tag sil">Lectura</span>
+          <div class="card-title">Sílabas</div>
+          <div class="card-desc">Dividí palabras en sílabas, contá cuántas tiene cada una y superá el desafío contrarreloj.</div>
+        </div>
+      </div>
+      <div class="features">
+        <span class="feat-pill sil-f">Dividir</span>
+        <span class="feat-pill sil-f">Contar</span>
+        <span class="feat-pill">30+ palabras</span>
+        <span class="feat-pill">Desafío 60 s</span>
+        <span class="feat-pill">Emojis</span>
+      </div>
+      <div class="card-btn sil">
+        <span>Abrir Sílabas</span>
         <span class="btn-arrow">→</span>
       </div>
     </a>
