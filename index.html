@@ -40,6 +40,9 @@
   --ch-a: #0D9488;
   --ch-b: #99F6E4;
   --ch-bg: #F0FDFA;
+  --en-a: #1D4ED8;
+  --en-b: #BFDBFE;
+  --en-bg: #EFF6FF;
   --text: #1a1a2e;
   --muted: #64748B;
   --bg: #F8F7F4;
@@ -149,6 +152,7 @@ html, body {
 .card-icon.col { background: var(--col-bg); }
 .card-icon.seq { background: var(--seq-bg); }
 .card-icon.ch  { background: var(--ch-bg); }
+.card-icon.en  { background: var(--en-bg); }
 
 .card-info { flex: 1; }
 
@@ -172,6 +176,7 @@ html, body {
 .card-tag.col { background: var(--col-bg); color: var(--col-a); }
 .card-tag.seq { background: var(--seq-bg); color: var(--seq-a); }
 .card-tag.ch  { background: var(--ch-bg);  color: var(--ch-a);  }
+.card-tag.en  { background: var(--en-bg);  color: var(--en-a);  }
 
 .card-title {
   font-size: 20px;
@@ -215,6 +220,7 @@ html, body {
 .feat-pill.col-f { background: var(--col-bg); color: var(--col-a); border-color: var(--col-b); }
 .feat-pill.seq-f { background: var(--seq-bg); color: var(--seq-a); border-color: var(--seq-b); }
 .feat-pill.ch-f  { background: var(--ch-bg);  color: var(--ch-a);  border-color: var(--ch-b);  }
+.feat-pill.en-f  { background: var(--en-bg);  color: var(--en-a);  border-color: var(--en-b);  }
 
 /* cta button */
 .card-btn {
@@ -236,6 +242,7 @@ html, body {
 .card-btn.col { background: var(--col-a); color: #FDF2F8; }
 .card-btn.seq { background: var(--seq-a); color: #FFFBEB; }
 .card-btn.ch  { background: var(--ch-a);  color: #F0FDFA; }
+.card-btn.en  { background: var(--en-a);  color: #EFF6FF; }
 
 .btn-arrow {
   font-size: 18px;
@@ -478,6 +485,29 @@ html, body {
       </div>
       <div class="card-btn seq">
         <span>Abrir Secuencias</span>
+        <span class="btn-arrow">→</span>
+      </div>
+    </a>
+
+    <!-- Inglés -->
+    <a class="app-card" href="ingles.html">
+      <div class="card-top">
+        <div class="card-icon en">🇬🇧</div>
+        <div class="card-info">
+          <span class="card-tag en">Inglés</span>
+          <div class="card-title">English</div>
+          <div class="card-desc">Aprendé números, colores, animales y frases del día a día en inglés con pronunciación.</div>
+        </div>
+      </div>
+      <div class="features">
+        <span class="feat-pill en-f">Numbers 1–20</span>
+        <span class="feat-pill en-f">Colors</span>
+        <span class="feat-pill">Animals</span>
+        <span class="feat-pill">Phrases</span>
+        <span class="feat-pill">Challenge</span>
+      </div>
+      <div class="card-btn en">
+        <span>Abrir English</span>
         <span class="btn-arrow">→</span>
       </div>
     </a>
