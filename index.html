@@ -6,48 +6,31 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>Mis Apps de Aprendizaje</title>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,300;1,300&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@700;800&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --cal-a: #534AB7;
-  --cal-b: #AFA9EC;
-  --cal-bg: #EEEDFE;
-  --num-a: #185FA5;
-  --num-b: #93C5FD;
-  --num-bg: #E6F1FB;
-  --dec-a: #993556;
-  --dec-bg: #FBEAF0;
-  --sil-a: #EA580C;
-  --sil-b: #FED7AA;
-  --sil-bg: #FFF7ED;
-  --sr-a: #7C3AED;
-  --sr-b: #DDD6FE;
-  --sr-bg: #F5F3FF;
-  --tab-a: #0891B2;
-  --tab-b: #A5F3FC;
-  --tab-bg: #ECFEFF;
-  --mem-a: #16A34A;
-  --mem-b: #86EFAC;
-  --mem-bg: #F0FDF4;
-  --col-a: #EC4899;
-  --col-b: #FBCFE8;
-  --col-bg: #FDF2F8;
-  --seq-a: #F59E0B;
-  --seq-b: #FDE68A;
-  --seq-bg: #FFFBEB;
-  --ch-a: #0D9488;
-  --ch-b: #99F6E4;
-  --ch-bg: #F0FDFA;
-  --en-a: #1D4ED8;
-  --en-b: #BFDBFE;
-  --en-bg: #EFF6FF;
+  --bg: #F4F3F0;
+  --surface: #FFFFFF;
   --text: #1a1a2e;
   --muted: #64748B;
-  --bg: #F8F7F4;
-  --surface: #FFFFFF;
-  --border: rgba(0,0,0,0.08);
+  --border: rgba(0,0,0,0.07);
+  --shadow: 0 1px 4px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.06);
+  --shadow-hover: 0 4px 12px rgba(0,0,0,0.08), 0 12px 32px rgba(0,0,0,0.10);
+  --radius: 20px;
+
+  /* per-app colors */
+  --cal-a:#534AB7; --cal-b:#AFA9EC; --cal-bg:#EEEDFE;
+  --sil-a:#EA580C; --sil-b:#FED7AA; --sil-bg:#FFF7ED;
+  --num-a:#185FA5; --num-b:#93C5FD; --num-bg:#E6F1FB;
+  --sr-a:#7C3AED;  --sr-b:#DDD6FE;  --sr-bg:#F5F3FF;
+  --tab-a:#0891B2; --tab-b:#A5F3FC; --tab-bg:#ECFEFF;
+  --mem-a:#16A34A; --mem-b:#86EFAC; --mem-bg:#F0FDF4;
+  --col-a:#EC4899; --col-b:#FBCFE8; --col-bg:#FDF2F8;
+  --seq-a:#F59E0B; --seq-b:#FDE68A; --seq-bg:#FFFBEB;
+  --ch-a:#0D9488;  --ch-b:#99F6E4;  --ch-bg:#F0FDFA;
+  --en-a:#1D4ED8;  --en-b:#BFDBFE;  --en-bg:#EFF6FF;
 }
 
 html, body {
@@ -58,118 +41,134 @@ html, body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* ─── PAGE SHELL ─── */
 .page {
-  max-width: 480px;
+  max-width: 1140px;
   margin: 0 auto;
-  padding: 48px 20px 60px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 32px;
+  padding: 40px 20px 64px;
 }
 
-/* header */
-.header {
+/* ─── HEADER ─── */
+.page-header {
   text-align: center;
+  margin-bottom: 36px;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 10px;
 }
-
-.icon-circle {
-  width: 72px; height: 72px;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 36px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-  margin-bottom: 4px;
+.header-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 20px; padding: 5px 14px;
+  font-size: 12px; font-weight: 700; color: var(--muted);
+  letter-spacing: .04em; text-transform: uppercase;
+  box-shadow: var(--shadow);
 }
-
-.header h1 {
-  font-size: 26px;
-  font-weight: 900;
+.page-header h1 {
+  font-family: 'Baloo 2', cursive;
+  font-size: clamp(24px, 4vw, 36px);
+  font-weight: 800;
   color: var(--text);
   line-height: 1.2;
 }
+.page-header p {
+  font-size: 15px; color: var(--muted);
+  font-weight: 600; max-width: 340px;
+}
 
-.header p {
-  font-size: 15px;
+/* ─── SECTION LABEL ─── */
+.section-label {
+  font-size: 11px; font-weight: 800;
+  text-transform: uppercase; letter-spacing: .08em;
   color: var(--muted);
-  font-weight: 600;
-  line-height: 1.5;
-  max-width: 300px;
+  margin-bottom: 12px; margin-top: 28px;
+  padding-left: 2px;
+  display: flex; align-items: center; gap: 8px;
+}
+.section-label::after {
+  content: '';
+  flex: 1; height: 1px; background: var(--border);
 }
 
-/* cards */
-.cards {
-  display: flex;
-  flex-direction: column;
+/* ─── GRID ─── */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 16px;
-  width: 100%;
 }
 
+/* ─── CARD ─── */
 .app-card {
   background: var(--surface);
-  border-radius: 20px;
+  border-radius: var(--radius);
   border: 1px solid var(--border);
-  padding: 24px;
   text-decoration: none;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
   transition: transform 0.15s, box-shadow 0.15s;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
+.app-card:hover  { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
+.app-card:active { transform: scale(0.98); box-shadow: var(--shadow); }
 
-.app-card:active {
-  transform: scale(0.98);
+/* colored top stripe */
+.card-stripe {
+  height: 5px; flex-shrink: 0;
 }
+.card-stripe.cal { background: var(--cal-a); }
+.card-stripe.sil { background: var(--sil-a); }
+.card-stripe.num { background: var(--num-a); }
+.card-stripe.sr  { background: var(--sr-a);  }
+.card-stripe.tab { background: var(--tab-a); }
+.card-stripe.mem { background: var(--mem-a); }
+.card-stripe.col { background: var(--col-a); }
+.card-stripe.seq { background: var(--seq-a); }
+.card-stripe.ch  { background: var(--ch-a);  }
+.card-stripe.en  { background: var(--en-a);  }
 
-.card-top {
+/* card body */
+.card-body {
+  padding: 16px 16px 12px;
+  flex: 1;
   display: flex;
-  align-items: flex-start;
-  gap: 14px;
+  flex-direction: column;
+  gap: 8px;
 }
 
+.card-header-row {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 2px;
+}
 .card-icon {
-  width: 56px; height: 56px;
-  border-radius: 14px;
+  width: 44px; height: 44px; border-radius: 12px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 28px;
-  flex-shrink: 0;
+  font-size: 22px; flex-shrink: 0;
 }
-
 .card-icon.cal { background: var(--cal-bg); }
-.card-icon.num { background: var(--num-bg); }
 .card-icon.sil { background: var(--sil-bg); }
-.card-icon.sr  { background: var(--sr-bg); }
+.card-icon.num { background: var(--num-bg); }
+.card-icon.sr  { background: var(--sr-bg);  }
 .card-icon.tab { background: var(--tab-bg); }
 .card-icon.mem { background: var(--mem-bg); }
 .card-icon.col { background: var(--col-bg); }
 .card-icon.seq { background: var(--seq-bg); }
-.card-icon.ch  { background: var(--ch-bg); }
-.card-icon.en  { background: var(--en-bg); }
+.card-icon.ch  { background: var(--ch-bg);  }
+.card-icon.en  { background: var(--en-bg);  }
 
-.card-info { flex: 1; }
-
+.card-meta { display: flex; flex-direction: column; gap: 1px; }
 .card-tag {
   display: inline-block;
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  padding: 3px 8px;
-  border-radius: 20px;
-  margin-bottom: 6px;
+  font-size: 10px; font-weight: 800;
+  text-transform: uppercase; letter-spacing: .06em;
+  padding: 2px 7px; border-radius: 20px;
+  align-self: flex-start;
 }
-
 .card-tag.cal { background: var(--cal-bg); color: var(--cal-a); }
-.card-tag.num { background: var(--num-bg); color: var(--num-a); }
 .card-tag.sil { background: var(--sil-bg); color: var(--sil-a); }
+.card-tag.num { background: var(--num-bg); color: var(--num-a); }
 .card-tag.sr  { background: var(--sr-bg);  color: var(--sr-a);  }
 .card-tag.tab { background: var(--tab-bg); color: var(--tab-a); }
 .card-tag.mem { background: var(--mem-bg); color: var(--mem-a); }
@@ -179,41 +178,25 @@ html, body {
 .card-tag.en  { background: var(--en-bg);  color: var(--en-a);  }
 
 .card-title {
-  font-size: 20px;
-  font-weight: 900;
-  color: var(--text);
-  margin-bottom: 4px;
-  line-height: 1.2;
+  font-size: 17px; font-weight: 900; color: var(--text); line-height: 1.2;
 }
-
 .card-desc {
-  font-size: 14px;
-  color: var(--muted);
-  font-weight: 600;
-  line-height: 1.5;
+  font-size: 13px; color: var(--muted); font-weight: 600;
+  line-height: 1.55; flex: 1;
 }
 
 /* feature pills */
 .features {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
+  display: flex; gap: 5px; flex-wrap: wrap; margin-top: 4px;
 }
-
 .feat-pill {
-  font-size: 12px;
-  font-weight: 700;
-  padding: 5px 10px;
-  border-radius: 20px;
-  border: 1px solid var(--border);
-  color: var(--muted);
-  background: var(--bg);
+  font-size: 11px; font-weight: 700;
+  padding: 3px 8px; border-radius: 20px;
+  border: 1px solid var(--border); color: var(--muted); background: var(--bg);
 }
-
 .feat-pill.cal-f { background: var(--cal-bg); color: var(--cal-a); border-color: var(--cal-b); }
-.feat-pill.num-f { background: var(--num-bg); color: var(--num-a); border-color: var(--num-b); }
-.feat-pill.dec-f { background: var(--dec-bg); color: var(--dec-a); border-color: #F4C0D1; }
 .feat-pill.sil-f { background: var(--sil-bg); color: var(--sil-a); border-color: var(--sil-b); }
+.feat-pill.num-f { background: var(--num-bg); color: var(--num-a); border-color: var(--num-b); }
 .feat-pill.sr-f  { background: var(--sr-bg);  color: var(--sr-a);  border-color: var(--sr-b);  }
 .feat-pill.tab-f { background: var(--tab-bg); color: var(--tab-a); border-color: var(--tab-b); }
 .feat-pill.mem-f { background: var(--mem-bg); color: var(--mem-a); border-color: var(--mem-b); }
@@ -222,20 +205,18 @@ html, body {
 .feat-pill.ch-f  { background: var(--ch-bg);  color: var(--ch-a);  border-color: var(--ch-b);  }
 .feat-pill.en-f  { background: var(--en-bg);  color: var(--en-a);  border-color: var(--en-b);  }
 
-/* cta button */
+/* CTA button */
 .card-btn {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 16px;
+  display: flex; align-items: center; justify-content: space-between;
+  margin: 0 12px 12px;
+  padding: 10px 14px;
   border-radius: 12px;
-  font-size: 14px;
-  font-weight: 800;
+  font-size: 13px; font-weight: 800;
+  flex-shrink: 0;
 }
-
 .card-btn.cal { background: var(--cal-a); color: #EEEDFE; }
-.card-btn.num { background: var(--num-a); color: #E6F1FB; }
 .card-btn.sil { background: var(--sil-a); color: #FFF7ED; }
+.card-btn.num { background: var(--num-a); color: #E6F1FB; }
 .card-btn.sr  { background: var(--sr-a);  color: #F5F3FF; }
 .card-btn.tab { background: var(--tab-a); color: #ECFEFF; }
 .card-btn.mem { background: var(--mem-a); color: #F0FDF4; }
@@ -244,298 +225,303 @@ html, body {
 .card-btn.ch  { background: var(--ch-a);  color: #F0FDFA; }
 .card-btn.en  { background: var(--en-a);  color: #EFF6FF; }
 
-.btn-arrow {
-  font-size: 18px;
-  transition: transform 0.15s;
-}
+.btn-arrow { font-size: 16px; transition: transform 0.15s; }
+.app-card:hover .btn-arrow { transform: translateX(3px); }
 
-.app-card:active .btn-arrow { transform: translateX(4px); }
-
-/* tips */
+/* ─── TIPS ─── */
 .tip-box {
-  width: 100%;
+  margin-top: 36px;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: var(--radius);
   padding: 18px 20px;
+  box-shadow: var(--shadow);
 }
-
 .tip-box h3 {
-  font-size: 14px;
-  font-weight: 800;
-  color: var(--text);
-  margin-bottom: 12px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
+  font-size: 13px; font-weight: 800; color: var(--text);
+  margin-bottom: 10px; display: flex; align-items: center; gap: 6px;
 }
-
 .tip-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  margin-bottom: 10px;
-  font-size: 13px;
-  color: var(--muted);
-  font-weight: 600;
-  line-height: 1.5;
+  display: flex; align-items: flex-start; gap: 10px;
+  margin-bottom: 8px; font-size: 13px; color: var(--muted);
+  font-weight: 600; line-height: 1.5;
 }
-
 .tip-item:last-child { margin-bottom: 0; }
-
 .tip-dot {
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: var(--muted);
-  margin-top: 7px;
-  flex-shrink: 0;
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--muted); margin-top: 8px; flex-shrink: 0;
 }
 
+/* ─── FOOTER ─── */
 .footer {
-  font-size: 12px;
-  color: var(--muted);
-  font-weight: 600;
-  text-align: center;
+  font-size: 12px; color: var(--muted); font-weight: 600;
+  text-align: center; margin-top: 32px;
+}
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 540px) {
+  .page { padding: 24px 14px 48px; }
+  .cards-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .card-body { padding: 12px 12px 8px; gap: 6px; }
+  .card-btn { margin: 0 8px 8px; padding: 9px 12px; font-size: 12px; }
+  .card-icon { width: 38px; height: 38px; font-size: 19px; border-radius: 10px; }
+  .card-title { font-size: 15px; }
+  .card-desc { font-size: 12px; }
+  .features { gap: 4px; }
+  .feat-pill { font-size: 10px; padding: 2px 6px; }
+}
+
+@media (max-width: 360px) {
+  .cards-grid { grid-template-columns: 1fr; }
 }
 </style>
 </head>
 <body>
 <div class="page">
 
-  <div class="header">
-    <div class="icon-circle">📚</div>
-    <h1>Mis Apps de Aprendizaje</h1>
-    <p>Selecciona una app para comenzar a practicar</p>
-  </div>
+  <!-- ── HEADER ── -->
+  <header class="page-header">
+    <div class="header-badge">📚 Aprendizaje</div>
+    <h1>Mis Apps</h1>
+    <p>Seleccioná una app para empezar a practicar</p>
+  </header>
 
-  <div class="cards">
+  <!-- ══ ESCRITURA ══ -->
+  <div class="section-label">✍️ Escritura</div>
+  <div class="cards-grid">
 
-    <!-- Caligrafía -->
     <a class="app-card" href="caligrafia.html">
-      <div class="card-top">
-        <div class="card-icon cal">✍️</div>
-        <div class="card-info">
-          <span class="card-tag cal">Escritura</span>
-          <div class="card-title">Caligrafía</div>
-          <div class="card-desc">Practica letras y oraciones con guías y evaluación de trazos en tiempo real.</div>
+      <div class="card-stripe cal"></div>
+      <div class="card-body">
+        <div class="card-header-row">
+          <div class="card-icon cal">✍️</div>
+          <div class="card-meta">
+            <span class="card-tag cal">Escritura</span>
+            <div class="card-title">Caligrafía</div>
+          </div>
+        </div>
+        <div class="card-desc">Practica letras y oraciones con guías y evaluación de trazos en tiempo real.</div>
+        <div class="features">
+          <span class="feat-pill cal-f">26 letras</span>
+          <span class="feat-pill cal-f">Oraciones libres</span>
+          <span class="feat-pill">Apple Pencil</span>
         </div>
       </div>
-      <div class="features">
-        <span class="feat-pill cal-f">26 letras</span>
-        <span class="feat-pill cal-f">Oraciones libres</span>
-        <span class="feat-pill">Evaluador de trazos</span>
-        <span class="feat-pill">Guías de renglón</span>
-        <span class="feat-pill">Apple Pencil</span>
-      </div>
-      <div class="card-btn cal">
-        <span>Abrir Caligrafía</span>
-        <span class="btn-arrow">→</span>
-      </div>
+      <div class="card-btn cal"><span>Abrir Caligrafía</span><span class="btn-arrow">→</span></div>
     </a>
 
-    <!-- Sílabas -->
     <a class="app-card" href="silabas.html">
-      <div class="card-top">
-        <div class="card-icon sil">🔤</div>
-        <div class="card-info">
-          <span class="card-tag sil">Lectura</span>
-          <div class="card-title">Sílabas</div>
-          <div class="card-desc">Dividí palabras en sílabas, contá cuántas tiene cada una y superá el desafío contrarreloj.</div>
+      <div class="card-stripe sil"></div>
+      <div class="card-body">
+        <div class="card-header-row">
+          <div class="card-icon sil">🔤</div>
+          <div class="card-meta">
+            <span class="card-tag sil">Lectura</span>
+            <div class="card-title">Sílabas</div>
+          </div>
+        </div>
+        <div class="card-desc">Dividí palabras en sílabas, contá cuántas tiene cada una y superá el desafío.</div>
+        <div class="features">
+          <span class="feat-pill sil-f">Dividir</span>
+          <span class="feat-pill sil-f">Contar</span>
+          <span class="feat-pill">30+ palabras</span>
+          <span class="feat-pill">Desafío 60s</span>
         </div>
       </div>
-      <div class="features">
-        <span class="feat-pill sil-f">Dividir</span>
-        <span class="feat-pill sil-f">Contar</span>
-        <span class="feat-pill">30+ palabras</span>
-        <span class="feat-pill">Desafío 60 s</span>
-        <span class="feat-pill">Emojis</span>
-      </div>
-      <div class="card-btn sil">
-        <span>Abrir Sílabas</span>
-        <span class="btn-arrow">→</span>
-      </div>
-    </a>
-
-    <!-- Matemáticas -->
-    <a class="app-card" href="unidades-decenas.html">
-      <div class="card-top">
-        <div class="card-icon num">🔢</div>
-        <div class="card-info">
-          <span class="card-tag num">Matemáticas</span>
-          <div class="card-title">Unidades y Decenas</div>
-          <div class="card-desc">Aprende a identificar, componer y descomponer números del 0 al 99.</div>
-        </div>
-      </div>
-      <div class="features">
-        <span class="feat-pill num-f">Bloques visuales</span>
-        <span class="feat-pill num-f">3 tipos de ejercicios</span>
-        <span class="feat-pill dec-f">Contar bloques</span>
-        <span class="feat-pill">Desafío 60 s</span>
-      </div>
-      <div class="card-btn num">
-        <span>Abrir Matemáticas</span>
-        <span class="btn-arrow">→</span>
-      </div>
-    </a>
-
-    <!-- Suma y Resta -->
-    <a class="app-card" href="suma-resta.html">
-      <div class="card-top">
-        <div class="card-icon sr">➕</div>
-        <div class="card-info">
-          <span class="card-tag sr">Matemáticas</span>
-          <div class="card-title">Suma y Resta</div>
-          <div class="card-desc">Suma y resta hasta 20 con bloques visuales de colores y desafío contrarreloj.</div>
-        </div>
-      </div>
-      <div class="features">
-        <span class="feat-pill sr-f">Hasta 20</span>
-        <span class="feat-pill sr-f">Visual</span>
-        <span class="feat-pill">Suma</span>
-        <span class="feat-pill">Resta</span>
-        <span class="feat-pill">Desafío 60s</span>
-      </div>
-      <div class="card-btn sr">
-        <span>Abrir Suma y Resta</span>
-        <span class="btn-arrow">→</span>
-      </div>
-    </a>
-
-    <!-- Tablas -->
-    <a class="app-card" href="tablas.html">
-      <div class="card-top">
-        <div class="card-icon tab">✖️</div>
-        <div class="card-info">
-          <span class="card-tag tab">Matemáticas</span>
-          <div class="card-title">Tablas × 2 y × 5</div>
-          <div class="card-desc">Aprende las tablas del 2 y del 5 con arrays visuales de puntos y práctica interactiva.</div>
-        </div>
-      </div>
-      <div class="features">
-        <span class="feat-pill tab-f">× 2</span>
-        <span class="feat-pill tab-f">× 5</span>
-        <span class="feat-pill">Arrays visuales</span>
-        <span class="feat-pill">Desafío 60s</span>
-      </div>
-      <div class="card-btn tab">
-        <span>Abrir Tablas</span>
-        <span class="btn-arrow">→</span>
-      </div>
-    </a>
-
-    <!-- Memoria -->
-    <a class="app-card" href="memoria.html">
-      <div class="card-top">
-        <div class="card-icon mem">🃏</div>
-        <div class="card-info">
-          <span class="card-tag mem">Juego</span>
-          <div class="card-title">Memoria de Cartas</div>
-          <div class="card-desc">Encontrá los 8 pares de emojis animales en la grilla 4×4. ¡Probá batir tu propio récord!</div>
-        </div>
-      </div>
-      <div class="features">
-        <span class="feat-pill mem-f">8 pares</span>
-        <span class="feat-pill mem-f">Animales</span>
-        <span class="feat-pill">Flip animado</span>
-        <span class="feat-pill">Cronómetro</span>
-      </div>
-      <div class="card-btn mem">
-        <span>Abrir Memoria</span>
-        <span class="btn-arrow">→</span>
-      </div>
-    </a>
-
-    <!-- Colorear -->
-    <a class="app-card" href="colorear.html">
-      <div class="card-top">
-        <div class="card-icon col">🎨</div>
-        <div class="card-info">
-          <span class="card-tag col">Arte</span>
-          <div class="card-title">Colorear</div>
-          <div class="card-desc">Pintá figuras SVG con los dedos: un sol, una casa, una mariposa y un pez con 10 colores.</div>
-        </div>
-      </div>
-      <div class="features">
-        <span class="feat-pill col-f">4 escenas</span>
-        <span class="feat-pill col-f">10 colores</span>
-        <span class="feat-pill">Touch</span>
-        <span class="feat-pill">SVG</span>
-      </div>
-      <div class="card-btn col">
-        <span>Abrir Colorear</span>
-        <span class="btn-arrow">→</span>
-      </div>
-    </a>
-
-    <!-- Secuencias -->
-    <a class="app-card" href="secuencias.html">
-      <div class="card-top">
-        <div class="card-icon seq">🔢</div>
-        <div class="card-info">
-          <span class="card-tag seq">Lógica</span>
-          <div class="card-title">Secuencias</div>
-          <div class="card-desc">Completá patrones de figuras, números y emojis. ¿Qué sigue en la serie?</div>
-        </div>
-      </div>
-      <div class="features">
-        <span class="feat-pill seq-f">Figuras</span>
-        <span class="feat-pill seq-f">Números</span>
-        <span class="feat-pill">Emojis</span>
-        <span class="feat-pill">Desafío 60s</span>
-      </div>
-      <div class="card-btn seq">
-        <span>Abrir Secuencias</span>
-        <span class="btn-arrow">→</span>
-      </div>
-    </a>
-
-    <!-- Inglés -->
-    <a class="app-card" href="ingles.html">
-      <div class="card-top">
-        <div class="card-icon en">🇬🇧</div>
-        <div class="card-info">
-          <span class="card-tag en">Inglés</span>
-          <div class="card-title">English</div>
-          <div class="card-desc">Aprendé números, colores, animales y frases del día a día en inglés con pronunciación.</div>
-        </div>
-      </div>
-      <div class="features">
-        <span class="feat-pill en-f">Numbers 1–20</span>
-        <span class="feat-pill en-f">Colors</span>
-        <span class="feat-pill">Animals</span>
-        <span class="feat-pill">Phrases</span>
-        <span class="feat-pill">Challenge</span>
-      </div>
-      <div class="card-btn en">
-        <span>Abrir English</span>
-        <span class="btn-arrow">→</span>
-      </div>
-    </a>
-
-    <!-- Cuerpo Humano -->
-    <a class="app-card" href="cuerpo-humano.html">
-      <div class="card-top">
-        <div class="card-icon ch">🫀</div>
-        <div class="card-info">
-          <span class="card-tag ch">Ciencias</span>
-          <div class="card-title">Cuerpo Humano</div>
-          <div class="card-desc">Tocá cada parte del cuerpo para aprender su nombre y función. ¡Después ponete a prueba!</div>
-        </div>
-      </div>
-      <div class="features">
-        <span class="feat-pill ch-f">Aprender</span>
-        <span class="feat-pill ch-f">Quiz</span>
-        <span class="feat-pill">17 partes</span>
-        <span class="feat-pill">SVG interactivo</span>
-      </div>
-      <div class="card-btn ch">
-        <span>Abrir Cuerpo Humano</span>
-        <span class="btn-arrow">→</span>
-      </div>
+      <div class="card-btn sil"><span>Abrir Sílabas</span><span class="btn-arrow">→</span></div>
     </a>
 
   </div>
 
+  <!-- ══ MATEMÁTICAS ══ -->
+  <div class="section-label">🔢 Matemáticas</div>
+  <div class="cards-grid">
+
+    <a class="app-card" href="unidades-decenas.html">
+      <div class="card-stripe num"></div>
+      <div class="card-body">
+        <div class="card-header-row">
+          <div class="card-icon num">🔢</div>
+          <div class="card-meta">
+            <span class="card-tag num">Matemáticas</span>
+            <div class="card-title">Unidades y Decenas</div>
+          </div>
+        </div>
+        <div class="card-desc">Identifica, compone y descompone números del 0 al 999. Incluye caja C·D·U.</div>
+        <div class="features">
+          <span class="feat-pill num-f">Bloques visuales</span>
+          <span class="feat-pill num-f">Centenas</span>
+          <span class="feat-pill">Desafío 60s</span>
+        </div>
+      </div>
+      <div class="card-btn num"><span>Abrir Matemáticas</span><span class="btn-arrow">→</span></div>
+    </a>
+
+    <a class="app-card" href="suma-resta.html">
+      <div class="card-stripe sr"></div>
+      <div class="card-body">
+        <div class="card-header-row">
+          <div class="card-icon sr">➕</div>
+          <div class="card-meta">
+            <span class="card-tag sr">Matemáticas</span>
+            <div class="card-title">Suma y Resta</div>
+          </div>
+        </div>
+        <div class="card-desc">Suma y resta hasta 20 con bloques visuales de colores y desafío contrarreloj.</div>
+        <div class="features">
+          <span class="feat-pill sr-f">Hasta 20</span>
+          <span class="feat-pill sr-f">Visual</span>
+          <span class="feat-pill">Desafío 60s</span>
+        </div>
+      </div>
+      <div class="card-btn sr"><span>Abrir Suma y Resta</span><span class="btn-arrow">→</span></div>
+    </a>
+
+    <a class="app-card" href="tablas.html">
+      <div class="card-stripe tab"></div>
+      <div class="card-body">
+        <div class="card-header-row">
+          <div class="card-icon tab">✖️</div>
+          <div class="card-meta">
+            <span class="card-tag tab">Matemáticas</span>
+            <div class="card-title">Tablas × 2 y × 5</div>
+          </div>
+        </div>
+        <div class="card-desc">Aprende las tablas del 2 y del 5 con arrays visuales de puntos y práctica interactiva.</div>
+        <div class="features">
+          <span class="feat-pill tab-f">× 2</span>
+          <span class="feat-pill tab-f">× 5</span>
+          <span class="feat-pill">Arrays visuales</span>
+          <span class="feat-pill">Desafío 60s</span>
+        </div>
+      </div>
+      <div class="card-btn tab"><span>Abrir Tablas</span><span class="btn-arrow">→</span></div>
+    </a>
+
+  </div>
+
+  <!-- ══ JUEGOS ══ -->
+  <div class="section-label">🎮 Juegos y Lógica</div>
+  <div class="cards-grid">
+
+    <a class="app-card" href="memoria.html">
+      <div class="card-stripe mem"></div>
+      <div class="card-body">
+        <div class="card-header-row">
+          <div class="card-icon mem">🃏</div>
+          <div class="card-meta">
+            <span class="card-tag mem">Juego</span>
+            <div class="card-title">Memoria de Cartas</div>
+          </div>
+        </div>
+        <div class="card-desc">Encontrá los 8 pares de emojis animales en la grilla 4×4. ¡Batí tu récord!</div>
+        <div class="features">
+          <span class="feat-pill mem-f">8 pares</span>
+          <span class="feat-pill mem-f">Flip animado</span>
+          <span class="feat-pill">Cronómetro</span>
+        </div>
+      </div>
+      <div class="card-btn mem"><span>Abrir Memoria</span><span class="btn-arrow">→</span></div>
+    </a>
+
+    <a class="app-card" href="secuencias.html">
+      <div class="card-stripe seq"></div>
+      <div class="card-body">
+        <div class="card-header-row">
+          <div class="card-icon seq">🔡</div>
+          <div class="card-meta">
+            <span class="card-tag seq">Lógica</span>
+            <div class="card-title">Secuencias</div>
+          </div>
+        </div>
+        <div class="card-desc">Completá patrones de figuras, números y emojis. ¿Qué sigue en la serie?</div>
+        <div class="features">
+          <span class="feat-pill seq-f">Figuras</span>
+          <span class="feat-pill seq-f">Números</span>
+          <span class="feat-pill">Emojis</span>
+          <span class="feat-pill">Desafío 60s</span>
+        </div>
+      </div>
+      <div class="card-btn seq"><span>Abrir Secuencias</span><span class="btn-arrow">→</span></div>
+    </a>
+
+  </div>
+
+  <!-- ══ ARTE Y CIENCIAS ══ -->
+  <div class="section-label">🎨 Arte y Ciencias</div>
+  <div class="cards-grid">
+
+    <a class="app-card" href="colorear.html">
+      <div class="card-stripe col"></div>
+      <div class="card-body">
+        <div class="card-header-row">
+          <div class="card-icon col">🎨</div>
+          <div class="card-meta">
+            <span class="card-tag col">Arte</span>
+            <div class="card-title">Colorear</div>
+          </div>
+        </div>
+        <div class="card-desc">Pintá figuras SVG con los dedos: un sol, una casa, una mariposa y un pez.</div>
+        <div class="features">
+          <span class="feat-pill col-f">4 escenas</span>
+          <span class="feat-pill col-f">10 colores</span>
+          <span class="feat-pill">Touch</span>
+        </div>
+      </div>
+      <div class="card-btn col"><span>Abrir Colorear</span><span class="btn-arrow">→</span></div>
+    </a>
+
+    <a class="app-card" href="cuerpo-humano.html">
+      <div class="card-stripe ch"></div>
+      <div class="card-body">
+        <div class="card-header-row">
+          <div class="card-icon ch">🫀</div>
+          <div class="card-meta">
+            <span class="card-tag ch">Ciencias</span>
+            <div class="card-title">Cuerpo Humano</div>
+          </div>
+        </div>
+        <div class="card-desc">Tocá cada parte del cuerpo para aprender su nombre y función. ¡Después ponete a prueba!</div>
+        <div class="features">
+          <span class="feat-pill ch-f">Aprender</span>
+          <span class="feat-pill ch-f">Quiz</span>
+          <span class="feat-pill">17 partes</span>
+        </div>
+      </div>
+      <div class="card-btn ch"><span>Abrir Cuerpo Humano</span><span class="btn-arrow">→</span></div>
+    </a>
+
+  </div>
+
+  <!-- ══ IDIOMAS ══ -->
+  <div class="section-label">🌍 Idiomas</div>
+  <div class="cards-grid">
+
+    <a class="app-card" href="ingles.html">
+      <div class="card-stripe en"></div>
+      <div class="card-body">
+        <div class="card-header-row">
+          <div class="card-icon en">🇬🇧</div>
+          <div class="card-meta">
+            <span class="card-tag en">Inglés</span>
+            <div class="card-title">English</div>
+          </div>
+        </div>
+        <div class="card-desc">Aprendé números, colores, animales y frases del día a día en inglés con pronunciación.</div>
+        <div class="features">
+          <span class="feat-pill en-f">Numbers 1–20</span>
+          <span class="feat-pill en-f">Colors</span>
+          <span class="feat-pill">Animals</span>
+          <span class="feat-pill">Phrases</span>
+          <span class="feat-pill">Challenge</span>
+        </div>
+      </div>
+      <div class="card-btn en"><span>Abrir English</span><span class="btn-arrow">→</span></div>
+    </a>
+
+  </div>
+
+  <!-- ── TIPS ── -->
   <div class="tip-box">
     <h3>💡 Consejos para el iPad</h3>
     <div class="tip-item"><div class="tip-dot"></div><span>Usá <strong>Apple Pencil</strong> en la app de caligrafía para mejores resultados.</span></div>
