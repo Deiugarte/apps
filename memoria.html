@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Memoria</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #F0FDF4;
+  --surface: #FFFFFF;
+  --mem-a: #16A34A;
+  --mem-light: #DCFCE7;
+  --mem-bg: #F0FDF4;
+  --correct: #16A34A;
+  --correct-bg: #DCFCE7;
+  --wrong: #DC2626;
+  --wrong-bg: #FEE2E2;
+  --text: #1E293B;
+  --text-light: #64748B;
+  --border: rgba(0,0,0,0.08);
+  --shadow: 0 2px 12px rgba(0,0,0,0.06);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.10);
+  --radius: 16px;
+  --radius-sm: 10px;
+  --card-back: #1E293B;
+}
+
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  font-family: 'Nunito', sans-serif;
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  touch-action: manipulation;
+}
+
+#app { display: flex; flex-direction: column; height: 100vh; width: 100vw; }
+
+/* ── NAV ── */
+#nav {
+  display: flex; align-items: center;
+  padding: 0 12px; height: 56px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  gap: 8px; flex-shrink: 0;
+}
+.home-btn {
+  display: flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; border-radius: 10px;
+  background: var(--bg); border: 1.5px solid var(--border);
+  text-decoration: none; font-size: 18px; flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+.home-btn:active { opacity: .7; }
+#nav-title {
+  font-family: 'Baloo 2', cursive;
+  font-size: 20px; font-weight: 800;
+  color: var(--mem-a);
+  white-space: nowrap; flex-shrink: 0;
+}
+#nav-stats {
+  margin-left: auto; display: flex; align-items: center; gap: 8px; flex-shrink: 0;
+}
+.stat-chip {
+  display: flex; align-items: center; gap: 4px;
+  padding: 4px 10px; border-radius: 20px;
+  font-size: 13px; font-weight: 800;
+  font-family: 'Baloo 2', cursive;
+}
+.stat-chip.pairs { background: var(--correct-bg); color: var(--correct); }
+.stat-chip.moves { background: #EFF6FF; color: #1D4ED8; }
+
+/* ── CONTENT ── */
+#content {
+  flex: 1; overflow-y: auto; overflow-x: hidden;
+  padding: 16px;
+  -webkit-overflow-scrolling: touch;
+  display: flex; flex-direction: column; align-items: center;
+}
+
+/* ── GRID ── */
+#board {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  width: 100%;
+  max-width: 520px;
+}
+
+/* ── CARD FLIP ── */
+.card-wrap {
+  aspect-ratio: 1;
+  perspective: 600px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+.card-inner {
+  width: 100%; height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.35s ease;
+  border-radius: 14px;
+}
+.card-wrap.flipped .card-inner { transform: rotateY(180deg); }
+.card-wrap.matched .card-inner { transform: rotateY(180deg); }
+
+.card-face {
+  position: absolute; inset: 0;
+  border-radius: 14px;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  display: flex; align-items: center; justify-content: center;
+}
+.card-back-face {
+  background: var(--card-back);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+}
+.card-back-face::after {
+  content: '?';
+  font-family: 'Baloo 2', cursive;
+  font-size: clamp(22px, 5vw, 32px);
+  font-weight: 800;
+  color: rgba(255,255,255,0.25);
+}
+.card-front-face {
+  background: #FFFFFF;
+  transform: rotateY(180deg);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+  font-size: clamp(28px, 7vw, 44px);
+  border: 3px solid transparent;
+}
+.card-wrap.matched .card-front-face {
+  border-color: var(--correct);
+  background: var(--correct-bg);
+}
+
+@keyframes card-match {
+  0% { transform: rotateY(180deg) scale(1); }
+  40% { transform: rotateY(180deg) scale(1.18); }
+  70% { transform: rotateY(180deg) scale(0.94); }
+  100% { transform: rotateY(180deg) scale(1); }
+}
+.card-wrap.matched .card-inner { animation: card-match 0.4s ease 0.35s both; }
+
+@keyframes card-shake {
+  0%,100% { transform: rotateY(180deg) translateX(0); }
+  20% { transform: rotateY(180deg) translateX(-5px); }
+  40% { transform: rotateY(180deg) translateX(5px); }
+  60% { transform: rotateY(180deg) translateX(-4px); }
+  80% { transform: rotateY(180deg) translateX(3px); }
+}
+.card-wrap.shaking .card-inner { animation: card-shake 0.35s ease both; }
+
+/* ── WIN OVERLAY ── */
+#win-overlay {
+  display: none; position: fixed; inset: 0; z-index: 100;
+  background: rgba(0,0,0,0.45); align-items: center; justify-content: center;
+}
+#win-overlay.show { display: flex; }
+#win-box {
+  background: white; border-radius: 24px; padding: 36px 28px;
+  text-align: center; max-width: 320px; width: 90%;
+  box-shadow: 0 20px 60px rgba(0,0,0,.2);
+}
+#win-emoji { font-size: 64px; margin-bottom: 8px; }
+#win-title {
+  font-family: 'Baloo 2', cursive;
+  font-size: 30px; font-weight: 900; color: var(--mem-a); margin-bottom: 6px;
+}
+#win-stats {
+  font-size: 16px; font-weight: 700; color: var(--text-light);
+  margin-bottom: 24px; line-height: 2;
+}
+#win-stats strong { color: var(--text); }
+#win-replay {
+  width: 100%; padding: 16px; border-radius: 14px; border: none;
+  background: var(--mem-a); color: white;
+  font-family: 'Nunito', sans-serif; font-size: 18px; font-weight: 800;
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
+}
+#win-replay:active { opacity: .85; }
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ── NAV ── -->
+<div id="nav">
+  <a href="index.html" class="home-btn">🏠</a>
+  <span id="nav-title">🃏 Memoria</span>
+  <div id="nav-stats">
+    <div class="stat-chip pairs">🟢 <span id="stat-pairs">0</span>/8</div>
+    <div class="stat-chip moves">🖐 <span id="stat-moves">0</span></div>
+  </div>
+</div>
+
+<!-- ── CONTENT ── -->
+<div id="content">
+  <div id="board"></div>
+</div>
+
+</div><!-- /app -->
+
+<!-- ── WIN OVERLAY ── -->
+<div id="win-overlay">
+  <div id="win-box">
+    <div id="win-emoji">🎉</div>
+    <div id="win-title">¡Ganaste!</div>
+    <div id="win-stats"></div>
+    <button id="win-replay">Jugar de nuevo 🔄</button>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════
+   DATA
+═══════════════════════════════════ */
+const EMOJIS = ['🐱','🐶','🐭','🐹','🐰','🦊','🐻','🐼'];
+
+/* ═══════════════════════════════════
+   STATE
+═══════════════════════════════════ */
+let cards = [];        // array of {id, emoji, el, matched, flipped}
+let flipped = [];      // up to 2 flipped card ids
+let locked = false;    // block taps during check
+let moves = 0;
+let pairs = 0;
+let startTime = null;
+let timerRef = null;
+
+/* ═══════════════════════════════════
+   HELPERS
+═══════════════════════════════════ */
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function formatTime(ms) {
+  const s = Math.floor(ms / 1000);
+  const m = Math.floor(s / 60);
+  const ss = s % 60;
+  return m > 0 ? `${m}m ${ss}s` : `${s}s`;
+}
+
+/* ═══════════════════════════════════
+   BUILD BOARD
+═══════════════════════════════════ */
+function buildBoard() {
+  // Reset state
+  cards = [];
+  flipped = [];
+  locked = false;
+  moves = 0;
+  pairs = 0;
+  startTime = null;
+  clearInterval(timerRef);
+
+  document.getElementById('stat-pairs').textContent = '0';
+  document.getElementById('stat-moves').textContent = '0';
+
+  const deck = shuffle([...EMOJIS, ...EMOJIS]);
+  const board = document.getElementById('board');
+  board.innerHTML = '';
+
+  deck.forEach((emoji, idx) => {
+    const cardData = { id: idx, emoji, matched: false, flipped: false };
+    cards.push(cardData);
+
+    const wrap = document.createElement('div');
+    wrap.className = 'card-wrap';
+    wrap.dataset.id = idx;
+
+    const inner = document.createElement('div');
+    inner.className = 'card-inner';
+
+    const back = document.createElement('div');
+    back.className = 'card-face card-back-face';
+
+    const front = document.createElement('div');
+    front.className = 'card-face card-front-face';
+    front.textContent = emoji;
+
+    inner.appendChild(back);
+    inner.appendChild(front);
+    wrap.appendChild(inner);
+    board.appendChild(wrap);
+
+    cardData.el = wrap;
+
+    wrap.addEventListener('click', () => onCardTap(idx));
+  });
+}
+
+/* ═══════════════════════════════════
+   GAME LOGIC
+═══════════════════════════════════ */
+function onCardTap(id) {
+  if (locked) return;
+  const card = cards[id];
+  if (card.matched || card.flipped) return;
+
+  // Start timer on first tap
+  if (startTime === null) {
+    startTime = Date.now();
+  }
+
+  // Flip card
+  card.flipped = true;
+  card.el.classList.add('flipped');
+  flipped.push(id);
+
+  if (flipped.length < 2) return;
+
+  // Two cards flipped — check match
+  moves++;
+  document.getElementById('stat-moves').textContent = moves;
+  locked = true;
+
+  const [a, b] = flipped;
+  if (cards[a].emoji === cards[b].emoji) {
+    // Match!
+    setTimeout(() => {
+      cards[a].matched = true;
+      cards[b].matched = true;
+      cards[a].el.classList.remove('flipped');
+      cards[b].el.classList.remove('flipped');
+      cards[a].el.classList.add('matched');
+      cards[b].el.classList.add('matched');
+      pairs++;
+      document.getElementById('stat-pairs').textContent = pairs;
+      flipped = [];
+      locked = false;
+      if (pairs === 8) showWin();
+    }, 300);
+  } else {
+    // No match — shake and flip back
+    setTimeout(() => {
+      cards[a].el.classList.add('shaking');
+      cards[b].el.classList.add('shaking');
+    }, 100);
+    setTimeout(() => {
+      cards[a].el.classList.remove('flipped', 'shaking');
+      cards[b].el.classList.remove('flipped', 'shaking');
+      cards[a].flipped = false;
+      cards[b].flipped = false;
+      flipped = [];
+      locked = false;
+    }, 800);
+  }
+}
+
+function showWin() {
+  const elapsed = Date.now() - startTime;
+  const overlay = document.getElementById('win-overlay');
+  document.getElementById('win-stats').innerHTML =
+    `⏱ Tiempo: <strong>${formatTime(elapsed)}</strong><br>` +
+    `🖐 Movimientos: <strong>${moves}</strong><br>` +
+    `⭐ Pares: <strong>8/8</strong>`;
+  overlay.classList.add('show');
+}
+
+/* ═══════════════════════════════════
+   EVENTS
+═══════════════════════════════════ */
+document.getElementById('win-replay').addEventListener('click', () => {
+  document.getElementById('win-overlay').classList.remove('show');
+  buildBoard();
+});
+
+/* ═══════════════════════════════════
+   INIT
+═══════════════════════════════════ */
+buildBoard();
+</script>
+</body>
+</html>

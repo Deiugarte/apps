@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Tablas</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #ECFEFF;
+  --surface: #FFFFFF;
+  --tab-a: #0891B2;
+  --tab-bg: #ECFEFF;
+  --tab-light: #A5F3FC;
+  --tab-mid: #67E8F9;
+  --correct: #16A34A;
+  --correct-bg: #DCFCE7;
+  --wrong: #DC2626;
+  --wrong-bg: #FEE2E2;
+  --text: #1E293B;
+  --text-light: #64748B;
+  --border: rgba(0,0,0,0.08);
+  --shadow: 0 2px 12px rgba(0,0,0,0.06);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.10);
+  --radius: 16px;
+  --radius-sm: 10px;
+}
+
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  font-family: 'Nunito', sans-serif;
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  touch-action: manipulation;
+}
+
+#app { display: flex; flex-direction: column; height: 100vh; width: 100vw; }
+
+/* ── NAV ── */
+#nav {
+  display: flex; align-items: center;
+  padding: 0 12px; height: 56px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  gap: 6px; flex-shrink: 0;
+  overflow-x: auto; -webkit-overflow-scrolling: touch;
+}
+.home-btn {
+  display: flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; border-radius: 10px;
+  background: var(--bg); border: 1.5px solid var(--border);
+  text-decoration: none; font-size: 18px; flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+.home-btn:active { opacity: .7; }
+#nav-title {
+  font-family: 'Baloo 2', cursive;
+  font-size: 19px; font-weight: 800;
+  color: var(--tab-a);
+  margin-right: 4px; white-space: nowrap; flex-shrink: 0;
+}
+.nav-tab {
+  padding: 6px 12px; border-radius: 20px;
+  border: 2px solid transparent;
+  font-size: 13px; font-weight: 700;
+  cursor: pointer; transition: all .15s;
+  white-space: nowrap; user-select: none;
+  background: transparent; color: var(--text-light);
+  font-family: 'Nunito', sans-serif; flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+.nav-tab.active { background: var(--text); color: white; border-color: var(--text); }
+#score-area {
+  margin-left: auto; display: flex; align-items: center; gap: 6px; flex-shrink: 0;
+}
+.score-chip {
+  display: flex; align-items: center; gap: 4px;
+  padding: 4px 10px; border-radius: 20px;
+  font-size: 13px; font-weight: 800;
+}
+.score-chip.right { background: var(--correct-bg); color: var(--correct); }
+.score-chip.wrong { background: var(--wrong-bg); color: var(--wrong); }
+
+/* ── CONTENT ── */
+#content {
+  flex: 1; overflow-y: auto; overflow-x: hidden;
+  padding: 16px 16px 40px;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ════════════════════════
+   TABLA cards (×2 / ×5)
+════════════════════════ */
+#tab-x2, #tab-x5 { display: flex; flex-direction: column; gap: 10px; }
+
+.tabla-header {
+  background: var(--tab-a); color: white;
+  border-radius: var(--radius); padding: 16px 20px;
+  box-shadow: var(--shadow);
+  text-align: center;
+}
+.tabla-header-title {
+  font-family: 'Baloo 2', cursive; font-size: 28px; font-weight: 900;
+}
+.tabla-header-sub {
+  font-size: 13px; font-weight: 700; opacity: .85; margin-top: 2px;
+}
+
+.tabla-row {
+  background: var(--surface); border-radius: var(--radius-sm);
+  padding: 14px 18px;
+  display: flex; align-items: center; justify-content: space-between;
+  box-shadow: var(--shadow); cursor: pointer;
+  border: 2px solid transparent;
+  transition: border-color .15s, background .15s;
+  user-select: none; -webkit-tap-highlight-color: transparent;
+}
+.tabla-row:nth-child(even) { background: var(--tab-bg); }
+.tabla-row.active-row { background: var(--tab-a); border-color: var(--tab-a); }
+.tabla-row-eq {
+  font-family: 'Baloo 2', cursive; font-size: 22px; font-weight: 800;
+  color: var(--text);
+}
+.tabla-row.active-row .tabla-row-eq { color: white; }
+.tabla-row-result {
+  font-family: 'Baloo 2', cursive; font-size: 28px; font-weight: 900;
+  color: var(--tab-a);
+}
+.tabla-row.active-row .tabla-row-result { color: white; }
+
+.tabla-expand {
+  overflow: hidden; max-height: 0; transition: max-height .3s ease;
+  background: var(--surface); border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+  border: 2px solid var(--tab-light); border-top: none;
+  margin-top: -4px; margin-bottom: 4px;
+}
+.tabla-expand.open { max-height: 300px; }
+.tabla-expand-inner {
+  padding: 12px 14px; display: flex; flex-direction: column; gap: 6px;
+}
+.expand-label {
+  font-size: 12px; font-weight: 700; color: var(--tab-a);
+  text-transform: uppercase; letter-spacing: .06em;
+}
+.dot-grid { display: flex; flex-direction: column; gap: 4px; }
+.dot-row { display: flex; gap: 4px; align-items: center; }
+.dot {
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--tab-a); flex-shrink: 0;
+}
+.dot-row-label {
+  font-size: 11px; font-weight: 700; color: var(--text-light); margin-left: 6px;
+}
+
+/* ════════════════════════
+   PRÁCTICA
+════════════════════════ */
+#tab-practica { display: flex; flex-direction: column; }
+
+.ex-card {
+  background: var(--surface); border-radius: var(--radius);
+  padding: 24px 20px 20px; box-shadow: var(--shadow-lg);
+  display: flex; flex-direction: column; gap: 16px;
+}
+.question-label {
+  font-size: 13px; font-weight: 700; color: var(--text-light);
+  text-transform: uppercase; letter-spacing: .06em; text-align: center;
+}
+.question-eq {
+  font-family: 'Baloo 2', cursive; font-size: 52px; font-weight: 900;
+  text-align: center; line-height: 1; color: var(--text);
+}
+.question-eq .q-sign { color: var(--tab-a); }
+
+/* dot grid in practice */
+.prac-dot-area {
+  background: var(--bg); border-radius: 12px; padding: 12px;
+  display: flex; flex-direction: column; gap: 5px; align-items: flex-start;
+  min-height: 60px;
+}
+
+.answer-display {
+  height: 60px; border-radius: 14px;
+  border: 2.5px solid var(--border); background: var(--bg);
+  font-family: 'Baloo 2', cursive;
+  font-size: 36px; font-weight: 900;
+  text-align: center; line-height: 60px;
+  color: var(--text); letter-spacing: 4px;
+  transition: border-color .15s, background .15s;
+}
+.answer-display.focused { border-color: var(--tab-a); background: white; }
+.answer-display.correct { border-color: var(--correct); background: var(--correct-bg); color: var(--correct); }
+.answer-display.wrong   { border-color: var(--wrong);   background: var(--wrong-bg);   color: var(--wrong); }
+
+.feedback-bar {
+  padding: 12px 16px; border-radius: 12px;
+  font-size: 15px; font-weight: 800;
+  text-align: center; display: none;
+}
+.feedback-bar.correct { background: var(--correct-bg); color: var(--correct); display: block; }
+.feedback-bar.wrong   { background: var(--wrong-bg);   color: var(--wrong);   display: block; }
+
+/* numpad */
+.numpad {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+}
+.np-btn {
+  height: 54px; border-radius: 12px;
+  border: 2px solid var(--border); background: white;
+  font-family: 'Baloo 2', cursive;
+  font-size: 22px; font-weight: 800;
+  cursor: pointer; color: var(--text);
+  user-select: none; -webkit-tap-highlight-color: transparent;
+  transition: transform .1s, background .1s;
+}
+.np-btn:active { transform: scale(.93); background: var(--bg); }
+.np-btn.np-del { font-size: 18px; color: var(--text-light); }
+.np-btn.np-ok  { background: var(--tab-a); color: white; border-color: var(--tab-a); font-size: 16px; }
+.np-btn.np-next { background: #059669; color: white; border-color: #059669; font-size: 14px; }
+
+/* ════════════════════════
+   DESAFÍO
+════════════════════════ */
+#tab-desafio { display: flex; flex-direction: column; gap: 16px; }
+#challenge-card {
+  background: var(--surface); border-radius: var(--radius);
+  padding: 20px; box-shadow: var(--shadow-lg);
+  display: flex; flex-direction: column; gap: 14px;
+}
+#ch-score-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.ch-stat { padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 800; }
+.ch-stat.time   { background: var(--tab-bg); color: var(--tab-a); }
+.ch-stat.pts    { background: var(--correct-bg); color: var(--correct); }
+.ch-stat.streak { background: #FEF9C3; color: #854D0E; }
+#timer-bar-wrap { height: 8px; background: var(--bg); border-radius: 4px; overflow: hidden; }
+#timer-bar { height: 100%; background: var(--tab-a); border-radius: 4px; transition: width .1s linear; }
+#challenge-q {
+  text-align: center;
+  font-family: 'Baloo 2', cursive; font-size: 28px; font-weight: 800;
+  min-height: 56px; display: flex; align-items: center; justify-content: center;
+  color: var(--text);
+}
+#challenge-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.ch-option {
+  padding: 18px 12px; border-radius: 14px;
+  border: 2.5px solid var(--border); background: white;
+  font-family: 'Baloo 2', cursive; font-size: 24px; font-weight: 800;
+  cursor: pointer; text-align: center;
+  transition: transform .1s; color: var(--text);
+  user-select: none; -webkit-tap-highlight-color: transparent;
+}
+.ch-option:active { transform: scale(.96); }
+.ch-option.correct { background: var(--correct-bg); border-color: var(--correct); color: var(--correct); }
+.ch-option.wrong   { background: var(--wrong-bg);   border-color: var(--wrong);   color: var(--wrong); }
+#challenge-start {
+  padding: 14px; border-radius: 14px; border: none;
+  background: var(--tab-a); color: white;
+  font-family: 'Nunito', sans-serif; font-size: 17px; font-weight: 800;
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
+}
+#challenge-start:active { opacity: .85; }
+
+/* result overlay */
+#result-overlay {
+  display: none; position: fixed; inset: 0; z-index: 100;
+  background: rgba(0,0,0,0.4); align-items: center; justify-content: center;
+}
+#result-overlay.show { display: flex; }
+#result-box {
+  background: white; border-radius: 24px; padding: 32px 28px;
+  text-align: center; max-width: 320px; width: 90%;
+  box-shadow: 0 20px 60px rgba(0,0,0,.2);
+}
+#result-emoji { font-size: 56px; margin-bottom: 8px; }
+#result-title { font-family: 'Baloo 2', cursive; font-size: 28px; font-weight: 900; margin-bottom: 6px; }
+#result-sub { font-size: 15px; color: var(--text-light); font-weight: 600; margin-bottom: 16px; }
+#result-score { font-family: 'Baloo 2', cursive; font-size: 52px; font-weight: 900; color: var(--tab-a); }
+#result-score-label { font-size: 14px; color: var(--text-light); font-weight: 600; margin-bottom: 20px; }
+#result-play-again {
+  width: 100%; padding: 14px; border-radius: 14px; border: none;
+  background: var(--tab-a); color: white;
+  font-family: 'Nunito', sans-serif; font-size: 17px; font-weight: 800;
+  cursor: pointer;
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ── NAV ── -->
+<div id="nav">
+  <a href="index.html" class="home-btn">🏠</a>
+  <span id="nav-title">✖️ Tablas</span>
+  <button class="nav-tab active" data-tab="x2">× 2</button>
+  <button class="nav-tab" data-tab="x5">× 5</button>
+  <button class="nav-tab" data-tab="practica">Práctica</button>
+  <button class="nav-tab" data-tab="desafio">Desafío</button>
+  <div id="score-area">
+    <div class="score-chip right">✓ <span id="sc-right">0</span></div>
+    <div class="score-chip wrong">✗ <span id="sc-wrong">0</span></div>
+  </div>
+</div>
+
+<!-- ── CONTENT ── -->
+<div id="content">
+
+  <!-- ═══ TABLA × 2 ═══ -->
+  <div id="tab-x2">
+    <div class="tabla-header">
+      <div class="tabla-header-title">Tabla del 2</div>
+      <div class="tabla-header-sub">Toca cada fila para ver el array visual</div>
+    </div>
+    <div id="tabla2-rows"></div>
+  </div>
+
+  <!-- ═══ TABLA × 5 ═══ -->
+  <div id="tab-x5" style="display:none">
+    <div class="tabla-header">
+      <div class="tabla-header-title">Tabla del 5</div>
+      <div class="tabla-header-sub">Toca cada fila para ver el array visual</div>
+    </div>
+    <div id="tabla5-rows"></div>
+  </div>
+
+  <!-- ═══ PRÁCTICA ═══ -->
+  <div id="tab-practica" style="display:none">
+    <div class="ex-card">
+      <div class="question-label">¿Cuánto es?</div>
+      <div class="question-eq" id="prac-eq">3 <span class="q-sign">×</span> 2 = ?</div>
+      <div class="prac-dot-area" id="prac-dots"></div>
+      <div class="answer-display focused" id="prac-display">?</div>
+      <div class="feedback-bar" id="prac-feedback"></div>
+      <div class="numpad">
+        <button class="np-btn" data-np="1">1</button>
+        <button class="np-btn" data-np="2">2</button>
+        <button class="np-btn" data-np="3">3</button>
+        <button class="np-btn" data-np="4">4</button>
+        <button class="np-btn" data-np="5">5</button>
+        <button class="np-btn" data-np="6">6</button>
+        <button class="np-btn" data-np="7">7</button>
+        <button class="np-btn" data-np="8">8</button>
+        <button class="np-btn" data-np="9">9</button>
+        <button class="np-btn np-del" data-np="del">⌫</button>
+        <button class="np-btn" data-np="0">0</button>
+        <button class="np-btn np-ok" id="prac-check">✓</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ DESAFÍO ═══ -->
+  <div id="tab-desafio" style="display:none">
+    <div id="challenge-card">
+      <div id="ch-score-row">
+        <div class="ch-stat time">⏱ <span id="ch-time">60</span>s</div>
+        <div class="ch-stat pts">⭐ <span id="ch-pts">0</span> pts</div>
+        <div class="ch-stat streak">🔥 <span id="ch-streak">0</span> seguidas</div>
+      </div>
+      <div id="timer-bar-wrap"><div id="timer-bar" style="width:100%"></div></div>
+      <div id="challenge-q">¡Toca Iniciar para comenzar!</div>
+      <div id="challenge-options" style="visibility:hidden">
+        <div class="ch-option" data-idx="0">—</div>
+        <div class="ch-option" data-idx="1">—</div>
+        <div class="ch-option" data-idx="2">—</div>
+        <div class="ch-option" data-idx="3">—</div>
+      </div>
+      <button id="challenge-start">🚀 Iniciar desafío (60 segundos)</button>
+    </div>
+  </div>
+
+</div><!-- /content -->
+</div><!-- /app -->
+
+<!-- result overlay -->
+<div id="result-overlay">
+  <div id="result-box">
+    <div id="result-emoji">🎉</div>
+    <div id="result-title">¡Tiempo!</div>
+    <div id="result-sub">Puntuación final</div>
+    <div id="result-score">0</div>
+    <div id="result-score-label">puntos en 60 segundos</div>
+    <button id="result-play-again">Jugar de nuevo</button>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════
+   HELPERS
+═══════════════════════════════ */
+function rand(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+
+/* ═══════════════════════════════
+   SCORE
+═══════════════════════════════ */
+let scoreRight = 0, scoreWrong = 0;
+function addScore(correct) {
+  if (correct) { scoreRight++; document.getElementById('sc-right').textContent = scoreRight; }
+  else         { scoreWrong++; document.getElementById('sc-wrong').textContent = scoreWrong; }
+}
+
+/* ═══════════════════════════════
+   NAV TABS
+═══════════════════════════════ */
+const TABS = ['x2','x5','practica','desafio'];
+document.querySelectorAll('.nav-tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const t = btn.dataset.tab;
+    document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    TABS.forEach(id => {
+      const el = document.getElementById('tab-' + id);
+      el.style.display = id === t ? 'flex' : 'none';
+    });
+    if (t === 'practica') genPractica();
+    if (t === 'desafio')  resetChallenge();
+  });
+});
+
+/* ═══════════════════════════════
+   BUILD DOT GRID visual
+   rows × dotsPerRow
+═══════════════════════════════ */
+function buildDotGrid(container, rows, dotsPerRow) {
+  container.innerHTML = '';
+  for (let r = 0; r < rows; r++) {
+    const rowEl = document.createElement('div');
+    rowEl.className = 'dot-row';
+    for (let d = 0; d < dotsPerRow; d++) {
+      const dot = document.createElement('div');
+      dot.className = 'dot';
+      rowEl.appendChild(dot);
+    }
+    const lbl = document.createElement('div');
+    lbl.className = 'dot-row-label';
+    lbl.textContent = `fila ${r + 1}`;
+    rowEl.appendChild(lbl);
+    container.appendChild(rowEl);
+  }
+}
+
+/* ═══════════════════════════════
+   BUILD TABLA (× 2 / × 5)
+═══════════════════════════════ */
+function buildTabla(containerId, multiplier) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+
+  let openIdx = -1;
+
+  for (let n = 1; n <= 10; n++) {
+    const result = n * multiplier;
+
+    // row wrapper
+    const wrap = document.createElement('div');
+
+    // clickable row
+    const row = document.createElement('div');
+    row.className = 'tabla-row';
+    row.dataset.n = n;
+
+    const eq = document.createElement('div');
+    eq.className = 'tabla-row-eq';
+    eq.textContent = `${n} × ${multiplier}`;
+
+    const res = document.createElement('div');
+    res.className = 'tabla-row-result';
+    res.textContent = `= ${result}`;
+
+    row.appendChild(eq);
+    row.appendChild(res);
+
+    // expand panel
+    const expand = document.createElement('div');
+    expand.className = 'tabla-expand';
+    expand.id = `expand-${multiplier}-${n}`;
+
+    const inner = document.createElement('div');
+    inner.className = 'tabla-expand-inner';
+    const lbl = document.createElement('div');
+    lbl.className = 'expand-label';
+    lbl.textContent = `${n} filas de ${multiplier} puntos = ${result}`;
+    const grid = document.createElement('div');
+    grid.className = 'dot-grid';
+    buildDotGrid(grid, n, multiplier);
+    inner.appendChild(lbl);
+    inner.appendChild(grid);
+    expand.appendChild(inner);
+
+    row.addEventListener('click', () => {
+      const isOpen = expand.classList.contains('open');
+      // close all
+      container.querySelectorAll('.tabla-expand').forEach(e => e.classList.remove('open'));
+      container.querySelectorAll('.tabla-row').forEach(r => r.classList.remove('active-row'));
+      if (!isOpen) {
+        expand.classList.add('open');
+        row.classList.add('active-row');
+      }
+    });
+
+    wrap.appendChild(row);
+    wrap.appendChild(expand);
+    container.appendChild(wrap);
+  }
+}
+
+buildTabla('tabla2-rows', 2);
+buildTabla('tabla5-rows', 5);
+
+/* ═══════════════════════════════
+   PRÁCTICA
+═══════════════════════════════ */
+let pracN = 3, pracMul = 2, pracAnswer = '', pracAnswered = false;
+
+function genPractica() {
+  pracAnswered = false;
+  pracAnswer = '';
+  pracMul = rand(0, 1) === 0 ? 2 : 5;
+  pracN = rand(1, 10);
+
+  document.getElementById('prac-eq').innerHTML =
+    `${pracN} <span class="q-sign">×</span> ${pracMul} = ?`;
+
+  // dot grid
+  buildDotGrid(document.getElementById('prac-dots'), pracN, pracMul);
+
+  const disp = document.getElementById('prac-display');
+  disp.textContent = '?';
+  disp.className = 'answer-display focused';
+
+  const fb = document.getElementById('prac-feedback');
+  fb.className = 'feedback-bar';
+
+  const btn = document.getElementById('prac-check');
+  btn.className = 'np-btn np-ok';
+  btn.textContent = '✓';
+}
+
+document.querySelectorAll('[data-np]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (pracAnswered) return;
+    const n = btn.dataset.np;
+    const disp = document.getElementById('prac-display');
+    if (n === 'del') {
+      pracAnswer = pracAnswer.slice(0, -1);
+      disp.textContent = pracAnswer || '?';
+    } else {
+      if (pracAnswer.length < 2) {
+        pracAnswer += n;
+        disp.textContent = pracAnswer;
+      }
+    }
+  });
+});
+
+document.getElementById('prac-check').addEventListener('click', () => {
+  if (pracAnswered) { genPractica(); return; }
+  if (!pracAnswer) return;
+  const userVal = parseInt(pracAnswer);
+  const correct = userVal === pracN * pracMul;
+  pracAnswered = true;
+  addScore(correct);
+  const disp = document.getElementById('prac-display');
+  disp.className = 'answer-display ' + (correct ? 'correct' : 'wrong');
+  const fb = document.getElementById('prac-feedback');
+  if (correct) {
+    fb.textContent = `¡Muy bien! ${pracN} × ${pracMul} = ${pracN * pracMul} 🎉`;
+    fb.className = 'feedback-bar correct';
+  } else {
+    fb.textContent = `La respuesta es ${pracN * pracMul}. ¡Mirá los puntos! 💪`;
+    fb.className = 'feedback-bar wrong';
+  }
+  const btn = document.getElementById('prac-check');
+  btn.className = 'np-btn np-next';
+  btn.textContent = 'Siguiente →';
+});
+
+/* ═══════════════════════════════
+   DESAFÍO
+═══════════════════════════════ */
+let chPts = 0, chStreak = 0, chTime = 60, chTimer = null;
+let chAnswer = 0, chRunning = false;
+
+function resetChallenge() {
+  chPts = 0; chStreak = 0; chTime = 60; chRunning = false;
+  clearInterval(chTimer);
+  document.getElementById('ch-time').textContent = 60;
+  document.getElementById('ch-pts').textContent = 0;
+  document.getElementById('ch-streak').textContent = 0;
+  document.getElementById('timer-bar').style.width = '100%';
+  document.getElementById('timer-bar').style.background = 'var(--tab-a)';
+  document.getElementById('challenge-options').style.visibility = 'hidden';
+  document.getElementById('challenge-q').textContent = '¡Toca Iniciar para comenzar!';
+  document.getElementById('challenge-start').style.display = 'block';
+}
+
+function startChallenge() {
+  chPts = 0; chStreak = 0; chTime = 60; chRunning = true;
+  document.getElementById('challenge-start').style.display = 'none';
+  document.getElementById('challenge-options').style.visibility = 'visible';
+  genChallengeQ();
+  chTimer = setInterval(() => {
+    chTime--;
+    document.getElementById('ch-time').textContent = chTime;
+    document.getElementById('timer-bar').style.width = (chTime / 60 * 100) + '%';
+    if (chTime <= 15) document.getElementById('timer-bar').style.background = '#DC2626';
+    else if (chTime <= 30) document.getElementById('timer-bar').style.background = '#D97706';
+    if (chTime <= 0) endChallenge();
+  }, 1000);
+}
+
+function genChallengeQ() {
+  const optEls = document.querySelectorAll('.ch-option');
+  optEls.forEach(o => { o.className = 'ch-option'; o.style.pointerEvents = ''; });
+
+  const mul = rand(0, 1) === 0 ? 2 : 5;
+  const n = rand(1, 10);
+  const correct = n * mul;
+  chAnswer = correct;
+
+  document.getElementById('challenge-q').textContent = `${n} × ${mul} = ?`;
+
+  // generate plausible distractors from both tables
+  const allAnswers = [];
+  for (let i = 1; i <= 10; i++) { allAnswers.push(i * 2); allAnswers.push(i * 5); }
+  const opts = shuffleWithCorrect(correct, allAnswers, 4);
+  optEls.forEach((el, i) => {
+    el.textContent = opts[i];
+    el.dataset.val = opts[i];
+  });
+}
+
+function shuffleWithCorrect(correct, pool, count) {
+  const set = new Set([correct]);
+  const shuffled = pool.sort(() => Math.random() - 0.5);
+  for (const v of shuffled) {
+    if (set.size >= count) break;
+    if (v !== correct) set.add(v);
+  }
+  // fallback: pad with adjacent numbers
+  let pad = correct + 1;
+  while (set.size < count) { set.add(pad++); }
+  return [...set].sort(() => Math.random() - 0.5);
+}
+
+document.querySelectorAll('.ch-option').forEach(el => {
+  el.addEventListener('click', () => {
+    if (!chRunning) return;
+    const val = parseInt(el.dataset.val);
+    const correct = val === chAnswer;
+    el.className = 'ch-option ' + (correct ? 'correct' : 'wrong');
+    if (!correct) {
+      document.querySelectorAll('.ch-option').forEach(o => {
+        if (parseInt(o.dataset.val) === chAnswer) o.className = 'ch-option correct';
+      });
+    }
+    document.querySelectorAll('.ch-option').forEach(o => o.style.pointerEvents = 'none');
+    if (correct) { chPts += 10 + chStreak * 2; chStreak++; }
+    else { chStreak = 0; chPts = Math.max(0, chPts - 2); }
+    document.getElementById('ch-pts').textContent = chPts;
+    document.getElementById('ch-streak').textContent = chStreak;
+    addScore(correct);
+    setTimeout(genChallengeQ, 650);
+  });
+});
+
+document.getElementById('challenge-start').addEventListener('click', startChallenge);
+
+function endChallenge() {
+  chRunning = false; clearInterval(chTimer);
+  document.getElementById('timer-bar').style.width = '0%';
+  document.getElementById('ch-time').textContent = 0;
+  const emoji = chPts >= 100 ? '🏆' : chPts >= 60 ? '🎉' : chPts >= 30 ? '👍' : '💪';
+  const title = chPts >= 100 ? '¡Increíble!' : chPts >= 60 ? '¡Excelente!' : chPts >= 30 ? '¡Bien hecho!' : '¡Sigue practicando!';
+  document.getElementById('result-emoji').textContent = emoji;
+  document.getElementById('result-title').textContent = title;
+  document.getElementById('result-score').textContent = chPts;
+  document.getElementById('result-overlay').classList.add('show');
+}
+
+document.getElementById('result-play-again').addEventListener('click', () => {
+  document.getElementById('result-overlay').classList.remove('show');
+  resetChallenge();
+});
+
+/* ═══════════════════════════════
+   INIT
+═══════════════════════════════ */
+genPractica();
+</script>
+</body>
+</html>

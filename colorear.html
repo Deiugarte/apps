@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Colorear</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #FDF2F8;
+  --surface: #FFFFFF;
+  --col-a: #EC4899;
+  --col-bg: #FDF2F8;
+  --col-light: #FBCFE8;
+  --text: #1E293B;
+  --text-light: #64748B;
+  --border: rgba(0,0,0,0.08);
+  --shadow: 0 2px 12px rgba(0,0,0,0.06);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.10);
+  --radius: 16px;
+  --radius-sm: 10px;
+}
+
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  font-family: 'Nunito', sans-serif;
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  touch-action: manipulation;
+}
+
+#app { display: flex; flex-direction: column; height: 100vh; width: 100vw; }
+
+/* ── NAV ── */
+#nav {
+  display: flex; align-items: center;
+  padding: 0 12px; height: 56px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  gap: 6px; flex-shrink: 0;
+  overflow-x: auto; -webkit-overflow-scrolling: touch;
+}
+#nav-title {
+  font-family: 'Baloo 2', cursive;
+  font-size: 20px; font-weight: 800;
+  color: var(--col-a);
+  margin-right: 6px; white-space: nowrap; flex-shrink: 0;
+}
+.nav-tab {
+  padding: 6px 12px; border-radius: 20px;
+  border: 2px solid transparent;
+  font-size: 13px; font-weight: 700;
+  cursor: pointer; transition: all .15s;
+  white-space: nowrap; user-select: none;
+  background: transparent; color: var(--text-light);
+  font-family: 'Nunito', sans-serif; flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+.nav-tab.active { background: var(--text); color: white; border-color: var(--text); }
+.home-btn {
+  display: flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; border-radius: 10px;
+  background: var(--bg); border: 1.5px solid var(--border);
+  text-decoration: none; font-size: 18px; flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+.home-btn:active { opacity: .7; }
+
+/* ── CONTENT (middle area) ── */
+#content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ── SVG AREA ── */
+#svg-area {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 8px;
+}
+
+.scene {
+  display: none;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+}
+.scene.active {
+  display: flex;
+}
+
+.scene svg {
+  width: 100%;
+  height: 100%;
+  max-width: 500px;
+  max-height: calc(100vh - 180px);
+  object-fit: contain;
+}
+
+/* ── PALETTE ── */
+#palette-bar {
+  flex-shrink: 0;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  justify-content: center;
+}
+
+.color-btn {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: transform .1s;
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+.color-btn:active { transform: scale(.88); }
+.color-btn.selected {
+  border-color: var(--text);
+  transform: scale(1.18);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+.color-btn[data-color="#FFFFFF"] {
+  border-color: #CBD5E1;
+}
+.color-btn[data-color="#FFFFFF"].selected {
+  border-color: var(--text);
+}
+
+.erase-btn {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border);
+  background: var(--bg);
+  cursor: pointer;
+  flex-shrink: 0;
+  font-size: 18px;
+  display: flex; align-items: center; justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+}
+.erase-btn:active { opacity: .7; }
+
+/* coloreable regions */
+.coloreable {
+  cursor: pointer;
+  transition: opacity .1s;
+}
+.coloreable:active { opacity: .75; }
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ── NAV ── -->
+<div id="nav">
+  <a href="index.html" class="home-btn">🏠</a>
+  <span id="nav-title">🎨 Colorear</span>
+  <button class="nav-tab active" data-tab="sol">Sol</button>
+  <button class="nav-tab" data-tab="casa">Casa</button>
+  <button class="nav-tab" data-tab="mariposa">Mariposa</button>
+  <button class="nav-tab" data-tab="pez">Pez</button>
+</div>
+
+<!-- ── CONTENT ── -->
+<div id="content">
+  <div id="svg-area">
+
+    <!-- SOL -->
+    <div class="scene active" id="scene-sol">
+      <svg viewBox="0 0 400 350" xmlns="http://www.w3.org/2000/svg">
+        <rect id="cielo" class="coloreable" x="0" y="0" width="400" height="350" fill="#DBEAFE"/>
+        <ellipse id="nube" class="coloreable" cx="300" cy="60" rx="50" ry="30" fill="#E2E8F0"/>
+        <rect id="rayo-0" class="coloreable" x="193" y="70" width="14" height="60" rx="7" transform="rotate(0 200 175)" fill="#E2E8F0"/>
+        <rect id="rayo-1" class="coloreable" x="193" y="70" width="14" height="60" rx="7" transform="rotate(45 200 175)" fill="#E2E8F0"/>
+        <rect id="rayo-2" class="coloreable" x="193" y="70" width="14" height="60" rx="7" transform="rotate(90 200 175)" fill="#E2E8F0"/>
+        <rect id="rayo-3" class="coloreable" x="193" y="70" width="14" height="60" rx="7" transform="rotate(135 200 175)" fill="#E2E8F0"/>
+        <rect id="rayo-4" class="coloreable" x="193" y="70" width="14" height="60" rx="7" transform="rotate(180 200 175)" fill="#E2E8F0"/>
+        <rect id="rayo-5" class="coloreable" x="193" y="70" width="14" height="60" rx="7" transform="rotate(225 200 175)" fill="#E2E8F0"/>
+        <rect id="rayo-6" class="coloreable" x="193" y="70" width="14" height="60" rx="7" transform="rotate(270 200 175)" fill="#E2E8F0"/>
+        <rect id="rayo-7" class="coloreable" x="193" y="70" width="14" height="60" rx="7" transform="rotate(315 200 175)" fill="#E2E8F0"/>
+        <circle id="sol-cuerpo" class="coloreable" cx="200" cy="175" r="70" fill="#E2E8F0"/>
+      </svg>
+    </div>
+
+    <!-- CASA -->
+    <div class="scene" id="scene-casa">
+      <svg viewBox="0 0 400 350" xmlns="http://www.w3.org/2000/svg">
+        <rect id="casa-cielo" class="coloreable" x="0" y="0" width="400" height="350" fill="#DBEAFE"/>
+        <rect id="suelo" class="coloreable" x="0" y="280" width="400" height="70" fill="#E2E8F0"/>
+        <rect id="chimenea" class="coloreable" x="250" y="60" width="35" height="60" fill="#E2E8F0"/>
+        <polygon id="techo" class="coloreable" points="60,160 200,60 340,160" fill="#E2E8F0"/>
+        <rect id="paredes" class="coloreable" x="80" y="150" width="240" height="170" fill="#E2E8F0"/>
+        <rect id="ventana1" class="coloreable" x="95" y="175" width="60" height="55" rx="6" fill="#E2E8F0"/>
+        <rect id="ventana2" class="coloreable" x="245" y="175" width="60" height="55" rx="6" fill="#E2E8F0"/>
+        <rect id="puerta" class="coloreable" x="160" y="230" width="80" height="100" rx="6" fill="#E2E8F0"/>
+      </svg>
+    </div>
+
+    <!-- MARIPOSA -->
+    <div class="scene" id="scene-mariposa">
+      <svg viewBox="0 0 400 350" xmlns="http://www.w3.org/2000/svg">
+        <rect id="mp-fondo" class="coloreable" x="0" y="0" width="400" height="350" fill="#F0FDF4"/>
+        <ellipse id="ala-si" class="coloreable" cx="130" cy="130" rx="70" ry="55" fill="#E2E8F0"/>
+        <ellipse id="ala-sd" class="coloreable" cx="270" cy="130" rx="70" ry="55" fill="#E2E8F0"/>
+        <ellipse id="ala-ii" class="coloreable" cx="145" cy="220" rx="50" ry="40" fill="#E2E8F0"/>
+        <ellipse id="ala-id" class="coloreable" cx="255" cy="220" rx="50" ry="40" fill="#E2E8F0"/>
+        <ellipse id="cuerpo-mp" class="coloreable" cx="200" cy="175" rx="15" ry="60" fill="#E2E8F0"/>
+        <circle id="cabeza-mp" class="coloreable" cx="200" cy="108" r="15" fill="#E2E8F0"/>
+        <!-- antenas (no coloreables) -->
+        <line x1="193" y1="96" x2="170" y2="70" stroke="#1E293B" stroke-width="2.5" stroke-linecap="round"/>
+        <circle cx="168" cy="68" r="4" fill="#1E293B"/>
+        <line x1="207" y1="96" x2="230" y2="70" stroke="#1E293B" stroke-width="2.5" stroke-linecap="round"/>
+        <circle cx="232" cy="68" r="4" fill="#1E293B"/>
+      </svg>
+    </div>
+
+    <!-- PEZ -->
+    <div class="scene" id="scene-pez">
+      <svg viewBox="0 0 400 350" xmlns="http://www.w3.org/2000/svg">
+        <rect id="agua" class="coloreable" x="0" y="0" width="400" height="350" fill="#DBEAFE"/>
+        <circle id="burbuja1" class="coloreable" cx="50" cy="100" r="20" fill="#E2E8F0" opacity="0.8"/>
+        <circle id="burbuja2" class="coloreable" cx="30" cy="55" r="12" fill="#E2E8F0" opacity="0.8"/>
+        <polygon id="pez-cola" class="coloreable" points="310,120 370,175 310,230" fill="#E2E8F0"/>
+        <ellipse id="pez-cuerpo" class="coloreable" cx="190" cy="175" rx="110" ry="70" fill="#E2E8F0"/>
+        <polygon id="aleta-d" class="coloreable" points="150,105 200,65 250,105" fill="#E2E8F0"/>
+        <polygon id="aleta-v" class="coloreable" points="150,240 200,275 220,240" fill="#E2E8F0"/>
+        <!-- ojo (no coloreable) -->
+        <circle id="pez-ojo" cx="110" cy="160" r="18" fill="white" stroke="#1E293B" stroke-width="2"/>
+        <circle cx="113" cy="158" r="9" fill="#1E293B"/>
+        <circle cx="116" cy="155" r="3" fill="white"/>
+      </svg>
+    </div>
+
+  </div><!-- /svg-area -->
+
+  <!-- ── PALETTE ── -->
+  <div id="palette-bar">
+    <button class="erase-btn" id="erase-btn" title="Borrar">🗑️</button>
+    <button class="color-btn selected" data-color="#EF4444" style="background:#EF4444"></button>
+    <button class="color-btn" data-color="#F97316" style="background:#F97316"></button>
+    <button class="color-btn" data-color="#EAB308" style="background:#EAB308"></button>
+    <button class="color-btn" data-color="#22C55E" style="background:#22C55E"></button>
+    <button class="color-btn" data-color="#3B82F6" style="background:#3B82F6"></button>
+    <button class="color-btn" data-color="#A855F7" style="background:#A855F7"></button>
+    <button class="color-btn" data-color="#EC4899" style="background:#EC4899"></button>
+    <button class="color-btn" data-color="#92400E" style="background:#92400E"></button>
+    <button class="color-btn" data-color="#1E293B" style="background:#1E293B"></button>
+    <button class="color-btn" data-color="#FFFFFF" style="background:#FFFFFF"></button>
+  </div>
+
+</div><!-- /content -->
+</div><!-- /app -->
+
+<script>
+/* ═══════════════════════════
+   STATE
+═══════════════════════════ */
+let selectedColor = '#EF4444';
+
+/* Default fills per element id (used for reset) */
+const DEFAULTS = {
+  // sol
+  'cielo': '#DBEAFE',
+  'nube': '#E2E8F0',
+  'sol-cuerpo': '#E2E8F0',
+  'rayo-0': '#E2E8F0', 'rayo-1': '#E2E8F0', 'rayo-2': '#E2E8F0', 'rayo-3': '#E2E8F0',
+  'rayo-4': '#E2E8F0', 'rayo-5': '#E2E8F0', 'rayo-6': '#E2E8F0', 'rayo-7': '#E2E8F0',
+  // casa
+  'casa-cielo': '#DBEAFE', 'suelo': '#E2E8F0', 'chimenea': '#E2E8F0',
+  'techo': '#E2E8F0', 'paredes': '#E2E8F0', 'ventana1': '#E2E8F0',
+  'ventana2': '#E2E8F0', 'puerta': '#E2E8F0',
+  // mariposa
+  'mp-fondo': '#F0FDF4', 'ala-si': '#E2E8F0', 'ala-sd': '#E2E8F0',
+  'ala-ii': '#E2E8F0', 'ala-id': '#E2E8F0', 'cuerpo-mp': '#E2E8F0',
+  'cabeza-mp': '#E2E8F0',
+  // pez
+  'agua': '#DBEAFE', 'burbuja1': '#E2E8F0', 'burbuja2': '#E2E8F0',
+  'pez-cola': '#E2E8F0', 'pez-cuerpo': '#E2E8F0', 'aleta-d': '#E2E8F0',
+  'aleta-v': '#E2E8F0',
+};
+
+/* ═══════════════════════════
+   PALETTE
+═══════════════════════════ */
+document.querySelectorAll('.color-btn').forEach(btn => {
+  btn.addEventListener('pointerdown', () => {
+    document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    selectedColor = btn.dataset.color;
+  });
+});
+
+/* ═══════════════════════════
+   COLOREAR
+═══════════════════════════ */
+document.querySelectorAll('.coloreable').forEach(el => {
+  el.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    el.style.fill = selectedColor;
+  });
+});
+
+/* ═══════════════════════════
+   BORRAR (reset)
+═══════════════════════════ */
+document.getElementById('erase-btn').addEventListener('click', () => {
+  document.querySelectorAll('.coloreable').forEach(el => {
+    if (DEFAULTS[el.id]) {
+      el.style.fill = DEFAULTS[el.id];
+    }
+  });
+});
+
+/* ═══════════════════════════
+   NAV TABS
+═══════════════════════════ */
+const TABS = ['sol', 'casa', 'mariposa', 'pez'];
+
+document.querySelectorAll('.nav-tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const t = btn.dataset.tab;
+    document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    TABS.forEach(id => {
+      const scene = document.getElementById('scene-' + id);
+      if (scene) {
+        if (id === t) scene.classList.add('active');
+        else scene.classList.remove('active');
+      }
+    });
+  });
+});
+</script>
+</body>
+</html>

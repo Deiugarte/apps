@@ -22,6 +22,24 @@
   --sil-a: #EA580C;
   --sil-b: #FED7AA;
   --sil-bg: #FFF7ED;
+  --sr-a: #7C3AED;
+  --sr-b: #DDD6FE;
+  --sr-bg: #F5F3FF;
+  --tab-a: #0891B2;
+  --tab-b: #A5F3FC;
+  --tab-bg: #ECFEFF;
+  --mem-a: #16A34A;
+  --mem-b: #86EFAC;
+  --mem-bg: #F0FDF4;
+  --col-a: #EC4899;
+  --col-b: #FBCFE8;
+  --col-bg: #FDF2F8;
+  --seq-a: #F59E0B;
+  --seq-b: #FDE68A;
+  --seq-bg: #FFFBEB;
+  --ch-a: #0D9488;
+  --ch-b: #99F6E4;
+  --ch-bg: #F0FDFA;
   --text: #1a1a2e;
   --muted: #64748B;
   --bg: #F8F7F4;
@@ -125,6 +143,12 @@ html, body {
 .card-icon.cal { background: var(--cal-bg); }
 .card-icon.num { background: var(--num-bg); }
 .card-icon.sil { background: var(--sil-bg); }
+.card-icon.sr  { background: var(--sr-bg); }
+.card-icon.tab { background: var(--tab-bg); }
+.card-icon.mem { background: var(--mem-bg); }
+.card-icon.col { background: var(--col-bg); }
+.card-icon.seq { background: var(--seq-bg); }
+.card-icon.ch  { background: var(--ch-bg); }
 
 .card-info { flex: 1; }
 
@@ -142,6 +166,12 @@ html, body {
 .card-tag.cal { background: var(--cal-bg); color: var(--cal-a); }
 .card-tag.num { background: var(--num-bg); color: var(--num-a); }
 .card-tag.sil { background: var(--sil-bg); color: var(--sil-a); }
+.card-tag.sr  { background: var(--sr-bg);  color: var(--sr-a);  }
+.card-tag.tab { background: var(--tab-bg); color: var(--tab-a); }
+.card-tag.mem { background: var(--mem-bg); color: var(--mem-a); }
+.card-tag.col { background: var(--col-bg); color: var(--col-a); }
+.card-tag.seq { background: var(--seq-bg); color: var(--seq-a); }
+.card-tag.ch  { background: var(--ch-bg);  color: var(--ch-a);  }
 
 .card-title {
   font-size: 20px;
@@ -179,6 +209,12 @@ html, body {
 .feat-pill.num-f { background: var(--num-bg); color: var(--num-a); border-color: var(--num-b); }
 .feat-pill.dec-f { background: var(--dec-bg); color: var(--dec-a); border-color: #F4C0D1; }
 .feat-pill.sil-f { background: var(--sil-bg); color: var(--sil-a); border-color: var(--sil-b); }
+.feat-pill.sr-f  { background: var(--sr-bg);  color: var(--sr-a);  border-color: var(--sr-b);  }
+.feat-pill.tab-f { background: var(--tab-bg); color: var(--tab-a); border-color: var(--tab-b); }
+.feat-pill.mem-f { background: var(--mem-bg); color: var(--mem-a); border-color: var(--mem-b); }
+.feat-pill.col-f { background: var(--col-bg); color: var(--col-a); border-color: var(--col-b); }
+.feat-pill.seq-f { background: var(--seq-bg); color: var(--seq-a); border-color: var(--seq-b); }
+.feat-pill.ch-f  { background: var(--ch-bg);  color: var(--ch-a);  border-color: var(--ch-b);  }
 
 /* cta button */
 .card-btn {
@@ -194,6 +230,12 @@ html, body {
 .card-btn.cal { background: var(--cal-a); color: #EEEDFE; }
 .card-btn.num { background: var(--num-a); color: #E6F1FB; }
 .card-btn.sil { background: var(--sil-a); color: #FFF7ED; }
+.card-btn.sr  { background: var(--sr-a);  color: #F5F3FF; }
+.card-btn.tab { background: var(--tab-a); color: #ECFEFF; }
+.card-btn.mem { background: var(--mem-a); color: #F0FDF4; }
+.card-btn.col { background: var(--col-a); color: #FDF2F8; }
+.card-btn.seq { background: var(--seq-a); color: #FFFBEB; }
+.card-btn.ch  { background: var(--ch-a);  color: #F0FDFA; }
 
 .btn-arrow {
   font-size: 18px;
@@ -325,6 +367,139 @@ html, body {
       </div>
       <div class="card-btn num">
         <span>Abrir Matemáticas</span>
+        <span class="btn-arrow">→</span>
+      </div>
+    </a>
+
+    <!-- Suma y Resta -->
+    <a class="app-card" href="suma-resta.html">
+      <div class="card-top">
+        <div class="card-icon sr">➕</div>
+        <div class="card-info">
+          <span class="card-tag sr">Matemáticas</span>
+          <div class="card-title">Suma y Resta</div>
+          <div class="card-desc">Suma y resta hasta 20 con bloques visuales de colores y desafío contrarreloj.</div>
+        </div>
+      </div>
+      <div class="features">
+        <span class="feat-pill sr-f">Hasta 20</span>
+        <span class="feat-pill sr-f">Visual</span>
+        <span class="feat-pill">Suma</span>
+        <span class="feat-pill">Resta</span>
+        <span class="feat-pill">Desafío 60s</span>
+      </div>
+      <div class="card-btn sr">
+        <span>Abrir Suma y Resta</span>
+        <span class="btn-arrow">→</span>
+      </div>
+    </a>
+
+    <!-- Tablas -->
+    <a class="app-card" href="tablas.html">
+      <div class="card-top">
+        <div class="card-icon tab">✖️</div>
+        <div class="card-info">
+          <span class="card-tag tab">Matemáticas</span>
+          <div class="card-title">Tablas × 2 y × 5</div>
+          <div class="card-desc">Aprende las tablas del 2 y del 5 con arrays visuales de puntos y práctica interactiva.</div>
+        </div>
+      </div>
+      <div class="features">
+        <span class="feat-pill tab-f">× 2</span>
+        <span class="feat-pill tab-f">× 5</span>
+        <span class="feat-pill">Arrays visuales</span>
+        <span class="feat-pill">Desafío 60s</span>
+      </div>
+      <div class="card-btn tab">
+        <span>Abrir Tablas</span>
+        <span class="btn-arrow">→</span>
+      </div>
+    </a>
+
+    <!-- Memoria -->
+    <a class="app-card" href="memoria.html">
+      <div class="card-top">
+        <div class="card-icon mem">🃏</div>
+        <div class="card-info">
+          <span class="card-tag mem">Juego</span>
+          <div class="card-title">Memoria de Cartas</div>
+          <div class="card-desc">Encontrá los 8 pares de emojis animales en la grilla 4×4. ¡Probá batir tu propio récord!</div>
+        </div>
+      </div>
+      <div class="features">
+        <span class="feat-pill mem-f">8 pares</span>
+        <span class="feat-pill mem-f">Animales</span>
+        <span class="feat-pill">Flip animado</span>
+        <span class="feat-pill">Cronómetro</span>
+      </div>
+      <div class="card-btn mem">
+        <span>Abrir Memoria</span>
+        <span class="btn-arrow">→</span>
+      </div>
+    </a>
+
+    <!-- Colorear -->
+    <a class="app-card" href="colorear.html">
+      <div class="card-top">
+        <div class="card-icon col">🎨</div>
+        <div class="card-info">
+          <span class="card-tag col">Arte</span>
+          <div class="card-title">Colorear</div>
+          <div class="card-desc">Pintá figuras SVG con los dedos: un sol, una casa, una mariposa y un pez con 10 colores.</div>
+        </div>
+      </div>
+      <div class="features">
+        <span class="feat-pill col-f">4 escenas</span>
+        <span class="feat-pill col-f">10 colores</span>
+        <span class="feat-pill">Touch</span>
+        <span class="feat-pill">SVG</span>
+      </div>
+      <div class="card-btn col">
+        <span>Abrir Colorear</span>
+        <span class="btn-arrow">→</span>
+      </div>
+    </a>
+
+    <!-- Secuencias -->
+    <a class="app-card" href="secuencias.html">
+      <div class="card-top">
+        <div class="card-icon seq">🔢</div>
+        <div class="card-info">
+          <span class="card-tag seq">Lógica</span>
+          <div class="card-title">Secuencias</div>
+          <div class="card-desc">Completá patrones de figuras, números y emojis. ¿Qué sigue en la serie?</div>
+        </div>
+      </div>
+      <div class="features">
+        <span class="feat-pill seq-f">Figuras</span>
+        <span class="feat-pill seq-f">Números</span>
+        <span class="feat-pill">Emojis</span>
+        <span class="feat-pill">Desafío 60s</span>
+      </div>
+      <div class="card-btn seq">
+        <span>Abrir Secuencias</span>
+        <span class="btn-arrow">→</span>
+      </div>
+    </a>
+
+    <!-- Cuerpo Humano -->
+    <a class="app-card" href="cuerpo-humano.html">
+      <div class="card-top">
+        <div class="card-icon ch">🫀</div>
+        <div class="card-info">
+          <span class="card-tag ch">Ciencias</span>
+          <div class="card-title">Cuerpo Humano</div>
+          <div class="card-desc">Tocá cada parte del cuerpo para aprender su nombre y función. ¡Después ponete a prueba!</div>
+        </div>
+      </div>
+      <div class="features">
+        <span class="feat-pill ch-f">Aprender</span>
+        <span class="feat-pill ch-f">Quiz</span>
+        <span class="feat-pill">17 partes</span>
+        <span class="feat-pill">SVG interactivo</span>
+      </div>
+      <div class="card-btn ch">
+        <span>Abrir Cuerpo Humano</span>
         <span class="btn-arrow">→</span>
       </div>
     </a>

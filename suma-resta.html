@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Suma y Resta</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #F5F3FF;
+  --surface: #FFFFFF;
+  --sr-a: #7C3AED;
+  --sr-bg: #F5F3FF;
+  --sr-light: #DDD6FE;
+  --sr-mid: #C4B5FD;
+  --blue: #2563EB;
+  --blue-light: #DBEAFE;
+  --correct: #16A34A;
+  --correct-bg: #DCFCE7;
+  --wrong: #DC2626;
+  --wrong-bg: #FEE2E2;
+  --text: #1E293B;
+  --text-light: #64748B;
+  --border: rgba(0,0,0,0.08);
+  --shadow: 0 2px 12px rgba(0,0,0,0.06);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.10);
+  --radius: 16px;
+  --radius-sm: 10px;
+}
+
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  font-family: 'Nunito', sans-serif;
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  touch-action: manipulation;
+}
+
+#app { display: flex; flex-direction: column; height: 100vh; width: 100vw; }
+
+/* ── NAV ── */
+#nav {
+  display: flex; align-items: center;
+  padding: 0 12px; height: 56px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  gap: 6px; flex-shrink: 0;
+  overflow-x: auto; -webkit-overflow-scrolling: touch;
+}
+.home-btn {
+  display: flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; border-radius: 10px;
+  background: var(--bg); border: 1.5px solid var(--border);
+  text-decoration: none; font-size: 18px; flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+.home-btn:active { opacity: .7; }
+#nav-title {
+  font-family: 'Baloo 2', cursive;
+  font-size: 19px; font-weight: 800;
+  color: var(--sr-a);
+  margin-right: 4px; white-space: nowrap; flex-shrink: 0;
+}
+.nav-tab {
+  padding: 6px 12px; border-radius: 20px;
+  border: 2px solid transparent;
+  font-size: 13px; font-weight: 700;
+  cursor: pointer; transition: all .15s;
+  white-space: nowrap; user-select: none;
+  background: transparent; color: var(--text-light);
+  font-family: 'Nunito', sans-serif; flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+.nav-tab.active { background: var(--text); color: white; border-color: var(--text); }
+#score-area {
+  margin-left: auto; display: flex; align-items: center; gap: 6px; flex-shrink: 0;
+}
+.score-chip {
+  display: flex; align-items: center; gap: 4px;
+  padding: 4px 10px; border-radius: 20px;
+  font-size: 13px; font-weight: 800;
+}
+.score-chip.right { background: var(--correct-bg); color: var(--correct); }
+.score-chip.wrong { background: var(--wrong-bg); color: var(--wrong); }
+
+/* ── CONTENT ── */
+#content {
+  flex: 1; overflow-y: auto; overflow-x: hidden;
+  padding: 20px 16px 40px;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ════════════════════════
+   APRENDER
+════════════════════════ */
+#tab-aprender { display: flex; flex-direction: column; gap: 16px; }
+
+.learn-card {
+  background: var(--surface); border-radius: var(--radius);
+  padding: 20px; box-shadow: var(--shadow);
+}
+.learn-card h2 {
+  font-family: 'Baloo 2', cursive;
+  font-size: 18px; font-weight: 800; margin-bottom: 14px;
+  color: var(--text);
+}
+
+/* operation display */
+.op-display {
+  display: flex; align-items: center; justify-content: center;
+  gap: 10px; flex-wrap: wrap; margin-bottom: 16px;
+}
+.op-num {
+  font-family: 'Baloo 2', cursive; font-size: 40px; font-weight: 900;
+  color: var(--text);
+}
+.op-sign {
+  font-family: 'Baloo 2', cursive; font-size: 32px; font-weight: 800;
+  color: var(--text-light);
+}
+.op-result {
+  font-family: 'Baloo 2', cursive; font-size: 44px; font-weight: 900;
+  color: var(--sr-a);
+}
+
+/* circles visual */
+.circles-wrap {
+  display: flex; align-items: flex-start; gap: 16px;
+  flex-wrap: wrap; padding: 12px 0; margin-bottom: 12px;
+}
+.circles-group { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.circles-label { font-size: 12px; font-weight: 700; color: var(--text-light); text-transform: uppercase; letter-spacing: .04em; }
+.circles-row { display: flex; flex-wrap: wrap; gap: 5px; max-width: 200px; }
+.circle {
+  width: 26px; height: 26px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+}
+.circle.purple { background: var(--sr-a); }
+.circle.blue   { background: var(--blue); }
+.circle.crossed {
+  background: var(--sr-light);
+  border: 2px solid var(--sr-mid);
+  opacity: 0.35;
+  position: relative;
+}
+.circle.crossed::after {
+  content: '✕';
+  position: absolute;
+  font-size: 14px;
+  font-weight: 900;
+  color: var(--sr-a);
+  opacity: 1;
+  line-height: 1;
+}
+.circles-plus {
+  font-family: 'Baloo 2', cursive; font-size: 28px; font-weight: 800;
+  color: var(--text-light); padding-top: 20px;
+}
+
+.learn-tip {
+  font-size: 14px; color: var(--text-light); font-weight: 600; line-height: 1.6;
+  background: var(--sr-bg); border-radius: var(--radius-sm);
+  padding: 12px 14px; border: 1.5px solid var(--sr-light);
+}
+
+/* ════════════════════════
+   SUMA / RESTA tabs
+════════════════════════ */
+#tab-suma, #tab-resta { display: flex; flex-direction: column; }
+
+.ex-card {
+  background: var(--surface); border-radius: var(--radius);
+  padding: 24px 20px 20px; box-shadow: var(--shadow-lg);
+  display: flex; flex-direction: column; gap: 16px;
+}
+
+.question-label {
+  font-size: 13px; font-weight: 700; color: var(--text-light);
+  text-transform: uppercase; letter-spacing: .06em; text-align: center;
+}
+.question-eq {
+  font-family: 'Baloo 2', cursive; font-size: 56px; font-weight: 900;
+  text-align: center; line-height: 1; color: var(--text);
+}
+.question-eq .q-sign { color: var(--sr-a); }
+
+/* circles in exercise */
+.ex-circles-area {
+  display: flex; gap: 14px; align-items: flex-start; flex-wrap: wrap;
+  background: var(--bg); border-radius: 12px; padding: 12px;
+  justify-content: center; min-height: 60px;
+}
+
+/* answer display */
+.answer-display {
+  height: 60px;
+  border-radius: 14px;
+  border: 2.5px solid var(--border);
+  background: var(--bg);
+  font-family: 'Baloo 2', cursive;
+  font-size: 36px; font-weight: 900;
+  text-align: center; line-height: 60px;
+  color: var(--text); letter-spacing: 4px;
+  transition: border-color .15s, background .15s;
+}
+.answer-display.focused { border-color: var(--sr-a); background: white; }
+.answer-display.correct { border-color: var(--correct); background: var(--correct-bg); color: var(--correct); }
+.answer-display.wrong   { border-color: var(--wrong);   background: var(--wrong-bg);   color: var(--wrong); }
+
+/* numpad */
+.numpad {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+}
+.np-btn {
+  height: 54px; border-radius: 12px;
+  border: 2px solid var(--border); background: white;
+  font-family: 'Baloo 2', cursive;
+  font-size: 22px; font-weight: 800;
+  cursor: pointer; color: var(--text);
+  user-select: none; -webkit-tap-highlight-color: transparent;
+  transition: transform .1s, background .1s;
+}
+.np-btn:active { transform: scale(.93); background: var(--bg); }
+.np-btn.np-del { font-size: 18px; color: var(--text-light); }
+.np-btn.np-ok  { background: var(--sr-a); color: white; border-color: var(--sr-a); font-size: 16px; }
+.np-btn.np-next { background: var(--blue); color: white; border-color: var(--blue); font-size: 14px; }
+
+.feedback-bar {
+  padding: 12px 16px; border-radius: 12px;
+  font-size: 15px; font-weight: 800;
+  text-align: center; display: none;
+}
+.feedback-bar.correct { background: var(--correct-bg); color: var(--correct); display: block; }
+.feedback-bar.wrong   { background: var(--wrong-bg);   color: var(--wrong);   display: block; }
+
+/* ════════════════════════
+   DESAFÍO
+════════════════════════ */
+#tab-desafio { display: flex; flex-direction: column; gap: 16px; }
+#challenge-card {
+  background: var(--surface); border-radius: var(--radius);
+  padding: 20px; box-shadow: var(--shadow-lg);
+  display: flex; flex-direction: column; gap: 14px;
+}
+#ch-score-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.ch-stat { padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 800; }
+.ch-stat.time   { background: var(--sr-bg); color: var(--sr-a); }
+.ch-stat.pts    { background: var(--blue-light); color: var(--blue); }
+.ch-stat.streak { background: #FEF9C3; color: #854D0E; }
+#timer-bar-wrap { height: 8px; background: var(--bg); border-radius: 4px; overflow: hidden; }
+#timer-bar { height: 100%; background: var(--sr-a); border-radius: 4px; transition: width .1s linear; }
+#challenge-q {
+  text-align: center;
+  font-family: 'Baloo 2', cursive; font-size: 28px; font-weight: 800;
+  min-height: 56px; display: flex; align-items: center; justify-content: center;
+  color: var(--text);
+}
+#challenge-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.ch-option {
+  padding: 18px 12px; border-radius: 14px;
+  border: 2.5px solid var(--border); background: white;
+  font-family: 'Baloo 2', cursive; font-size: 24px; font-weight: 800;
+  cursor: pointer; text-align: center;
+  transition: transform .1s; color: var(--text);
+  user-select: none; -webkit-tap-highlight-color: transparent;
+}
+.ch-option:active { transform: scale(.96); }
+.ch-option.correct { background: var(--correct-bg); border-color: var(--correct); color: var(--correct); }
+.ch-option.wrong   { background: var(--wrong-bg);   border-color: var(--wrong);   color: var(--wrong); }
+#challenge-start {
+  padding: 14px; border-radius: 14px; border: none;
+  background: var(--sr-a); color: white;
+  font-family: 'Nunito', sans-serif; font-size: 17px; font-weight: 800;
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
+}
+#challenge-start:active { opacity: .85; }
+
+/* result overlay */
+#result-overlay {
+  display: none; position: fixed; inset: 0; z-index: 100;
+  background: rgba(0,0,0,0.4); align-items: center; justify-content: center;
+}
+#result-overlay.show { display: flex; }
+#result-box {
+  background: white; border-radius: 24px; padding: 32px 28px;
+  text-align: center; max-width: 320px; width: 90%;
+  box-shadow: 0 20px 60px rgba(0,0,0,.2);
+}
+#result-emoji { font-size: 56px; margin-bottom: 8px; }
+#result-title { font-family: 'Baloo 2', cursive; font-size: 28px; font-weight: 900; margin-bottom: 6px; }
+#result-sub { font-size: 15px; color: var(--text-light); font-weight: 600; margin-bottom: 16px; }
+#result-score { font-family: 'Baloo 2', cursive; font-size: 52px; font-weight: 900; color: var(--sr-a); }
+#result-score-label { font-size: 14px; color: var(--text-light); font-weight: 600; margin-bottom: 20px; }
+#result-play-again {
+  width: 100%; padding: 14px; border-radius: 14px; border: none;
+  background: var(--sr-a); color: white;
+  font-family: 'Nunito', sans-serif; font-size: 17px; font-weight: 800;
+  cursor: pointer;
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ── NAV ── -->
+<div id="nav">
+  <a href="index.html" class="home-btn">🏠</a>
+  <span id="nav-title">➕ Suma y Resta</span>
+  <button class="nav-tab active" data-tab="aprender">Aprender</button>
+  <button class="nav-tab" data-tab="suma">+ Suma</button>
+  <button class="nav-tab" data-tab="resta">− Resta</button>
+  <button class="nav-tab" data-tab="desafio">Desafío</button>
+  <div id="score-area">
+    <div class="score-chip right">✓ <span id="sc-right">0</span></div>
+    <div class="score-chip wrong">✗ <span id="sc-wrong">0</span></div>
+  </div>
+</div>
+
+<!-- ── CONTENT ── -->
+<div id="content">
+
+  <!-- ═══ APRENDER ═══ -->
+  <div id="tab-aprender">
+
+    <div class="learn-card">
+      <h2>¿Cómo sumar?</h2>
+      <div class="op-display">
+        <span class="op-num">3</span>
+        <span class="op-sign">+</span>
+        <span class="op-num">4</span>
+        <span class="op-sign">=</span>
+        <span class="op-result">7</span>
+      </div>
+      <div class="circles-wrap">
+        <div class="circles-group">
+          <div class="circles-label" style="color:var(--sr-a)">3 círculos</div>
+          <div class="circles-row" id="learn-sum-a"></div>
+        </div>
+        <div class="circles-plus">+</div>
+        <div class="circles-group">
+          <div class="circles-label" style="color:var(--blue)">4 círculos</div>
+          <div class="circles-row" id="learn-sum-b"></div>
+        </div>
+        <div class="circles-plus">=</div>
+        <div class="circles-group">
+          <div class="circles-label" style="color:var(--sr-a)">7 en total</div>
+          <div class="circles-row" id="learn-sum-total"></div>
+        </div>
+      </div>
+      <div class="learn-tip">
+        Juntar los dos grupos y contar todos los círculos da el resultado. ¡Sumar es juntar!
+      </div>
+    </div>
+
+    <div class="learn-card">
+      <h2>¿Cómo restar?</h2>
+      <div class="op-display">
+        <span class="op-num">7</span>
+        <span class="op-sign">−</span>
+        <span class="op-num">3</span>
+        <span class="op-sign">=</span>
+        <span class="op-result">4</span>
+      </div>
+      <div class="circles-wrap">
+        <div class="circles-group">
+          <div class="circles-label" style="color:var(--sr-a)">7 círculos</div>
+          <div class="circles-row" id="learn-sub-total"></div>
+        </div>
+        <div class="circles-plus">→</div>
+        <div class="circles-group">
+          <div class="circles-label" style="color:var(--sr-a)">quedan 4</div>
+          <div class="circles-row" id="learn-sub-remain"></div>
+        </div>
+      </div>
+      <div class="learn-tip">
+        Los 3 primeros están tachados (los quitamos). ¡Contar los que quedan da el resultado!
+      </div>
+    </div>
+
+  </div><!-- /tab-aprender -->
+
+  <!-- ═══ SUMA ═══ -->
+  <div id="tab-suma" style="display:none">
+    <div class="ex-card">
+      <div class="question-label">¿Cuánto es?</div>
+      <div class="question-eq" id="suma-eq">3 <span class="q-sign">+</span> 4 = ?</div>
+      <div class="ex-circles-area" id="suma-circles"></div>
+      <div class="answer-display focused" id="suma-display">?</div>
+      <div class="feedback-bar" id="suma-feedback"></div>
+      <div class="numpad" id="suma-numpad">
+        <button class="np-btn" data-ns="1">1</button>
+        <button class="np-btn" data-ns="2">2</button>
+        <button class="np-btn" data-ns="3">3</button>
+        <button class="np-btn" data-ns="4">4</button>
+        <button class="np-btn" data-ns="5">5</button>
+        <button class="np-btn" data-ns="6">6</button>
+        <button class="np-btn" data-ns="7">7</button>
+        <button class="np-btn" data-ns="8">8</button>
+        <button class="np-btn" data-ns="9">9</button>
+        <button class="np-btn np-del" data-ns="del">⌫</button>
+        <button class="np-btn" data-ns="0">0</button>
+        <button class="np-btn np-ok" id="suma-check">✓</button>
+      </div>
+    </div>
+  </div><!-- /tab-suma -->
+
+  <!-- ═══ RESTA ═══ -->
+  <div id="tab-resta" style="display:none">
+    <div class="ex-card">
+      <div class="question-label">¿Cuánto queda?</div>
+      <div class="question-eq" id="resta-eq">7 <span class="q-sign">−</span> 3 = ?</div>
+      <div class="ex-circles-area" id="resta-circles"></div>
+      <div class="answer-display focused" id="resta-display">?</div>
+      <div class="feedback-bar" id="resta-feedback"></div>
+      <div class="numpad" id="resta-numpad">
+        <button class="np-btn" data-nr="1">1</button>
+        <button class="np-btn" data-nr="2">2</button>
+        <button class="np-btn" data-nr="3">3</button>
+        <button class="np-btn" data-nr="4">4</button>
+        <button class="np-btn" data-nr="5">5</button>
+        <button class="np-btn" data-nr="6">6</button>
+        <button class="np-btn" data-nr="7">7</button>
+        <button class="np-btn" data-nr="8">8</button>
+        <button class="np-btn" data-nr="9">9</button>
+        <button class="np-btn np-del" data-nr="del">⌫</button>
+        <button class="np-btn" data-nr="0">0</button>
+        <button class="np-btn np-ok" id="resta-check">✓</button>
+      </div>
+    </div>
+  </div><!-- /tab-resta -->
+
+  <!-- ═══ DESAFÍO ═══ -->
+  <div id="tab-desafio" style="display:none">
+    <div id="challenge-card">
+      <div id="ch-score-row">
+        <div class="ch-stat time">⏱ <span id="ch-time">60</span>s</div>
+        <div class="ch-stat pts">⭐ <span id="ch-pts">0</span> pts</div>
+        <div class="ch-stat streak">🔥 <span id="ch-streak">0</span> seguidas</div>
+      </div>
+      <div id="timer-bar-wrap"><div id="timer-bar" style="width:100%"></div></div>
+      <div id="challenge-q">¡Toca Iniciar para comenzar!</div>
+      <div id="challenge-options" style="visibility:hidden">
+        <div class="ch-option" data-idx="0">—</div>
+        <div class="ch-option" data-idx="1">—</div>
+        <div class="ch-option" data-idx="2">—</div>
+        <div class="ch-option" data-idx="3">—</div>
+      </div>
+      <button id="challenge-start">🚀 Iniciar desafío (60 segundos)</button>
+    </div>
+  </div><!-- /tab-desafio -->
+
+</div><!-- /content -->
+</div><!-- /app -->
+
+<!-- result overlay -->
+<div id="result-overlay">
+  <div id="result-box">
+    <div id="result-emoji">🎉</div>
+    <div id="result-title">¡Tiempo!</div>
+    <div id="result-sub">Puntuación final</div>
+    <div id="result-score">0</div>
+    <div id="result-score-label">puntos en 60 segundos</div>
+    <button id="result-play-again">Jugar de nuevo</button>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════
+   HELPERS
+═══════════════════════════════ */
+function rand(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+
+function makeCircles(container, count, type) {
+  container.innerHTML = '';
+  for (let i = 0; i < count; i++) {
+    const c = document.createElement('div');
+    c.className = 'circle ' + type;
+    container.appendChild(c);
+  }
+}
+
+/* ═══════════════════════════════
+   SCORE
+═══════════════════════════════ */
+let scoreRight = 0, scoreWrong = 0;
+function addScore(correct) {
+  if (correct) { scoreRight++; document.getElementById('sc-right').textContent = scoreRight; }
+  else         { scoreWrong++; document.getElementById('sc-wrong').textContent = scoreWrong; }
+}
+
+/* ═══════════════════════════════
+   NAV TABS
+═══════════════════════════════ */
+const TABS = ['aprender','suma','resta','desafio'];
+document.querySelectorAll('.nav-tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const t = btn.dataset.tab;
+    document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    TABS.forEach(id => {
+      const el = document.getElementById('tab-' + id);
+      el.style.display = id === t ? 'flex' : 'none';
+    });
+    if (t === 'suma')    genSuma();
+    if (t === 'resta')   genResta();
+    if (t === 'desafio') resetChallenge();
+  });
+});
+
+/* ═══════════════════════════════
+   APRENDER — build circles
+═══════════════════════════════ */
+(function buildLearnCircles() {
+  makeCircles(document.getElementById('learn-sum-a'), 3, 'purple');
+  makeCircles(document.getElementById('learn-sum-b'), 4, 'blue');
+  makeCircles(document.getElementById('learn-sum-total'), 7, 'purple');
+
+  // resta: 7 circles, first 3 crossed
+  const subTotal = document.getElementById('learn-sub-total');
+  subTotal.innerHTML = '';
+  for (let i = 0; i < 7; i++) {
+    const c = document.createElement('div');
+    c.className = 'circle ' + (i < 3 ? 'crossed' : 'purple');
+    subTotal.appendChild(c);
+  }
+  makeCircles(document.getElementById('learn-sub-remain'), 4, 'purple');
+})();
+
+/* ═══════════════════════════════
+   TAB SUMA
+═══════════════════════════════ */
+let sumaA = 3, sumaB = 4, sumaAnswer = '', sumaAnswered = false;
+
+function genSuma() {
+  sumaAnswered = false;
+  sumaAnswer = '';
+  sumaA = rand(1, 9);
+  do { sumaB = rand(1, 9); } while (sumaA + sumaB > 20);
+
+  document.getElementById('suma-eq').innerHTML =
+    `${sumaA} <span class="q-sign">+</span> ${sumaB} = ?`;
+
+  // circles area
+  const area = document.getElementById('suma-circles');
+  area.innerHTML = '';
+  const gA = document.createElement('div');
+  gA.className = 'circles-group';
+  const lblA = document.createElement('div');
+  lblA.className = 'circles-label'; lblA.style.color = 'var(--sr-a)';
+  lblA.textContent = sumaA + ' círculos';
+  const rowA = document.createElement('div'); rowA.className = 'circles-row';
+  for (let i = 0; i < sumaA; i++) {
+    const c = document.createElement('div'); c.className = 'circle purple'; rowA.appendChild(c);
+  }
+  gA.appendChild(lblA); gA.appendChild(rowA); area.appendChild(gA);
+
+  const plus = document.createElement('div');
+  plus.className = 'circles-plus'; plus.textContent = '+'; area.appendChild(plus);
+
+  const gB = document.createElement('div');
+  gB.className = 'circles-group';
+  const lblB = document.createElement('div');
+  lblB.className = 'circles-label'; lblB.style.color = 'var(--blue)';
+  lblB.textContent = sumaB + ' círculos';
+  const rowB = document.createElement('div'); rowB.className = 'circles-row';
+  for (let i = 0; i < sumaB; i++) {
+    const c = document.createElement('div'); c.className = 'circle blue'; rowB.appendChild(c);
+  }
+  gB.appendChild(lblB); gB.appendChild(rowB); area.appendChild(gB);
+
+  const disp = document.getElementById('suma-display');
+  disp.textContent = '?';
+  disp.className = 'answer-display focused';
+
+  const fb = document.getElementById('suma-feedback');
+  fb.className = 'feedback-bar';
+
+  const btn = document.getElementById('suma-check');
+  btn.className = 'np-btn np-ok';
+  btn.textContent = '✓';
+}
+
+document.querySelectorAll('[data-ns]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (sumaAnswered) return;
+    const n = btn.dataset.ns;
+    const disp = document.getElementById('suma-display');
+    if (n === 'del') {
+      sumaAnswer = sumaAnswer.slice(0, -1);
+      disp.textContent = sumaAnswer || '?';
+    } else {
+      if (sumaAnswer.length < 2) {
+        sumaAnswer += n;
+        disp.textContent = sumaAnswer;
+      }
+    }
+  });
+});
+
+document.getElementById('suma-check').addEventListener('click', () => {
+  if (sumaAnswered) { genSuma(); return; }
+  if (!sumaAnswer) return;
+  const userVal = parseInt(sumaAnswer);
+  const correct = userVal === sumaA + sumaB;
+  sumaAnswered = true;
+  addScore(correct);
+  const disp = document.getElementById('suma-display');
+  disp.className = 'answer-display ' + (correct ? 'correct' : 'wrong');
+  const fb = document.getElementById('suma-feedback');
+  if (correct) {
+    fb.textContent = `¡Muy bien! ${sumaA} + ${sumaB} = ${sumaA + sumaB} 🎉`;
+    fb.className = 'feedback-bar correct';
+  } else {
+    fb.textContent = `La respuesta es ${sumaA + sumaB}. ¡Podés hacerlo! 💪`;
+    fb.className = 'feedback-bar wrong';
+  }
+  const btn = document.getElementById('suma-check');
+  btn.className = 'np-btn np-next';
+  btn.textContent = 'Siguiente →';
+});
+
+/* ═══════════════════════════════
+   TAB RESTA
+═══════════════════════════════ */
+let restaX = 7, restaY = 3, restaAnswer = '', restaAnswered = false;
+
+function genResta() {
+  restaAnswered = false;
+  restaAnswer = '';
+  restaX = rand(5, 20);
+  restaY = rand(1, restaX);
+
+  document.getElementById('resta-eq').innerHTML =
+    `${restaX} <span class="q-sign">−</span> ${restaY} = ?`;
+
+  // circles: X total, first Y crossed
+  const area = document.getElementById('resta-circles');
+  area.innerHTML = '';
+  const g = document.createElement('div');
+  g.className = 'circles-group';
+  const lbl = document.createElement('div');
+  lbl.className = 'circles-label'; lbl.style.color = 'var(--sr-a)';
+  lbl.textContent = restaX + ' círculos';
+  const row = document.createElement('div'); row.className = 'circles-row';
+  for (let i = 0; i < restaX; i++) {
+    const c = document.createElement('div');
+    c.className = 'circle ' + (i < restaY ? 'crossed' : 'purple');
+    row.appendChild(c);
+  }
+  g.appendChild(lbl); g.appendChild(row); area.appendChild(g);
+
+  const disp = document.getElementById('resta-display');
+  disp.textContent = '?';
+  disp.className = 'answer-display focused';
+
+  const fb = document.getElementById('resta-feedback');
+  fb.className = 'feedback-bar';
+
+  const btn = document.getElementById('resta-check');
+  btn.className = 'np-btn np-ok';
+  btn.textContent = '✓';
+}
+
+document.querySelectorAll('[data-nr]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (restaAnswered) return;
+    const n = btn.dataset.nr;
+    const disp = document.getElementById('resta-display');
+    if (n === 'del') {
+      restaAnswer = restaAnswer.slice(0, -1);
+      disp.textContent = restaAnswer || '?';
+    } else {
+      if (restaAnswer.length < 2) {
+        restaAnswer += n;
+        disp.textContent = restaAnswer;
+      }
+    }
+  });
+});
+
+document.getElementById('resta-check').addEventListener('click', () => {
+  if (restaAnswered) { genResta(); return; }
+  if (!restaAnswer) return;
+  const userVal = parseInt(restaAnswer);
+  const correct = userVal === restaX - restaY;
+  restaAnswered = true;
+  addScore(correct);
+  const disp = document.getElementById('resta-display');
+  disp.className = 'answer-display ' + (correct ? 'correct' : 'wrong');
+  const fb = document.getElementById('resta-feedback');
+  if (correct) {
+    fb.textContent = `¡Muy bien! ${restaX} − ${restaY} = ${restaX - restaY} 🎉`;
+    fb.className = 'feedback-bar correct';
+  } else {
+    fb.textContent = `La respuesta es ${restaX - restaY}. ¡Seguí intentando! 💪`;
+    fb.className = 'feedback-bar wrong';
+  }
+  const btn = document.getElementById('resta-check');
+  btn.className = 'np-btn np-next';
+  btn.textContent = 'Siguiente →';
+});
+
+/* ═══════════════════════════════
+   DESAFÍO
+═══════════════════════════════ */
+let chPts = 0, chStreak = 0, chTime = 60, chTimer = null;
+let chAnswer = 0, chRunning = false;
+
+function resetChallenge() {
+  chPts = 0; chStreak = 0; chTime = 60; chRunning = false;
+  clearInterval(chTimer);
+  document.getElementById('ch-time').textContent = 60;
+  document.getElementById('ch-pts').textContent = 0;
+  document.getElementById('ch-streak').textContent = 0;
+  document.getElementById('timer-bar').style.width = '100%';
+  document.getElementById('timer-bar').style.background = 'var(--sr-a)';
+  document.getElementById('challenge-options').style.visibility = 'hidden';
+  document.getElementById('challenge-q').textContent = '¡Toca Iniciar para comenzar!';
+  document.getElementById('challenge-start').style.display = 'block';
+}
+
+function startChallenge() {
+  chPts = 0; chStreak = 0; chTime = 60; chRunning = true;
+  document.getElementById('challenge-start').style.display = 'none';
+  document.getElementById('challenge-options').style.visibility = 'visible';
+  genChallengeQ();
+  chTimer = setInterval(() => {
+    chTime--;
+    document.getElementById('ch-time').textContent = chTime;
+    document.getElementById('timer-bar').style.width = (chTime / 60 * 100) + '%';
+    if (chTime <= 15) document.getElementById('timer-bar').style.background = '#DC2626';
+    else if (chTime <= 30) document.getElementById('timer-bar').style.background = '#D97706';
+    if (chTime <= 0) endChallenge();
+  }, 1000);
+}
+
+function genChallengeQ() {
+  const optEls = document.querySelectorAll('.ch-option');
+  optEls.forEach(o => { o.className = 'ch-option'; o.style.pointerEvents = ''; });
+
+  const isSuma = rand(0, 1) === 0;
+  let qText, correct;
+
+  if (isSuma) {
+    const a = rand(1, 9);
+    let b;
+    do { b = rand(1, 9); } while (a + b > 20);
+    correct = a + b;
+    qText = `${a} + ${b} = ?`;
+  } else {
+    const x = rand(5, 20);
+    const y = rand(1, x);
+    correct = x - y;
+    qText = `${x} − ${y} = ?`;
+  }
+
+  chAnswer = correct;
+  document.getElementById('challenge-q').textContent = qText;
+
+  const opts = shuffleWithCorrect(correct, 0, 20, 4);
+  optEls.forEach((el, i) => {
+    el.textContent = opts[i];
+    el.dataset.val = opts[i];
+  });
+}
+
+function shuffleWithCorrect(correct, min, max, count) {
+  const set = new Set([correct]);
+  let tries = 0;
+  while (set.size < count && tries++ < 300) {
+    const v = rand(min, max);
+    if (v !== correct) set.add(v);
+  }
+  return [...set].sort(() => Math.random() - 0.5);
+}
+
+document.querySelectorAll('.ch-option').forEach(el => {
+  el.addEventListener('click', () => {
+    if (!chRunning) return;
+    const val = parseInt(el.dataset.val);
+    const correct = val === chAnswer;
+    el.className = 'ch-option ' + (correct ? 'correct' : 'wrong');
+    if (!correct) {
+      document.querySelectorAll('.ch-option').forEach(o => {
+        if (parseInt(o.dataset.val) === chAnswer) o.className = 'ch-option correct';
+      });
+    }
+    document.querySelectorAll('.ch-option').forEach(o => o.style.pointerEvents = 'none');
+    if (correct) { chPts += 10 + chStreak * 2; chStreak++; }
+    else { chStreak = 0; chPts = Math.max(0, chPts - 2); }
+    document.getElementById('ch-pts').textContent = chPts;
+    document.getElementById('ch-streak').textContent = chStreak;
+    addScore(correct);
+    setTimeout(genChallengeQ, 650);
+  });
+});
+
+document.getElementById('challenge-start').addEventListener('click', startChallenge);
+
+function endChallenge() {
+  chRunning = false; clearInterval(chTimer);
+  document.getElementById('timer-bar').style.width = '0%';
+  document.getElementById('ch-time').textContent = 0;
+  const emoji = chPts >= 100 ? '🏆' : chPts >= 60 ? '🎉' : chPts >= 30 ? '👍' : '💪';
+  const title = chPts >= 100 ? '¡Increíble!' : chPts >= 60 ? '¡Excelente!' : chPts >= 30 ? '¡Bien hecho!' : '¡Sigue practicando!';
+  document.getElementById('result-emoji').textContent = emoji;
+  document.getElementById('result-title').textContent = title;
+  document.getElementById('result-score').textContent = chPts;
+  document.getElementById('result-overlay').classList.add('show');
+}
+
+document.getElementById('result-play-again').addEventListener('click', () => {
+  document.getElementById('result-overlay').classList.remove('show');
+  resetChallenge();
+});
+
+/* ═══════════════════════════════
+   INIT
+═══════════════════════════════ */
+genSuma();
+genResta();
+</script>
+</body>
+</html>

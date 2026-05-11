@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Cuerpo Humano</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #F0FDFA;
+  --surface: #FFFFFF;
+  --ch-a: #0D9488;
+  --ch-bg: #F0FDFA;
+  --ch-light: #CCFBF1;
+  --correct: #16A34A;
+  --correct-bg: #DCFCE7;
+  --wrong: #DC2626;
+  --wrong-bg: #FEE2E2;
+  --text: #1E293B;
+  --text-light: #64748B;
+  --border: rgba(0,0,0,0.08);
+  --shadow: 0 2px 12px rgba(0,0,0,0.06);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.10);
+  --radius: 16px;
+  --radius-sm: 10px;
+}
+
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  font-family: 'Nunito', sans-serif;
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  touch-action: manipulation;
+}
+
+#app { display: flex; flex-direction: column; height: 100vh; width: 100vw; }
+
+/* ── NAV ── */
+#nav {
+  display: flex; align-items: center;
+  padding: 0 12px; height: 56px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  gap: 6px; flex-shrink: 0;
+  overflow-x: auto; -webkit-overflow-scrolling: touch;
+}
+#nav-title {
+  font-family: 'Baloo 2', cursive;
+  font-size: 20px; font-weight: 800;
+  color: var(--ch-a);
+  margin-right: 6px; white-space: nowrap; flex-shrink: 0;
+}
+.nav-tab {
+  padding: 6px 12px; border-radius: 20px;
+  border: 2px solid transparent;
+  font-size: 13px; font-weight: 700;
+  cursor: pointer; transition: all .15s;
+  white-space: nowrap; user-select: none;
+  background: transparent; color: var(--text-light);
+  font-family: 'Nunito', sans-serif; flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+.nav-tab.active { background: var(--text); color: white; border-color: var(--text); }
+.home-btn {
+  display: flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; border-radius: 10px;
+  background: var(--bg); border: 1.5px solid var(--border);
+  text-decoration: none; font-size: 18px; flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+.home-btn:active { opacity: .7; }
+#score-area {
+  margin-left: auto; display: flex; align-items: center; gap: 6px; flex-shrink: 0;
+}
+.score-chip {
+  display: flex; align-items: center; gap: 4px;
+  padding: 4px 10px; border-radius: 20px;
+  font-size: 13px; font-weight: 800;
+}
+.score-chip.right { background: var(--correct-bg); color: var(--correct); }
+.score-chip.wrong { background: var(--wrong-bg); color: var(--wrong); }
+
+/* ── CONTENT ── */
+#content {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ═══ TAB APRENDER ═══ */
+#tab-aprender {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+#aprender-inner {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 12px 12px 20px;
+  gap: 12px;
+}
+
+#svg-wrap-aprender {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+#svg-wrap-aprender svg {
+  width: auto;
+  height: auto;
+  max-height: 60vh;
+  max-width: 100%;
+}
+
+#info-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 76px;
+}
+.info-emoji {
+  font-size: 36px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+.info-text { flex: 1; }
+.info-name {
+  font-family: 'Baloo 2', cursive;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.1;
+}
+.info-desc {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-light);
+  margin-top: 2px;
+}
+.info-hint {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-light);
+}
+
+/* body parts */
+.body-part {
+  cursor: pointer;
+  transition: opacity .15s;
+}
+.body-part:active { opacity: .7; }
+
+/* ═══ TAB QUIZ ═══ */
+#tab-quiz {
+  flex: 1;
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+#quiz-inner {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 12px 12px 20px;
+  gap: 12px;
+}
+
+#quiz-question-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  box-shadow: var(--shadow);
+  text-align: center;
+}
+#quiz-question-text {
+  font-family: 'Baloo 2', cursive;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.3;
+}
+#quiz-progress {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-light);
+  margin-top: 4px;
+}
+
+#svg-wrap-quiz {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+#svg-wrap-quiz svg {
+  width: auto;
+  height: auto;
+  max-height: 58vh;
+  max-width: 100%;
+}
+
+#quiz-feedback {
+  padding: 14px 18px;
+  border-radius: var(--radius-sm);
+  font-family: 'Baloo 2', cursive;
+  font-size: 20px;
+  font-weight: 800;
+  text-align: center;
+  display: none;
+}
+#quiz-feedback.correct { background: var(--correct-bg); color: var(--correct); display: block; }
+#quiz-feedback.wrong   { background: var(--wrong-bg);   color: var(--wrong);   display: block; }
+
+#quiz-next-btn {
+  padding: 14px 32px; border-radius: 14px; border: none;
+  background: var(--ch-a); color: white;
+  font-family: 'Nunito', sans-serif; font-size: 17px; font-weight: 800;
+  cursor: pointer; display: none; align-self: center;
+  -webkit-tap-highlight-color: transparent;
+}
+#quiz-next-btn:active { opacity: .85; }
+
+/* result overlay */
+#result-overlay {
+  display: none; position: fixed; inset: 0; z-index: 100;
+  background: rgba(0,0,0,0.4); align-items: center; justify-content: center;
+}
+#result-overlay.show { display: flex; }
+#result-box {
+  background: white; border-radius: 24px; padding: 32px 28px;
+  text-align: center; max-width: 320px; width: 90%;
+  box-shadow: 0 20px 60px rgba(0,0,0,.2);
+}
+#result-emoji-big { font-size: 56px; margin-bottom: 8px; }
+#result-title { font-family: 'Baloo 2', cursive; font-size: 28px; font-weight: 900; margin-bottom: 6px; }
+#result-sub { font-size: 15px; color: var(--text-light); font-weight: 600; margin-bottom: 16px; }
+#result-score-big { font-family: 'Baloo 2', cursive; font-size: 52px; font-weight: 900; color: var(--ch-a); }
+#result-score-label { font-size: 14px; color: var(--text-light); font-weight: 600; margin-bottom: 20px; }
+#result-play-again {
+  width: 100%; padding: 14px; border-radius: 14px; border: none;
+  background: var(--ch-a); color: white;
+  font-family: 'Nunito', sans-serif; font-size: 17px; font-weight: 800;
+  cursor: pointer;
+}
+#result-play-again:active { opacity: .85; }
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ── NAV ── -->
+<div id="nav">
+  <a href="index.html" class="home-btn">🏠</a>
+  <span id="nav-title">🫀 Cuerpo Humano</span>
+  <button class="nav-tab active" data-tab="aprender">Aprender</button>
+  <button class="nav-tab" data-tab="quiz">Quiz</button>
+  <div id="score-area">
+    <div class="score-chip right">✓ <span id="sc-right">0</span></div>
+    <div class="score-chip wrong">✗ <span id="sc-wrong">0</span></div>
+  </div>
+</div>
+
+<!-- ── CONTENT ── -->
+<div id="content">
+
+  <!-- ═══ APRENDER ═══ -->
+  <div id="tab-aprender">
+    <div id="aprender-inner">
+
+      <div id="svg-wrap-aprender">
+        <svg id="body-svg-learn" viewBox="0 0 300 550" xmlns="http://www.w3.org/2000/svg">
+          <!-- cabeza -->
+          <g id="g-cabeza" class="body-part" data-id="cabeza">
+            <circle cx="150" cy="65" r="55" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1.5"/>
+          </g>
+          <!-- oreja-izq -->
+          <g id="g-oreja-izq" class="body-part" data-id="oreja-izq">
+            <ellipse cx="87" cy="65" rx="12" ry="18" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1.5"/>
+          </g>
+          <!-- oreja-der -->
+          <g id="g-oreja-der" class="body-part" data-id="oreja-der">
+            <ellipse cx="213" cy="65" rx="12" ry="18" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1.5"/>
+          </g>
+          <!-- ojo-izq -->
+          <g id="g-ojo-izq" class="body-part" data-id="ojo-izq">
+            <ellipse cx="128" cy="58" rx="10" ry="8" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1.5"/>
+            <ellipse cx="128" cy="58" rx="5" ry="4" fill="#1E293B"/>
+            <circle cx="130" cy="56" r="1.5" fill="white"/>
+          </g>
+          <!-- ojo-der -->
+          <g id="g-ojo-der" class="body-part" data-id="ojo-der">
+            <ellipse cx="172" cy="58" rx="10" ry="8" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1.5"/>
+            <ellipse cx="172" cy="58" rx="5" ry="4" fill="#1E293B"/>
+            <circle cx="174" cy="56" r="1.5" fill="white"/>
+          </g>
+          <!-- nariz -->
+          <g id="g-nariz" class="body-part" data-id="nariz">
+            <polygon points="150,65 142,82 158,82" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1.5" stroke-linejoin="round"/>
+          </g>
+          <!-- boca -->
+          <g id="g-boca" class="body-part" data-id="boca">
+            <!-- invisible hit area -->
+            <rect x="125" y="83" width="50" height="22" fill="transparent"/>
+            <path d="M 135 88 Q 150 102 165 88" stroke="#CBD5E1" stroke-width="3" fill="none" stroke-linecap="round"/>
+          </g>
+          <!-- cuello -->
+          <g id="g-cuello" class="body-part" data-id="cuello">
+            <rect x="133" y="118" width="34" height="35" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1.5"/>
+          </g>
+          <!-- torso -->
+          <g id="g-torso" class="body-part" data-id="torso">
+            <rect x="75" y="150" width="150" height="140" rx="15" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1.5"/>
+          </g>
+          <!-- brazo-izq -->
+          <g id="g-brazo-izq" class="body-part" data-id="brazo-izq">
+            <rect x="28" y="155" width="42" height="120" rx="15" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1.5"/>
+          </g>
+          <!-- brazo-der -->
+          <g id="g-brazo-der" class="body-part" data-id="brazo-der">
+            <rect x="230" y="155" width="42" height="120" rx="15" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1.5"/>
+          </g>
+          <!-- mano-izq -->
+          <g id="g-mano-izq" class="body-part" data-id="mano-izq">
+            <ellipse cx="49" cy="295" rx="22" ry="18" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1.5"/>
+          </g>
+          <!-- mano-der -->
+          <g id="g-mano-der" class="body-part" data-id="mano-der">
+            <ellipse cx="251" cy="295" rx="22" ry="18" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1.5"/>
+          </g>
+          <!-- pierna-izq -->
+          <g id="g-pierna-izq" class="body-part" data-id="pierna-izq">
+            <rect x="85" y="285" width="50" height="150" rx="12" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1.5"/>
+          </g>
+          <!-- pierna-der -->
+          <g id="g-pierna-der" class="body-part" data-id="pierna-der">
+            <rect x="165" y="285" width="50" height="150" rx="12" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1.5"/>
+          </g>
+          <!-- pie-izq -->
+          <g id="g-pie-izq" class="body-part" data-id="pie-izq">
+            <ellipse cx="110" cy="445" rx="32" ry="16" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1.5"/>
+          </g>
+          <!-- pie-der -->
+          <g id="g-pie-der" class="body-part" data-id="pie-der">
+            <ellipse cx="190" cy="445" rx="32" ry="16" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1.5"/>
+          </g>
+        </svg>
+      </div>
+
+      <div id="info-card">
+        <div class="info-emoji">✨</div>
+        <div class="info-text">
+          <div class="info-hint">Toca una parte del cuerpo para aprender ✨</div>
+        </div>
+      </div>
+
+    </div>
+  </div><!-- /tab-aprender -->
+
+  <!-- ═══ QUIZ ═══ -->
+  <div id="tab-quiz">
+    <div id="quiz-inner">
+
+      <div id="quiz-question-card">
+        <div id="quiz-question-text">¿Dónde están los <strong>Ojos</strong>?</div>
+        <div id="quiz-progress">Pregunta 1 de 10</div>
+      </div>
+
+      <div id="svg-wrap-quiz">
+        <svg id="body-svg-quiz" viewBox="0 0 300 550" xmlns="http://www.w3.org/2000/svg">
+          <!-- cabeza -->
+          <g id="qg-cabeza" class="body-part" data-id="cabeza">
+            <circle cx="150" cy="65" r="55" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1.5"/>
+          </g>
+          <!-- oreja-izq -->
+          <g id="qg-oreja-izq" class="body-part" data-id="oreja-izq">
+            <ellipse cx="87" cy="65" rx="12" ry="18" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1.5"/>
+          </g>
+          <!-- oreja-der -->
+          <g id="qg-oreja-der" class="body-part" data-id="oreja-der">
+            <ellipse cx="213" cy="65" rx="12" ry="18" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1.5"/>
+          </g>
+          <!-- ojo-izq -->
+          <g id="qg-ojo-izq" class="body-part" data-id="ojo-izq">
+            <ellipse cx="128" cy="58" rx="10" ry="8" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1.5"/>
+            <ellipse cx="128" cy="58" rx="5" ry="4" fill="#1E293B"/>
+            <circle cx="130" cy="56" r="1.5" fill="white"/>
+          </g>
+          <!-- ojo-der -->
+          <g id="qg-ojo-der" class="body-part" data-id="ojo-der">
+            <ellipse cx="172" cy="58" rx="10" ry="8" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1.5"/>
+            <ellipse cx="172" cy="58" rx="5" ry="4" fill="#1E293B"/>
+            <circle cx="174" cy="56" r="1.5" fill="white"/>
+          </g>
+          <!-- nariz -->
+          <g id="qg-nariz" class="body-part" data-id="nariz">
+            <polygon points="150,65 142,82 158,82" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1.5" stroke-linejoin="round"/>
+          </g>
+          <!-- boca -->
+          <g id="qg-boca" class="body-part" data-id="boca">
+            <rect x="125" y="83" width="50" height="22" fill="transparent"/>
+            <path d="M 135 88 Q 150 102 165 88" stroke="#CBD5E1" stroke-width="3" fill="none" stroke-linecap="round"/>
+          </g>
+          <!-- cuello -->
+          <g id="qg-cuello" class="body-part" data-id="cuello">
+            <rect x="133" y="118" width="34" height="35" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1.5"/>
+          </g>
+          <!-- torso -->
+          <g id="qg-torso" class="body-part" data-id="torso">
+            <rect x="75" y="150" width="150" height="140" rx="15" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1.5"/>
+          </g>
+          <!-- brazo-izq -->
+          <g id="qg-brazo-izq" class="body-part" data-id="brazo-izq">
+            <rect x="28" y="155" width="42" height="120" rx="15" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1.5"/>
+          </g>
+          <!-- brazo-der -->
+          <g id="qg-brazo-der" class="body-part" data-id="brazo-der">
+            <rect x="230" y="155" width="42" height="120" rx="15" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1.5"/>
+          </g>
+          <!-- mano-izq -->
+          <g id="qg-mano-izq" class="body-part" data-id="mano-izq">
+            <ellipse cx="49" cy="295" rx="22" ry="18" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1.5"/>
+          </g>
+          <!-- mano-der -->
+          <g id="qg-mano-der" class="body-part" data-id="mano-der">
+            <ellipse cx="251" cy="295" rx="22" ry="18" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1.5"/>
+          </g>
+          <!-- pierna-izq -->
+          <g id="qg-pierna-izq" class="body-part" data-id="pierna-izq">
+            <rect x="85" y="285" width="50" height="150" rx="12" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1.5"/>
+          </g>
+          <!-- pierna-der -->
+          <g id="qg-pierna-der" class="body-part" data-id="pierna-der">
+            <rect x="165" y="285" width="50" height="150" rx="12" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1.5"/>
+          </g>
+          <!-- pie-izq -->
+          <g id="qg-pie-izq" class="body-part" data-id="pie-izq">
+            <ellipse cx="110" cy="445" rx="32" ry="16" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1.5"/>
+          </g>
+          <!-- pie-der -->
+          <g id="qg-pie-der" class="body-part" data-id="pie-der">
+            <ellipse cx="190" cy="445" rx="32" ry="16" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1.5"/>
+          </g>
+        </svg>
+      </div>
+
+      <div id="quiz-feedback"></div>
+      <button id="quiz-next-btn">Siguiente →</button>
+
+    </div>
+  </div><!-- /tab-quiz -->
+
+</div><!-- /content -->
+</div><!-- /app -->
+
+<!-- RESULT OVERLAY -->
+<div id="result-overlay">
+  <div id="result-box">
+    <div id="result-emoji-big">🎉</div>
+    <div id="result-title">¡Muy bien!</div>
+    <div id="result-sub">Tu puntuación final</div>
+    <div id="result-score-big">0/10</div>
+    <div id="result-score-label">respuestas correctas</div>
+    <button id="result-play-again">Jugar de nuevo</button>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════
+   DATA
+═══════════════════════════════════ */
+const BODY_DATA = [
+  { id: 'cabeza',     nombre: 'Cabeza',  desc: 'Aquí está tu cerebro 🧠',             emoji: '🧠', color: '#FCA5A5' },
+  { id: 'ojo-izq',   nombre: 'Ojos',    desc: 'Con ellos ves el mundo 👁️',           emoji: '👁️', color: '#93C5FD' },
+  { id: 'ojo-der',   nombre: 'Ojos',    desc: 'Con ellos ves el mundo 👁️',           emoji: '👁️', color: '#93C5FD' },
+  { id: 'nariz',     nombre: 'Nariz',   desc: 'Con ella hueles las flores 👃',        emoji: '👃', color: '#FCA5A5' },
+  { id: 'boca',      nombre: 'Boca',    desc: 'Con ella hablas y comes 👄',           emoji: '👄', color: '#FCA5A5' },
+  { id: 'oreja-izq', nombre: 'Orejas',  desc: 'Con ellas escuchas música 👂',         emoji: '👂', color: '#FCA5A5' },
+  { id: 'oreja-der', nombre: 'Orejas',  desc: 'Con ellas escuchas música 👂',         emoji: '👂', color: '#FCA5A5' },
+  { id: 'cuello',    nombre: 'Cuello',  desc: 'Conecta tu cabeza con el cuerpo',      emoji: '🦒', color: '#FDE68A' },
+  { id: 'torso',     nombre: 'Panza',   desc: 'Aquí están tu corazón y pulmones ❤️', emoji: '❤️', color: '#A7F3D0' },
+  { id: 'brazo-izq', nombre: 'Brazos',  desc: 'Con ellos abrazas y cargas cosas 💪', emoji: '💪', color: '#BAE6FD' },
+  { id: 'brazo-der', nombre: 'Brazos',  desc: 'Con ellos abrazas y cargas cosas 💪', emoji: '💪', color: '#BAE6FD' },
+  { id: 'mano-izq',  nombre: 'Manos',   desc: 'Con ellas tocas y escribís ✋',        emoji: '✋', color: '#FDE68A' },
+  { id: 'mano-der',  nombre: 'Manos',   desc: 'Con ellas tocas y escribís ✋',        emoji: '✋', color: '#FDE68A' },
+  { id: 'pierna-izq',nombre: 'Piernas', desc: 'Con ellas caminas y corres 🦵',        emoji: '🦵', color: '#BAE6FD' },
+  { id: 'pierna-der',nombre: 'Piernas', desc: 'Con ellas caminas y corres 🦵',        emoji: '🦵', color: '#BAE6FD' },
+  { id: 'pie-izq',   nombre: 'Pies',    desc: 'Con ellos das cada paso 🦶',           emoji: '🦶', color: '#FDE68A' },
+  { id: 'pie-der',   nombre: 'Pies',    desc: 'Con ellos das cada paso 🦶',           emoji: '🦶', color: '#FDE68A' },
+];
+
+/* Map id → data for quick lookup */
+const DATA_MAP = {};
+BODY_DATA.forEach(d => { DATA_MAP[d.id] = d; });
+
+/* ═══════════════════════════════════
+   SCORE
+═══════════════════════════════════ */
+let scoreRight = 0, scoreWrong = 0;
+function addScore(correct) {
+  if (correct) { scoreRight++; document.getElementById('sc-right').textContent = scoreRight; }
+  else         { scoreWrong++; document.getElementById('sc-wrong').textContent = scoreWrong; }
+}
+
+/* ═══════════════════════════════════
+   NAV TABS
+═══════════════════════════════════ */
+document.querySelectorAll('.nav-tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const t = btn.dataset.tab;
+    document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    if (t === 'aprender') {
+      document.getElementById('tab-aprender').style.display = 'flex';
+      document.getElementById('tab-quiz').style.display = 'none';
+    } else {
+      document.getElementById('tab-aprender').style.display = 'none';
+      document.getElementById('tab-quiz').style.display = 'flex';
+      startQuiz();
+    }
+  });
+});
+
+/* ═══════════════════════════════════
+   APRENDER
+═══════════════════════════════════ */
+let currentHighlightedLearn = null;
+
+function resetLearnHighlights() {
+  BODY_DATA.forEach(d => {
+    const g = document.getElementById('g-' + d.id);
+    if (!g) return;
+    const shapes = g.querySelectorAll('circle, ellipse, rect, polygon, path');
+    shapes.forEach(s => {
+      // restore default fill for main shape (first shape in group that is not stroke-only)
+      if (s.tagName !== 'path' && s.getAttribute('fill') !== 'white' && s.getAttribute('fill') !== 'transparent' && s.getAttribute('fill') !== '#1E293B') {
+        s.style.fill = '';
+      }
+    });
+  });
+}
+
+document.querySelectorAll('#body-svg-learn .body-part').forEach(g => {
+  g.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    const id = g.dataset.id;
+    const data = DATA_MAP[id];
+    if (!data) return;
+
+    // unhighlight all
+    resetLearnHighlights();
+
+    // highlight this one
+    const mainShapes = g.querySelectorAll('circle, ellipse, rect, polygon');
+    mainShapes.forEach(s => {
+      if (s.getAttribute('fill') !== 'transparent') {
+        s.style.fill = data.color;
+      }
+    });
+
+    // update info card
+    const card = document.getElementById('info-card');
+    card.innerHTML = `
+      <div class="info-emoji">${data.emoji}</div>
+      <div class="info-text">
+        <div class="info-name">${data.nombre}</div>
+        <div class="info-desc">${data.desc}</div>
+      </div>
+    `;
+
+    currentHighlightedLearn = id;
+  });
+});
+
+/* ═══════════════════════════════════
+   QUIZ
+═══════════════════════════════════ */
+// Quiz uses one part per "category" (unique by nombre)
+const QUIZ_PARTS = [
+  { id: 'cabeza',     nombre: 'Cabeza',  articulo: 'la', ids: ['cabeza'] },
+  { id: 'ojo-izq',   nombre: 'Ojos',    articulo: 'los', ids: ['ojo-izq', 'ojo-der'] },
+  { id: 'nariz',     nombre: 'Nariz',   articulo: 'la', ids: ['nariz'] },
+  { id: 'boca',      nombre: 'Boca',    articulo: 'la', ids: ['boca'] },
+  { id: 'oreja-izq', nombre: 'Orejas',  articulo: 'las', ids: ['oreja-izq', 'oreja-der'] },
+  { id: 'cuello',    nombre: 'Cuello',  articulo: 'el', ids: ['cuello'] },
+  { id: 'torso',     nombre: 'Panza',   articulo: 'la', ids: ['torso'] },
+  { id: 'brazo-izq', nombre: 'Brazos',  articulo: 'los', ids: ['brazo-izq', 'brazo-der'] },
+  { id: 'mano-izq',  nombre: 'Manos',   articulo: 'las', ids: ['mano-izq', 'mano-der'] },
+  { id: 'pierna-izq',nombre: 'Piernas', articulo: 'las', ids: ['pierna-izq', 'pierna-der'] },
+];
+
+let quizQueue = [];
+let quizIndex = 0;
+let quizCorrect = 0;
+let quizAnswered = false;
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function startQuiz() {
+  quizQueue = shuffle([...QUIZ_PARTS]);
+  quizIndex = 0;
+  quizCorrect = 0;
+  quizAnswered = false;
+  document.getElementById('result-overlay').classList.remove('show');
+  loadQuizQuestion();
+}
+
+function resetQuizHighlights() {
+  QUIZ_PARTS.forEach(p => {
+    p.ids.forEach(id => {
+      const g = document.getElementById('qg-' + id);
+      if (!g) return;
+      g.querySelectorAll('circle, ellipse, rect, polygon').forEach(s => {
+        if (s.getAttribute('fill') !== 'transparent' && s.getAttribute('fill') !== 'white' && s.getAttribute('fill') !== '#1E293B') {
+          s.style.fill = '#F1F5F9';
+          s.style.stroke = '#CBD5E1';
+        }
+      });
+    });
+  });
+}
+
+function loadQuizQuestion() {
+  resetQuizHighlights();
+  quizAnswered = false;
+
+  const fb = document.getElementById('quiz-feedback');
+  fb.className = '';
+  fb.style.display = 'none';
+  document.getElementById('quiz-next-btn').style.display = 'none';
+
+  if (quizIndex >= quizQueue.length) {
+    showResult();
+    return;
+  }
+
+  const q = quizQueue[quizIndex];
+  const articulo = q.articulo;
+  const nombre = q.nombre;
+
+  document.getElementById('quiz-question-text').innerHTML =
+    `¿Dónde ${articulo.startsWith('lo') || articulo.startsWith('la') || articulo.startsWith('el') ? 'están' : 'está'} <strong>${articulo} ${nombre}</strong>?`;
+  // fix grammar: el/la -> está, los/las -> están
+  const verbo = (articulo === 'los' || articulo === 'las') ? 'están' : 'está';
+  document.getElementById('quiz-question-text').innerHTML =
+    `¿Dónde ${verbo} <strong>${articulo} ${nombre}</strong>?`;
+
+  document.getElementById('quiz-progress').textContent =
+    `Pregunta ${quizIndex + 1} de ${quizQueue.length}`;
+
+  // enable all body parts
+  document.querySelectorAll('#body-svg-quiz .body-part').forEach(g => {
+    g.style.pointerEvents = '';
+  });
+}
+
+document.querySelectorAll('#body-svg-quiz .body-part').forEach(g => {
+  g.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    if (quizAnswered) return;
+
+    const tappedId = g.dataset.id;
+    const q = quizQueue[quizIndex];
+    const isCorrect = q.ids.includes(tappedId);
+
+    quizAnswered = true;
+
+    // disable all taps
+    document.querySelectorAll('#body-svg-quiz .body-part').forEach(el => {
+      el.style.pointerEvents = 'none';
+    });
+
+    if (isCorrect) {
+      // highlight correct in green
+      q.ids.forEach(id => {
+        const el = document.getElementById('qg-' + id);
+        if (!el) return;
+        el.querySelectorAll('circle, ellipse, rect, polygon').forEach(s => {
+          if (s.getAttribute('fill') !== 'transparent' && s.getAttribute('fill') !== 'white' && s.getAttribute('fill') !== '#1E293B') {
+            s.style.fill = '#86EFAC';
+            s.style.stroke = '#16A34A';
+          }
+        });
+      });
+
+      const fb = document.getElementById('quiz-feedback');
+      fb.textContent = '¡Correcto! 🎉';
+      fb.className = 'correct';
+      fb.style.display = 'block';
+      quizCorrect++;
+      addScore(true);
+    } else {
+      // highlight tapped in red
+      const tappedGroup = document.getElementById('qg-' + tappedId);
+      if (tappedGroup) {
+        tappedGroup.querySelectorAll('circle, ellipse, rect, polygon').forEach(s => {
+          if (s.getAttribute('fill') !== 'transparent' && s.getAttribute('fill') !== 'white' && s.getAttribute('fill') !== '#1E293B') {
+            s.style.fill = '#FCA5A5';
+            s.style.stroke = '#DC2626';
+          }
+        });
+      }
+      // show correct in green
+      q.ids.forEach(id => {
+        const el = document.getElementById('qg-' + id);
+        if (!el) return;
+        el.querySelectorAll('circle, ellipse, rect, polygon').forEach(s => {
+          if (s.getAttribute('fill') !== 'transparent' && s.getAttribute('fill') !== 'white' && s.getAttribute('fill') !== '#1E293B') {
+            s.style.fill = '#86EFAC';
+            s.style.stroke = '#16A34A';
+          }
+        });
+      });
+
+      const fb = document.getElementById('quiz-feedback');
+      fb.textContent = `Ahí no 😅 Era ${q.articulo} ${q.nombre}`;
+      fb.className = 'wrong';
+      fb.style.display = 'block';
+      addScore(false);
+    }
+
+    document.getElementById('quiz-next-btn').style.display = 'block';
+  });
+});
+
+document.getElementById('quiz-next-btn').addEventListener('click', () => {
+  quizIndex++;
+  loadQuizQuestion();
+});
+
+function showResult() {
+  const total = quizQueue.length;
+  const emoji = quizCorrect >= 9 ? '🏆' : quizCorrect >= 7 ? '🎉' : quizCorrect >= 5 ? '👍' : '💪';
+  const title = quizCorrect >= 9 ? '¡Increíble!' : quizCorrect >= 7 ? '¡Excelente!' : quizCorrect >= 5 ? '¡Bien hecho!' : '¡Sigue practicando!';
+  document.getElementById('result-emoji-big').textContent = emoji;
+  document.getElementById('result-title').textContent = title;
+  document.getElementById('result-score-big').textContent = `${quizCorrect}/${total}`;
+  document.getElementById('result-overlay').classList.add('show');
+}
+
+document.getElementById('result-play-again').addEventListener('click', () => {
+  document.getElementById('result-overlay').classList.remove('show');
+  startQuiz();
+});
+
+/* ═══════════════════════════════════
+   INIT
+═══════════════════════════════════ */
+// Quiz is loaded when tab is tapped; aprender is already visible.
+</script>
+</body>
+</html>

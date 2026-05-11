@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Secuencias</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #FFFBEB;
+  --surface: #FFFFFF;
+  --seq-a: #F59E0B;
+  --seq-light: #FDE68A;
+  --seq-bg: #FFFBEB;
+  --correct: #16A34A;
+  --correct-bg: #DCFCE7;
+  --wrong: #DC2626;
+  --wrong-bg: #FEE2E2;
+  --text: #1E293B;
+  --text-light: #64748B;
+  --border: rgba(0,0,0,0.08);
+  --shadow: 0 2px 12px rgba(0,0,0,0.06);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.10);
+  --radius: 16px;
+  --radius-sm: 10px;
+}
+
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  font-family: 'Nunito', sans-serif;
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  touch-action: manipulation;
+}
+
+#app { display: flex; flex-direction: column; height: 100vh; width: 100vw; }
+
+/* ── NAV ── */
+#nav {
+  display: flex; align-items: center;
+  padding: 0 12px; height: 56px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  gap: 6px; flex-shrink: 0;
+  overflow-x: auto; -webkit-overflow-scrolling: touch;
+}
+.home-btn {
+  display: flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; border-radius: 10px;
+  background: var(--bg); border: 1.5px solid var(--border);
+  text-decoration: none; font-size: 18px; flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+.home-btn:active { opacity: .7; }
+#nav-title {
+  font-family: 'Baloo 2', cursive;
+  font-size: 20px; font-weight: 800;
+  color: var(--seq-a);
+  margin-right: 4px; white-space: nowrap; flex-shrink: 0;
+}
+.nav-tab {
+  padding: 6px 12px; border-radius: 20px;
+  border: 2px solid transparent;
+  font-size: 13px; font-weight: 700;
+  cursor: pointer; transition: all .15s;
+  white-space: nowrap; user-select: none;
+  background: transparent; color: var(--text-light);
+  font-family: 'Nunito', sans-serif; flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+.nav-tab.active { background: var(--text); color: white; border-color: var(--text); }
+#score-area {
+  margin-left: auto; display: flex; align-items: center; gap: 6px; flex-shrink: 0;
+}
+.score-chip {
+  display: flex; align-items: center; gap: 4px;
+  padding: 4px 10px; border-radius: 20px;
+  font-size: 13px; font-weight: 800;
+}
+.score-chip.right { background: var(--correct-bg); color: var(--correct); }
+.score-chip.wrong { background: var(--wrong-bg); color: var(--wrong); }
+
+/* ── CONTENT ── */
+#content {
+  flex: 1; overflow-y: auto; overflow-x: hidden;
+  padding: 20px 16px 40px;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ── SHARED QUESTION CARD ── */
+.q-card {
+  background: var(--surface); border-radius: var(--radius);
+  padding: 24px 16px 20px; box-shadow: var(--shadow-lg);
+  display: flex; flex-direction: column; gap: 18px; align-items: center;
+}
+
+/* ── SEQUENCE DISPLAY ── */
+.seq-display {
+  display: flex; align-items: center; justify-content: center;
+  gap: 6px; flex-wrap: wrap;
+}
+.seq-item {
+  font-size: clamp(28px, 7vw, 40px);
+  line-height: 1.1;
+  background: var(--bg); border-radius: 12px;
+  padding: 8px 10px;
+  border: 2px solid var(--seq-light);
+  min-width: 52px; text-align: center;
+}
+.seq-item.missing {
+  background: var(--seq-light); border-color: var(--seq-a);
+  animation: pulse-q 1.2s ease-in-out infinite;
+}
+.seq-item.num {
+  font-family: 'Baloo 2', cursive;
+  font-size: clamp(26px, 6vw, 38px);
+  font-weight: 800; color: var(--text);
+}
+@keyframes pulse-q {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(245,158,11,0.3); }
+  50% { transform: scale(1.06); box-shadow: 0 0 0 6px rgba(245,158,11,0); }
+}
+.seq-arrow {
+  font-size: 18px; color: var(--text-light); flex-shrink: 0;
+}
+
+/* ── OPTIONS GRID ── */
+.options-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px; width: 100%;
+}
+.opt-btn {
+  padding: 18px 10px; border-radius: 14px;
+  border: 2.5px solid var(--border); background: white;
+  font-size: clamp(26px, 7vw, 36px);
+  cursor: pointer; text-align: center;
+  transition: transform .1s; color: var(--text);
+  user-select: none; -webkit-tap-highlight-color: transparent;
+  font-family: 'Baloo 2', cursive; font-weight: 800;
+  line-height: 1.1;
+}
+.opt-btn:active { transform: scale(.95); }
+.opt-btn.correct { background: var(--correct-bg); border-color: var(--correct); color: var(--correct); }
+.opt-btn.wrong   { background: var(--wrong-bg); border-color: var(--wrong); color: var(--wrong); }
+.opt-btn:disabled { pointer-events: none; }
+
+/* ── FEEDBACK BAR ── */
+.feedback-bar {
+  padding: 12px 16px; border-radius: 12px;
+  font-size: 15px; font-weight: 800; text-align: center;
+  display: none; width: 100%;
+}
+.feedback-bar.correct { background: var(--correct-bg); color: var(--correct); display: block; }
+.feedback-bar.wrong   { background: var(--wrong-bg); color: var(--wrong); display: block; }
+
+/* ── CHALLENGE ── */
+#tab-desafio .q-card { gap: 12px; }
+#ch-meta { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; width: 100%; }
+.ch-stat { padding: 5px 12px; border-radius: 20px; font-size: 13px; font-weight: 800; }
+.ch-stat.time  { background: #FEF3C7; color: #B45309; }
+.ch-stat.pts   { background: #EFF6FF; color: #1D4ED8; }
+.ch-stat.streak { background: #FEE2E2; color: #B91C1C; }
+#timer-bar-wrap { height: 8px; background: var(--bg); border-radius: 4px; overflow: hidden; width: 100%; }
+#timer-bar { height: 100%; background: var(--seq-a); border-radius: 4px; transition: width .1s linear; }
+#challenge-q-display {
+  min-height: 80px; width: 100%;
+  display: flex; align-items: center; justify-content: center;
+}
+#challenge-start {
+  padding: 14px 28px; border-radius: 14px; border: none;
+  background: var(--seq-a); color: white;
+  font-family: 'Nunito', sans-serif; font-size: 17px; font-weight: 800;
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
+  width: 100%;
+}
+#challenge-start:active { opacity: .85; }
+
+/* ── RESULT OVERLAY ── */
+#result-overlay {
+  display: none; position: fixed; inset: 0; z-index: 100;
+  background: rgba(0,0,0,0.4); align-items: center; justify-content: center;
+}
+#result-overlay.show { display: flex; }
+#result-box {
+  background: white; border-radius: 24px; padding: 32px 28px;
+  text-align: center; max-width: 320px; width: 90%;
+  box-shadow: 0 20px 60px rgba(0,0,0,.2);
+}
+#result-emoji-big { font-size: 56px; margin-bottom: 8px; }
+#result-title { font-family: 'Baloo 2', cursive; font-size: 28px; font-weight: 900; margin-bottom: 6px; }
+#result-sub { font-size: 15px; color: var(--text-light); font-weight: 600; margin-bottom: 20px; line-height: 1.8; }
+#result-play-again {
+  width: 100%; padding: 14px; border-radius: 14px; border: none;
+  background: var(--seq-a); color: white;
+  font-family: 'Nunito', sans-serif; font-size: 17px; font-weight: 800;
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
+}
+#result-play-again:active { opacity: .85; }
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ── NAV ── -->
+<div id="nav">
+  <a href="index.html" class="home-btn">🏠</a>
+  <span id="nav-title">🔢 Secuencias</span>
+  <button class="nav-tab active" data-tab="figuras">Figuras</button>
+  <button class="nav-tab" data-tab="numeros">Números</button>
+  <button class="nav-tab" data-tab="emojis">Emojis</button>
+  <button class="nav-tab" data-tab="desafio">Desafío</button>
+  <div id="score-area">
+    <div class="score-chip right">✓ <span id="sc-right">0</span></div>
+    <div class="score-chip wrong">✗ <span id="sc-wrong">0</span></div>
+  </div>
+</div>
+
+<!-- ── CONTENT ── -->
+<div id="content">
+
+  <!-- ═══ FIGURAS ═══ -->
+  <div id="tab-figuras">
+    <div class="q-card" id="fig-card">
+      <div class="seq-display" id="fig-seq"></div>
+      <div class="options-grid" id="fig-opts"></div>
+      <div class="feedback-bar" id="fig-fb"></div>
+    </div>
+  </div>
+
+  <!-- ═══ NÚMEROS ═══ -->
+  <div id="tab-numeros" style="display:none">
+    <div class="q-card" id="num-card">
+      <div class="seq-display" id="num-seq"></div>
+      <div class="options-grid" id="num-opts"></div>
+      <div class="feedback-bar" id="num-fb"></div>
+    </div>
+  </div>
+
+  <!-- ═══ EMOJIS ═══ -->
+  <div id="tab-emojis" style="display:none">
+    <div class="q-card" id="emo-card">
+      <div class="seq-display" id="emo-seq"></div>
+      <div class="options-grid" id="emo-opts"></div>
+      <div class="feedback-bar" id="emo-fb"></div>
+    </div>
+  </div>
+
+  <!-- ═══ DESAFÍO ═══ -->
+  <div id="tab-desafio" style="display:none">
+    <div class="q-card">
+      <div id="ch-meta">
+        <div class="ch-stat time">⏱ <span id="ch-time">60</span>s</div>
+        <div class="ch-stat pts">⭐ <span id="ch-pts">0</span> pts</div>
+        <div class="ch-stat streak">🔥 <span id="ch-streak">0</span></div>
+      </div>
+      <div id="timer-bar-wrap"><div id="timer-bar" style="width:100%"></div></div>
+      <div id="challenge-q-display">
+        <span style="font-size:16px;font-weight:700;color:var(--text-light)">¡Toca Iniciar para comenzar!</span>
+      </div>
+      <div class="options-grid" id="ch-opts" style="visibility:hidden"></div>
+      <button id="challenge-start">🚀 Iniciar desafío (60 segundos)</button>
+    </div>
+  </div>
+
+</div><!-- /content -->
+</div><!-- /app -->
+
+<!-- ── RESULT OVERLAY ── -->
+<div id="result-overlay">
+  <div id="result-box">
+    <div id="result-emoji-big">🎉</div>
+    <div id="result-title">¡Tiempo!</div>
+    <div id="result-sub"></div>
+    <button id="result-play-again">Jugar de nuevo</button>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════
+   HELPERS
+═══════════════════════════════════ */
+function rand(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+function pickRand(arr) { return arr[rand(0, arr.length - 1)]; }
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+/* ═══════════════════════════════════
+   SCORE
+═══════════════════════════════════ */
+let scoreRight = 0, scoreWrong = 0;
+function addScore(correct) {
+  if (correct) { scoreRight++; document.getElementById('sc-right').textContent = scoreRight; }
+  else         { scoreWrong++; document.getElementById('sc-wrong').textContent = scoreWrong; }
+}
+
+/* ═══════════════════════════════════
+   NAV TABS
+═══════════════════════════════════ */
+const TABS = ['figuras','numeros','emojis','desafio'];
+document.querySelectorAll('.nav-tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const t = btn.dataset.tab;
+    document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    TABS.forEach(id => {
+      document.getElementById('tab-' + id).style.display = id === t ? 'block' : 'none';
+    });
+    if (t === 'figuras') genFiguras();
+    if (t === 'numeros') genNumeros();
+    if (t === 'emojis')  genEmojis();
+    if (t === 'desafio') resetChallenge();
+  });
+});
+
+/* ═══════════════════════════════════
+   SEQUENCE BUILDER UTIL
+═══════════════════════════════════ */
+function buildSeqDisplay(container, items, missingIdx, isNum) {
+  container.innerHTML = '';
+  items.forEach((item, i) => {
+    if (i > 0) {
+      const arrow = document.createElement('span');
+      arrow.className = 'seq-arrow';
+      arrow.textContent = '→';
+      container.appendChild(arrow);
+    }
+    const el = document.createElement('div');
+    el.className = 'seq-item' + (isNum ? ' num' : '') + (i === missingIdx ? ' missing' : '');
+    el.textContent = i === missingIdx ? '❓' : item;
+    container.appendChild(el);
+  });
+}
+
+function buildOptions(container, options, correctAnswer, onAnswer) {
+  container.innerHTML = '';
+  options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.textContent = opt;
+    btn.addEventListener('click', () => onAnswer(opt, btn, container));
+    container.appendChild(btn);
+  });
+}
+
+function handleAnswer(chosen, correct, btn, container, fbEl, afterDelay) {
+  const isCorrect = String(chosen) === String(correct);
+  btn.classList.add(isCorrect ? 'correct' : 'wrong');
+
+  // Mark correct if wrong was chosen
+  if (!isCorrect) {
+    container.querySelectorAll('.opt-btn').forEach(b => {
+      if (String(b.textContent) === String(correct)) b.classList.add('correct');
+    });
+  }
+
+  // Disable all
+  container.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
+
+  if (fbEl) {
+    fbEl.textContent = isCorrect ? '¡Correcto! 🎉' : `La respuesta era: ${correct}`;
+    fbEl.className = 'feedback-bar ' + (isCorrect ? 'correct' : 'wrong');
+  }
+
+  addScore(isCorrect);
+  setTimeout(afterDelay, 800);
+  return isCorrect;
+}
+
+/* ═══════════════════════════════════
+   TAB FIGURAS
+═══════════════════════════════════ */
+const SHAPE_SEQS = [
+  // AB patterns
+  { pattern: ['🔴','🔵'], type: 'AB' },
+  { pattern: ['🟢','🟡'], type: 'AB' },
+  { pattern: ['🔶','🔷'], type: 'AB' },
+  { pattern: ['⬛','⬜'], type: 'AB' },
+  { pattern: ['🟠','🟣'], type: 'AB' },
+  // AABB patterns
+  { pattern: ['🔴','🔴','🔵','🔵'], type: 'AABB' },
+  { pattern: ['🟢','🟢','🟡','🟡'], type: 'AABB' },
+  // ABC patterns
+  { pattern: ['🔴','🔵','🟢'], type: 'ABC' },
+  { pattern: ['🟡','🟠','🟣'], type: 'ABC' },
+  { pattern: ['🔶','⬛','🔷'], type: 'ABC' },
+];
+
+const ALL_SHAPES = ['🔴','🔵','🟢','🟡','🟠','🟣','⬛','⬜','🔶','🔷'];
+
+function genFiguras() {
+  const seq = pickRand(SHAPE_SEQS);
+  const pat = seq.pattern;
+  // Build 5-6 items from pattern
+  const len = 5 + (pat.length === 3 ? 1 : 0);
+  const full = [];
+  for (let i = 0; i < len; i++) full.push(pat[i % pat.length]);
+
+  // Pick a missing index (position 3 or 4, but not index 0)
+  const missingIdx = rand(3, len - 1);
+  const correct = full[missingIdx];
+
+  // Distractors: shapes not equal to correct
+  const distractors = shuffle(ALL_SHAPES.filter(s => s !== correct)).slice(0, 3);
+  const options = shuffle([correct, ...distractors]);
+
+  buildSeqDisplay(document.getElementById('fig-seq'), full, missingIdx, false);
+  const fb = document.getElementById('fig-fb');
+  fb.className = 'feedback-bar';
+  buildOptions(document.getElementById('fig-opts'), options, correct, (chosen, btn, container) => {
+    handleAnswer(chosen, correct, btn, container, fb, genFiguras);
+  });
+}
+
+/* ═══════════════════════════════════
+   TAB NÚMEROS
+═══════════════════════════════════ */
+const NUM_PATTERNS = [
+  { start: 1, step: 1,  label: 'de 1 en 1' },
+  { start: 2, step: 2,  label: 'de 2 en 2' },
+  { start: 5, step: 5,  label: 'de 5 en 5' },
+  { start: 10, step: 10, label: 'de 10 en 10' },
+  { start: 3, step: 3,  label: 'de 3 en 3' },
+  { start: 2, step: 1,  label: 'de 1 en 1' },
+  { start: 4, step: 2,  label: 'de 2 en 2' },
+  { start: 10, step: 5, label: 'de 5 en 5' },
+];
+
+function genNumeros() {
+  const pat = pickRand(NUM_PATTERNS);
+  const start = pat.start + rand(0, 3) * pat.step;
+  const seq = [start, start + pat.step, start + 2 * pat.step, start + 3 * pat.step];
+  const correct = seq[3];
+
+  // 3 distractors
+  const dists = new Set();
+  while (dists.size < 3) {
+    const offset = rand(1, 3) * pat.step * (Math.random() < 0.5 ? 1 : -1);
+    const v = correct + offset;
+    if (v > 0 && v !== correct) dists.add(v);
+  }
+  const options = shuffle([correct, ...[...dists]]);
+
+  // Show first 3, missing 4th
+  buildSeqDisplay(document.getElementById('num-seq'), seq, 3, true);
+  const fb = document.getElementById('num-fb');
+  fb.className = 'feedback-bar';
+  buildOptions(document.getElementById('num-opts'), options, correct, (chosen, btn, container) => {
+    handleAnswer(chosen, correct, btn, container, fb, genNumeros);
+  });
+}
+
+/* ═══════════════════════════════════
+   TAB EMOJIS
+═══════════════════════════════════ */
+const EMOJI_SEQS = [
+  { pattern: ['⭐','🌙'] },
+  { pattern: ['🍎','🍌'] },
+  { pattern: ['🌸','🌺'] },
+  { pattern: ['🚗','✈️'] },
+  { pattern: ['🐱','🐶'] },
+  { pattern: ['☀️','🌧️'] },
+  { pattern: ['🍎','🍌','🍊'] },
+  { pattern: ['⭐','🌙','☀️'] },
+  { pattern: ['🐱','🐶','🐰'] },
+  { pattern: ['🍕','🍔','🌮'] },
+  { pattern: ['🔴','⭐','🔴','⭐'] },
+  { pattern: ['🌸','🌿','🌸','🌿'] },
+];
+
+function genEmojis() {
+  const seq = pickRand(EMOJI_SEQS);
+  const pat = seq.pattern;
+  const len = pat.length <= 2 ? 6 : 5;
+  const full = [];
+  for (let i = 0; i < len; i++) full.push(pat[i % pat.length]);
+
+  const missingIdx = rand(Math.floor(len / 2), len - 1);
+  const correct = full[missingIdx];
+
+  // Distractors: other emojis from other patterns
+  const allEmojis = [...new Set(EMOJI_SEQS.flatMap(s => s.pattern))];
+  const distractors = shuffle(allEmojis.filter(e => e !== correct)).slice(0, 3);
+  const options = shuffle([correct, ...distractors]);
+
+  buildSeqDisplay(document.getElementById('emo-seq'), full, missingIdx, false);
+  const fb = document.getElementById('emo-fb');
+  fb.className = 'feedback-bar';
+  buildOptions(document.getElementById('emo-opts'), options, correct, (chosen, btn, container) => {
+    handleAnswer(chosen, correct, btn, container, fb, genEmojis);
+  });
+}
+
+/* ═══════════════════════════════════
+   DESAFÍO
+═══════════════════════════════════ */
+let chPts = 0, chStreak = 0, chTime = 60, chTimer = null;
+let chAnswer = null, chRunning = false;
+
+function resetChallenge() {
+  chPts = 0; chStreak = 0; chTime = 60; chRunning = false;
+  clearInterval(chTimer);
+  document.getElementById('ch-time').textContent = 60;
+  document.getElementById('ch-pts').textContent = 0;
+  document.getElementById('ch-streak').textContent = 0;
+  document.getElementById('timer-bar').style.width = '100%';
+  document.getElementById('timer-bar').style.background = 'var(--seq-a)';
+  document.getElementById('ch-opts').style.visibility = 'hidden';
+  document.getElementById('ch-opts').innerHTML = '';
+  document.getElementById('challenge-q-display').innerHTML =
+    '<span style="font-size:16px;font-weight:700;color:var(--text-light)">¡Toca Iniciar para comenzar!</span>';
+  document.getElementById('challenge-start').style.display = 'block';
+}
+
+function startChallenge() {
+  chPts = 0; chStreak = 0; chTime = 60; chRunning = true;
+  document.getElementById('challenge-start').style.display = 'none';
+  document.getElementById('ch-opts').style.visibility = 'visible';
+  genChallengeQ();
+  chTimer = setInterval(() => {
+    chTime--;
+    document.getElementById('ch-time').textContent = chTime;
+    document.getElementById('timer-bar').style.width = (chTime / 60 * 100) + '%';
+    if (chTime <= 15) document.getElementById('timer-bar').style.background = '#DC2626';
+    else if (chTime <= 30) document.getElementById('timer-bar').style.background = '#D97706';
+    if (chTime <= 0) endChallenge();
+  }, 1000);
+}
+
+function genChallengeQ() {
+  if (!chRunning) return;
+  const type = rand(0, 2); // 0=figuras, 1=numeros, 2=emojis
+  const container = document.getElementById('ch-opts');
+  const qDisplay = document.getElementById('challenge-q-display');
+  container.innerHTML = '';
+
+  let full, missingIdx, correct, options, isNum = false;
+
+  if (type === 0) {
+    // Figuras
+    const seq = pickRand(SHAPE_SEQS);
+    const pat = seq.pattern;
+    const len = 5;
+    full = [];
+    for (let i = 0; i < len; i++) full.push(pat[i % pat.length]);
+    missingIdx = rand(3, len - 1);
+    correct = full[missingIdx];
+    const distractors = shuffle(ALL_SHAPES.filter(s => s !== correct)).slice(0, 3);
+    options = shuffle([correct, ...distractors]);
+  } else if (type === 1) {
+    // Números
+    isNum = true;
+    const pat = pickRand(NUM_PATTERNS);
+    const start = pat.start + rand(0, 2) * pat.step;
+    const seq = [start, start + pat.step, start + 2 * pat.step, start + 3 * pat.step];
+    correct = seq[3];
+    full = seq;
+    missingIdx = 3;
+    const dists = new Set();
+    while (dists.size < 3) {
+      const offset = rand(1, 3) * pat.step * (Math.random() < 0.5 ? 1 : -1);
+      const v = correct + offset;
+      if (v > 0 && v !== correct) dists.add(v);
+    }
+    options = shuffle([correct, ...[...dists]]);
+  } else {
+    // Emojis
+    const seq = pickRand(EMOJI_SEQS);
+    const pat = seq.pattern;
+    const len = pat.length <= 2 ? 6 : 5;
+    full = [];
+    for (let i = 0; i < len; i++) full.push(pat[i % pat.length]);
+    missingIdx = rand(Math.floor(len / 2), len - 1);
+    correct = full[missingIdx];
+    const allEmojis = [...new Set(EMOJI_SEQS.flatMap(s => s.pattern))];
+    const distractors = shuffle(allEmojis.filter(e => e !== correct)).slice(0, 3);
+    options = shuffle([correct, ...distractors]);
+  }
+
+  chAnswer = correct;
+
+  // Build sequence display in challenge area
+  const seqWrap = document.createElement('div');
+  seqWrap.className = 'seq-display';
+  full.forEach((item, i) => {
+    if (i > 0) {
+      const arrow = document.createElement('span');
+      arrow.className = 'seq-arrow';
+      arrow.textContent = '→';
+      seqWrap.appendChild(arrow);
+    }
+    const el = document.createElement('div');
+    el.className = 'seq-item' + (isNum ? ' num' : '') + (i === missingIdx ? ' missing' : '');
+    el.textContent = i === missingIdx ? '❓' : item;
+    seqWrap.appendChild(el);
+  });
+  qDisplay.innerHTML = '';
+  qDisplay.appendChild(seqWrap);
+
+  // Build option buttons
+  options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.textContent = opt;
+    btn.addEventListener('click', () => onChallengeAnswer(opt, btn));
+    container.appendChild(btn);
+  });
+}
+
+function onChallengeAnswer(chosen, btn) {
+  if (!chRunning) return;
+  const isCorrect = String(chosen) === String(chAnswer);
+  btn.classList.add(isCorrect ? 'correct' : 'wrong');
+
+  if (!isCorrect) {
+    document.querySelectorAll('#ch-opts .opt-btn').forEach(b => {
+      if (String(b.textContent) === String(chAnswer)) b.classList.add('correct');
+    });
+  }
+
+  document.querySelectorAll('#ch-opts .opt-btn').forEach(b => b.disabled = true);
+
+  if (isCorrect) { chPts += 10 + Math.min(chStreak, 5) * 2; chStreak++; }
+  else { chStreak = 0; }
+
+  document.getElementById('ch-pts').textContent = chPts;
+  document.getElementById('ch-streak').textContent = chStreak;
+  addScore(isCorrect);
+  setTimeout(genChallengeQ, 700);
+}
+
+function endChallenge() {
+  chRunning = false; clearInterval(chTimer);
+  document.getElementById('timer-bar').style.width = '0%';
+  document.getElementById('ch-time').textContent = 0;
+  const emoji = chPts >= 100 ? '🏆' : chPts >= 60 ? '🎉' : chPts >= 30 ? '👍' : '💪';
+  const title = chPts >= 100 ? '¡Increíble!' : chPts >= 60 ? '¡Excelente!' : chPts >= 30 ? '¡Bien hecho!' : '¡Sigue practicando!';
+  document.getElementById('result-emoji-big').textContent = emoji;
+  document.getElementById('result-title').textContent = title;
+  document.getElementById('result-sub').innerHTML =
+    `⭐ <strong>${chPts} puntos</strong> en 60 segundos<br>🔥 Mejor racha: <strong>${chStreak}</strong>`;
+  document.getElementById('result-overlay').classList.add('show');
+}
+
+document.getElementById('challenge-start').addEventListener('click', startChallenge);
+document.getElementById('result-play-again').addEventListener('click', () => {
+  document.getElementById('result-overlay').classList.remove('show');
+  resetChallenge();
+});
+
+/* ═══════════════════════════════════
+   INIT
+═══════════════════════════════════ */
+genFiguras();
+genNumeros();
+genEmojis();
+</script>
+</body>
+</html>
