@@ -31,6 +31,7 @@
   --seq-a:#F59E0B; --seq-b:#FDE68A; --seq-bg:#FFFBEB;
   --ch-a:#0D9488;  --ch-b:#99F6E4;  --ch-bg:#F0FDFA;
   --en-a:#1D4ED8;  --en-b:#BFDBFE;  --en-bg:#EFF6FF;
+  --cmp-a:#EA580C; --cmp-b:#FED7AA; --cmp-bg:#FFF7ED;
 }
 
 html, body {
@@ -129,6 +130,7 @@ html, body {
 .card-stripe.seq { background: var(--seq-a); }
 .card-stripe.ch  { background: var(--ch-a);  }
 .card-stripe.en  { background: var(--en-a);  }
+.card-stripe.cmp { background: var(--cmp-a); }
 
 /* card body */
 .card-body {
@@ -157,6 +159,7 @@ html, body {
 .card-icon.seq { background: var(--seq-bg); }
 .card-icon.ch  { background: var(--ch-bg);  }
 .card-icon.en  { background: var(--en-bg);  }
+.card-icon.cmp { background: var(--cmp-bg); }
 
 .card-meta { display: flex; flex-direction: column; gap: 1px; }
 .card-tag {
@@ -176,6 +179,7 @@ html, body {
 .card-tag.seq { background: var(--seq-bg); color: var(--seq-a); }
 .card-tag.ch  { background: var(--ch-bg);  color: var(--ch-a);  }
 .card-tag.en  { background: var(--en-bg);  color: var(--en-a);  }
+.card-tag.cmp { background: var(--cmp-bg); color: var(--cmp-a); }
 
 .card-title {
   font-size: 17px; font-weight: 900; color: var(--text); line-height: 1.2;
@@ -204,6 +208,7 @@ html, body {
 .feat-pill.seq-f { background: var(--seq-bg); color: var(--seq-a); border-color: var(--seq-b); }
 .feat-pill.ch-f  { background: var(--ch-bg);  color: var(--ch-a);  border-color: var(--ch-b);  }
 .feat-pill.en-f  { background: var(--en-bg);  color: var(--en-a);  border-color: var(--en-b);  }
+.feat-pill.cmp-f { background: var(--cmp-bg); color: var(--cmp-a); border-color: var(--cmp-b); }
 
 /* CTA button */
 .card-btn {
@@ -224,6 +229,7 @@ html, body {
 .card-btn.seq { background: var(--seq-a); color: #FFFBEB; }
 .card-btn.ch  { background: var(--ch-a);  color: #F0FDFA; }
 .card-btn.en  { background: var(--en-a);  color: #EFF6FF; }
+.card-btn.cmp { background: var(--cmp-a); color: #FFF7ED; }
 
 .btn-arrow { font-size: 16px; transition: transform 0.15s; }
 .app-card:hover .btn-arrow { transform: translateX(3px); }
@@ -396,6 +402,27 @@ html, body {
         </div>
       </div>
       <div class="card-btn tab"><span>Abrir Tablas</span><span class="btn-arrow">→</span></div>
+    </a>
+
+    <a class="app-card" href="comparar.html">
+      <div class="card-stripe cmp"></div>
+      <div class="card-body">
+        <div class="card-header-row">
+          <div class="card-icon cmp">⚖️</div>
+          <div class="card-meta">
+            <span class="card-tag cmp">Matemáticas</span>
+            <div class="card-title">Mayor · Menor · Igual</div>
+          </div>
+        </div>
+        <div class="card-desc">Compará pares de números usando &gt;, &lt; y = con bloques visuales de puntos y el truco del cocodrilo.</div>
+        <div class="features">
+          <span class="feat-pill cmp-f">&gt; Mayor que</span>
+          <span class="feat-pill cmp-f">&lt; Menor que</span>
+          <span class="feat-pill cmp-f">= Igual que</span>
+          <span class="feat-pill">Desafío 60s</span>
+        </div>
+      </div>
+      <div class="card-btn cmp"><span>Abrir Comparar</span><span class="btn-arrow">→</span></div>
     </a>
 
   </div>

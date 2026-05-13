@@ -22,6 +22,7 @@ A suite of interactive educational web apps designed for a 6-year-old child. Bui
 | Unidades, Decenas y Centenas | `unidades-decenas.html` | Place value visualizer — build numbers 0–999 using unit cubes, ten-bars, and hundred-squares; enter C/D/U digits for a shown number |
 | Suma y Resta | `suma-resta.html` | Addition and subtraction 0–20 with visual circle counters; circles get crossed out for subtraction |
 | Tablas | `tablas.html` | Multiplication tables for ×2 and ×5 with dot-array visualizations and a timed practice mode |
+| Mayor · Menor · Igual | `comparar.html` | Compare pairs of numbers using >, < and = — dot visualizers, the crocodile trick, interactive number line, and a 60s challenge |
 
 ### 🧩 Juegos y Lógica
 

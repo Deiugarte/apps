@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Mayor · Menor · Igual</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #FFF7ED;
+  --surface: #FFFFFF;
+  --cmp-a: #EA580C;
+  --cmp-bg: #FFF7ED;
+  --cmp-light: #FED7AA;
+  --cmp-mid: #FB923C;
+  --gt-clr: #DC2626;
+  --gt-bg: #FEE2E2;
+  --lt-clr: #2563EB;
+  --lt-bg: #DBEAFE;
+  --eq-clr: #16A34A;
+  --eq-bg: #DCFCE7;
+  --correct: #16A34A;
+  --correct-bg: #DCFCE7;
+  --wrong: #DC2626;
+  --wrong-bg: #FEE2E2;
+  --text: #1E293B;
+  --text-light: #64748B;
+  --border: rgba(0,0,0,0.08);
+  --shadow: 0 2px 12px rgba(0,0,0,0.06);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.10);
+  --radius: 16px;
+  --radius-sm: 10px;
+}
+
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  font-family: 'Nunito', sans-serif;
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  touch-action: manipulation;
+}
+
+#app { display: flex; flex-direction: column; height: 100vh; width: 100vw; }
+
+/* ── NAV ── */
+#nav {
+  display: flex; align-items: center;
+  padding: 0 12px; height: 56px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  gap: 6px; flex-shrink: 0;
+  overflow-x: auto; -webkit-overflow-scrolling: touch;
+}
+.home-btn {
+  display: flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; border-radius: 10px;
+  background: var(--bg); border: 1.5px solid var(--border);
+  text-decoration: none; font-size: 18px; flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+.home-btn:active { opacity: .7; }
+#nav-title {
+  font-family: 'Baloo 2', cursive;
+  font-size: 17px; font-weight: 800;
+  color: var(--cmp-a);
+  margin-right: 4px; white-space: nowrap; flex-shrink: 0;
+}
+.nav-tab {
+  padding: 6px 12px; border-radius: 20px;
+  border: 2px solid transparent;
+  font-size: 13px; font-weight: 700;
+  cursor: pointer; transition: all .15s;
+  white-space: nowrap; user-select: none;
+  background: transparent; color: var(--text-light);
+  font-family: 'Nunito', sans-serif; flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+.nav-tab.active { background: var(--text); color: white; border-color: var(--text); }
+#score-area {
+  margin-left: auto; display: flex; align-items: center; gap: 6px; flex-shrink: 0;
+}
+.score-chip {
+  display: flex; align-items: center; gap: 4px;
+  padding: 4px 10px; border-radius: 20px;
+  font-size: 13px; font-weight: 800;
+}
+.score-chip.right { background: var(--correct-bg); color: var(--correct); }
+.score-chip.wrong { background: var(--wrong-bg); color: var(--wrong); }
+
+/* ── CONTENT ── */
+#content {
+  flex: 1; overflow-y: auto; overflow-x: hidden;
+  padding: 20px 16px 40px;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ════════════════════════
+   APRENDER
+════════════════════════ */
+#tab-aprender { display: flex; flex-direction: column; gap: 16px; }
+
+.learn-card {
+  background: var(--surface); border-radius: var(--radius);
+  padding: 20px; box-shadow: var(--shadow);
+}
+.learn-card h2 {
+  font-family: 'Baloo 2', cursive;
+  font-size: 18px; font-weight: 800; margin-bottom: 16px;
+  color: var(--text);
+}
+
+/* symbol hero */
+.sym-hero {
+  display: flex; align-items: center; justify-content: center;
+  gap: 18px; flex-wrap: wrap; margin-bottom: 16px;
+}
+.sym-block {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+}
+.sym-nums {
+  display: flex; align-items: center; gap: 10px;
+}
+.sym-num {
+  font-family: 'Baloo 2', cursive; font-size: 44px; font-weight: 900; line-height: 1;
+}
+.sym-num.left { color: var(--text); }
+.sym-num.right { color: var(--text); }
+.sym-sign {
+  font-family: 'Baloo 2', cursive; font-size: 44px; font-weight: 900; line-height: 1;
+}
+.sym-sign.gt { color: var(--gt-clr); }
+.sym-sign.lt { color: var(--lt-clr); }
+.sym-sign.eq { color: var(--eq-clr); }
+.sym-label {
+  font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em;
+}
+.sym-label.gt { color: var(--gt-clr); }
+.sym-label.lt { color: var(--lt-clr); }
+.sym-label.eq { color: var(--eq-clr); }
+
+.learn-tip {
+  font-size: 14px; color: var(--text-light); font-weight: 600; line-height: 1.7;
+  background: var(--cmp-bg); border-radius: var(--radius-sm);
+  padding: 12px 14px; border: 1.5px solid var(--cmp-light);
+}
+.learn-tip strong { color: var(--cmp-a); }
+
+/* crocodile tip */
+.croc-card {
+  background: var(--surface); border-radius: var(--radius);
+  padding: 20px; box-shadow: var(--shadow);
+  display: flex; flex-direction: column; gap: 14px;
+}
+.croc-card h2 {
+  font-family: 'Baloo 2', cursive;
+  font-size: 18px; font-weight: 800;
+  color: var(--text);
+}
+.croc-visual {
+  display: flex; align-items: center; justify-content: center;
+  gap: 12px; font-size: 42px;
+}
+.croc-arrow {
+  font-family: 'Baloo 2', cursive; font-size: 52px; font-weight: 900;
+  color: var(--eq-clr);
+}
+.croc-tip-text {
+  font-size: 14px; color: var(--text-light); font-weight: 600; line-height: 1.7;
+  background: #F0FDF4; border-radius: var(--radius-sm);
+  padding: 12px 14px; border: 1.5px solid #BBF7D0;
+}
+.croc-tip-text strong { color: var(--eq-clr); }
+
+/* number line */
+.numline-wrap {
+  background: var(--surface); border-radius: var(--radius);
+  padding: 20px; box-shadow: var(--shadow);
+}
+.numline-wrap h2 {
+  font-family: 'Baloo 2', cursive;
+  font-size: 18px; font-weight: 800; margin-bottom: 16px;
+  color: var(--text);
+}
+.numline {
+  display: flex; align-items: center; gap: 0;
+  overflow-x: auto; padding: 8px 0 12px;
+  -webkit-overflow-scrolling: touch;
+}
+.nl-item {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 6px; flex-shrink: 0;
+}
+.nl-num {
+  font-family: 'Baloo 2', cursive; font-size: 18px; font-weight: 800;
+  width: 36px; height: 36px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--cmp-light); color: var(--cmp-a);
+  border: 2px solid var(--cmp-mid);
+}
+.nl-dash {
+  width: 14px; height: 3px; background: var(--cmp-mid);
+  flex-shrink: 0; align-self: center; margin-top: -18px;
+}
+.nl-caption {
+  font-size: 10px; font-weight: 700; color: var(--text-light);
+  text-transform: uppercase; letter-spacing: .04em;
+}
+
+/* interactive example in aprender */
+.learn-example {
+  background: var(--surface); border-radius: var(--radius);
+  padding: 20px; box-shadow: var(--shadow);
+  display: flex; flex-direction: column; gap: 14px;
+}
+.learn-example h2 {
+  font-family: 'Baloo 2', cursive;
+  font-size: 18px; font-weight: 800;
+  color: var(--text);
+}
+.le-scale {
+  display: flex; align-items: flex-end; justify-content: center;
+  gap: 0; position: relative; height: 120px;
+  margin-bottom: 4px;
+}
+.le-pan {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 6px; transition: transform .5s cubic-bezier(.34,1.56,.64,1);
+}
+.le-pan.tilt-up   { transform: translateY(-20px); }
+.le-pan.tilt-down { transform: translateY(20px); }
+.le-pan-num {
+  font-family: 'Baloo 2', cursive; font-size: 52px; font-weight: 900;
+  width: 88px; height: 88px; border-radius: 20px;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: var(--shadow-lg);
+}
+.le-pan-num.left  { background: var(--lt-bg); color: var(--lt-clr); }
+.le-pan-num.right { background: var(--gt-bg); color: var(--gt-clr); }
+.le-beam {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: flex-end; width: 80px; flex-shrink: 0; gap: 0;
+  padding-bottom: 0; align-self: flex-end; margin-bottom: 20px;
+}
+.le-sym {
+  font-family: 'Baloo 2', cursive; font-size: 52px; font-weight: 900;
+  line-height: 1; color: var(--cmp-a);
+}
+.le-name {
+  font-size: 13px; font-weight: 800; color: var(--cmp-a); text-transform: uppercase;
+  letter-spacing: .05em;
+}
+#le-prev, #le-next {
+  display: flex; align-items: center; justify-content: center;
+  gap: 10px;
+}
+.le-nav-btn {
+  padding: 10px 22px; border-radius: 22px; border: none;
+  font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 800;
+  background: var(--cmp-a); color: white; cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.le-nav-btn:active { opacity: .8; }
+.le-counter {
+  font-size: 13px; font-weight: 700; color: var(--text-light);
+  flex: 1; text-align: center;
+}
+
+/* ════════════════════════
+   PRÁCTICA
+════════════════════════ */
+#tab-practica { display: flex; flex-direction: column; gap: 16px; }
+
+.ex-card {
+  background: var(--surface); border-radius: var(--radius);
+  padding: 24px 20px 20px; box-shadow: var(--shadow-lg);
+  display: flex; flex-direction: column; gap: 16px;
+}
+.question-label {
+  font-size: 13px; font-weight: 700; color: var(--text-light);
+  text-transform: uppercase; letter-spacing: .06em; text-align: center;
+}
+
+/* comparison display */
+.cmp-display {
+  display: flex; align-items: center; justify-content: center; gap: 16px;
+}
+.cmp-box {
+  font-family: 'Baloo 2', cursive; font-size: 72px; font-weight: 900;
+  width: 110px; height: 100px; border-radius: 20px;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: var(--shadow);
+}
+.cmp-box.left  { background: var(--lt-bg); color: var(--lt-clr); }
+.cmp-box.right { background: var(--gt-bg); color: var(--gt-clr); }
+.cmp-box.equal-l { background: var(--eq-bg); color: var(--eq-clr); }
+.cmp-box.equal-r { background: var(--eq-bg); color: var(--eq-clr); }
+.cmp-gap {
+  width: 60px; height: 60px; border-radius: 50%;
+  border: 3px dashed var(--cmp-light);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Baloo 2', cursive; font-size: 36px; font-weight: 900;
+  color: var(--text-light); background: var(--cmp-bg);
+  transition: all .3s;
+}
+.cmp-gap.filled-gt { border-color: var(--gt-clr); background: var(--gt-bg); color: var(--gt-clr); }
+.cmp-gap.filled-lt { border-color: var(--lt-clr); background: var(--lt-bg); color: var(--lt-clr); }
+.cmp-gap.filled-eq { border-color: var(--eq-clr); background: var(--eq-bg); color: var(--eq-clr); }
+
+/* dots visualizer */
+.dots-compare {
+  display: flex; align-items: flex-start; gap: 12px;
+  justify-content: center; flex-wrap: wrap;
+  background: var(--bg); border-radius: 12px; padding: 12px;
+  min-height: 56px;
+}
+.dots-group { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.dots-label { font-size: 11px; font-weight: 800; color: var(--text-light); text-transform: uppercase; }
+.dots-row { display: flex; flex-wrap: wrap; gap: 4px; max-width: 180px; }
+.dot {
+  width: 22px; height: 22px; border-radius: 50%;
+}
+.dot.lt { background: var(--lt-clr); }
+.dot.gt { background: var(--gt-clr); }
+.dot.eq-l { background: var(--lt-clr); }
+.dot.eq-r { background: var(--gt-clr); }
+
+/* symbol buttons */
+.sym-btns {
+  display: flex; gap: 10px; justify-content: center;
+}
+.sym-btn {
+  width: 90px; height: 90px; border-radius: 20px; border: 3px solid transparent;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 2px; cursor: pointer; transition: all .15s;
+  font-family: 'Nunito', sans-serif;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+.sym-btn .btn-sym {
+  font-family: 'Baloo 2', cursive; font-size: 36px; font-weight: 900; line-height: 1;
+}
+.sym-btn .btn-lbl {
+  font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em;
+}
+.sym-btn.gt-btn {
+  background: var(--gt-bg); color: var(--gt-clr); border-color: var(--gt-clr);
+}
+.sym-btn.lt-btn {
+  background: var(--lt-bg); color: var(--lt-clr); border-color: var(--lt-clr);
+}
+.sym-btn.eq-btn {
+  background: var(--eq-bg); color: var(--eq-clr); border-color: var(--eq-clr);
+}
+.sym-btn:active { transform: scale(.93); }
+.sym-btn.disabled { opacity: .4; pointer-events: none; }
+
+/* feedback */
+.feedback-row {
+  display: flex; align-items: center; justify-content: center;
+  min-height: 36px;
+}
+.feedback-badge {
+  padding: 8px 22px; border-radius: 22px;
+  font-size: 16px; font-weight: 800;
+  opacity: 0; transition: opacity .2s;
+}
+.feedback-badge.show { opacity: 1; }
+.feedback-badge.correct { background: var(--correct-bg); color: var(--correct); }
+.feedback-badge.wrong   { background: var(--wrong-bg); color: var(--wrong); }
+
+.next-btn {
+  width: 100%; padding: 16px; border-radius: var(--radius); border: none;
+  background: var(--cmp-a); color: white;
+  font-family: 'Nunito', sans-serif; font-size: 18px; font-weight: 800;
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
+  display: none;
+}
+.next-btn:active { opacity: .85; }
+
+/* progress row */
+.progress-row {
+  display: flex; align-items: center; gap: 10px;
+}
+.progress-bar-wrap {
+  flex: 1; height: 8px; border-radius: 4px;
+  background: var(--cmp-light); overflow: hidden;
+}
+.progress-bar-fill {
+  height: 100%; border-radius: 4px;
+  background: var(--cmp-a); transition: width .4s;
+}
+.progress-label {
+  font-size: 12px; font-weight: 800; color: var(--text-light); white-space: nowrap;
+}
+
+/* ════════════════════════
+   DESAFÍO
+════════════════════════ */
+#tab-desafio { display: flex; flex-direction: column; gap: 16px; }
+
+.timer-wrap {
+  background: var(--surface); border-radius: var(--radius-sm);
+  padding: 10px 14px; box-shadow: var(--shadow);
+  display: flex; align-items: center; gap: 10px;
+}
+.timer-bar-bg {
+  flex: 1; height: 12px; border-radius: 6px;
+  background: var(--cmp-light); overflow: hidden;
+}
+.timer-bar-fill {
+  height: 100%; border-radius: 6px;
+  background: var(--cmp-a); transition: width .9s linear, background .3s;
+}
+.timer-text {
+  font-family: 'Baloo 2', cursive; font-size: 22px; font-weight: 900;
+  color: var(--cmp-a); min-width: 38px; text-align: right;
+}
+
+.streak-badge {
+  display: none; padding: 6px 14px; border-radius: 20px;
+  background: #FEF3C7; color: #D97706;
+  font-size: 14px; font-weight: 800;
+}
+.streak-badge.show { display: flex; align-items: center; gap: 4px; }
+
+/* challenge card (reuses ex-card) */
+
+/* result overlay */
+.result-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,.55); backdrop-filter: blur(4px);
+  z-index: 100; align-items: center; justify-content: center;
+}
+.result-overlay.show { display: flex; }
+.result-box {
+  background: var(--surface); border-radius: 28px;
+  padding: 36px 32px; width: min(380px, 90vw);
+  display: flex; flex-direction: column; align-items: center; gap: 14px;
+  box-shadow: 0 24px 64px rgba(0,0,0,.25);
+  text-align: center;
+}
+.result-emoji { font-size: 72px; }
+.result-title {
+  font-family: 'Baloo 2', cursive; font-size: 28px; font-weight: 900;
+  color: var(--text);
+}
+.result-sub { font-size: 16px; font-weight: 700; color: var(--text-light); }
+.result-score {
+  font-family: 'Baloo 2', cursive; font-size: 52px; font-weight: 900;
+  color: var(--cmp-a);
+}
+.result-stats {
+  display: flex; gap: 20px;
+}
+.result-stat {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+}
+.result-stat-num {
+  font-family: 'Baloo 2', cursive; font-size: 26px; font-weight: 900;
+}
+.result-stat-num.g { color: var(--correct); }
+.result-stat-num.b { color: var(--wrong); }
+.result-stat-label { font-size: 12px; font-weight: 700; color: var(--text-light); }
+.play-again-btn {
+  padding: 16px 36px; border-radius: 50px; border: none;
+  background: var(--cmp-a); color: white;
+  font-family: 'Nunito', sans-serif; font-size: 18px; font-weight: 800;
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
+}
+.play-again-btn:active { opacity: .85; }
+
+/* start overlay */
+.start-overlay {
+  background: var(--surface); border-radius: var(--radius);
+  padding: 32px 24px; box-shadow: var(--shadow-lg);
+  display: flex; flex-direction: column; align-items: center; gap: 16px; text-align: center;
+}
+.start-overlay h2 {
+  font-family: 'Baloo 2', cursive; font-size: 24px; font-weight: 900;
+  color: var(--text);
+}
+.start-overlay p { font-size: 15px; font-weight: 600; color: var(--text-light); line-height: 1.6; }
+.start-btn {
+  padding: 16px 40px; border-radius: 50px; border: none;
+  background: var(--cmp-a); color: white;
+  font-family: 'Nunito', sans-serif; font-size: 18px; font-weight: 800;
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
+}
+.start-btn:active { opacity: .85; }
+
+/* ─── SCALE ANIMATION ─── */
+@keyframes wobble {
+  0%,100% { transform: rotate(0deg); }
+  25% { transform: rotate(-6deg); }
+  75% { transform: rotate(6deg); }
+}
+.scale-wobble { animation: wobble .5s ease-in-out; }
+</style>
+</head>
+<body>
+<div id="app">
+  <!-- NAV -->
+  <nav id="nav">
+    <a href="index.html" class="home-btn">🏠</a>
+    <span id="nav-title">Mayor · Menor · Igual</span>
+    <button class="nav-tab active" onclick="switchTab('aprender')">Aprender</button>
+    <button class="nav-tab" onclick="switchTab('practica')">Práctica</button>
+    <button class="nav-tab" onclick="switchTab('desafio')">Desafío ⚡</button>
+    <div id="score-area">
+      <div class="score-chip right">✓ <span id="sc-right">0</span></div>
+      <div class="score-chip wrong">✗ <span id="sc-wrong">0</span></div>
+    </div>
+  </nav>
+
+  <!-- CONTENT -->
+  <div id="content">
+
+    <!-- ══ APRENDER ══ -->
+    <div id="tab-aprender" style="display:flex">
+
+      <!-- Symbols intro -->
+      <div class="learn-card">
+        <h2>Los símbolos de comparación</h2>
+        <div class="sym-hero">
+          <div class="sym-block">
+            <div class="sym-nums">
+              <span class="sym-num left">8</span>
+              <span class="sym-sign gt">&gt;</span>
+              <span class="sym-num right">3</span>
+            </div>
+            <span class="sym-label gt">Mayor que</span>
+          </div>
+          <div class="sym-block">
+            <div class="sym-nums">
+              <span class="sym-num left">3</span>
+              <span class="sym-sign lt">&lt;</span>
+              <span class="sym-num right">8</span>
+            </div>
+            <span class="sym-label lt">Menor que</span>
+          </div>
+          <div class="sym-block">
+            <div class="sym-nums">
+              <span class="sym-num left">5</span>
+              <span class="sym-sign eq">=</span>
+              <span class="sym-num right">5</span>
+            </div>
+            <span class="sym-label eq">Igual que</span>
+          </div>
+        </div>
+        <div class="learn-tip">
+          Usamos estos símbolos para <strong>comparar dos números</strong> y decir cuál es más grande, más pequeño o si son iguales.
+        </div>
+      </div>
+
+      <!-- Crocodile trick -->
+      <div class="croc-card">
+        <h2>🐊 El truco del cocodrilo</h2>
+        <div class="croc-visual">
+          <span>🔢</span>
+          <span class="croc-arrow">≫</span>
+          <span>🔢</span>
+        </div>
+        <div class="croc-tip-text">
+          Imagina que <strong>el símbolo es la boca de un cocodrilo</strong>. El cocodrilo <strong>siempre quiere comer el número más grande</strong> — su boca abierta apunta hacia el número mayor.
+          <br><br>
+          <strong>8 &gt; 3</strong> → la boca abre hacia el 8 (el más grande) ✅<br>
+          <strong>3 &lt; 8</strong> → la boca abre hacia el 8 también ✅
+        </div>
+      </div>
+
+      <!-- Number line -->
+      <div class="numline-wrap">
+        <h2>La recta numérica</h2>
+        <div class="numline" id="numline"></div>
+        <div class="learn-tip">
+          En la recta numérica, los números de la derecha son <strong>siempre mayores</strong> que los de la izquierda.
+        </div>
+      </div>
+
+      <!-- Interactive examples -->
+      <div class="learn-example">
+        <h2>Ejemplos interactivos</h2>
+        <div class="le-scale">
+          <div class="le-pan" id="le-pan-left">
+            <div class="le-pan-num left" id="le-num-left">7</div>
+          </div>
+          <div class="le-beam">
+            <div class="le-sym" id="le-sym">></div>
+            <div class="le-name" id="le-name">mayor que</div>
+          </div>
+          <div class="le-pan" id="le-pan-right">
+            <div class="le-pan-num right" id="le-num-right">4</div>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+          <button class="le-nav-btn" id="le-prev" onclick="leNav(-1)">← Anterior</button>
+          <span class="le-counter" id="le-counter">1 / 8</span>
+          <button class="le-nav-btn" id="le-next" onclick="leNav(1)">Siguiente →</button>
+        </div>
+      </div>
+
+    </div><!-- /tab-aprender -->
+
+    <!-- ══ PRÁCTICA ══ -->
+    <div id="tab-practica" style="display:none; flex-direction:column; gap:16px;">
+      <div class="ex-card">
+        <div class="question-label">¿Cuál símbolo va en el medio?</div>
+        <!-- comparison display -->
+        <div class="cmp-display">
+          <div class="cmp-box left" id="pr-num-a">7</div>
+          <div class="cmp-gap" id="pr-gap">?</div>
+          <div class="cmp-box right" id="pr-num-b">3</div>
+        </div>
+        <!-- dots visualizer -->
+        <div class="dots-compare" id="pr-dots"></div>
+        <!-- progress -->
+        <div class="progress-row">
+          <div class="progress-bar-wrap">
+            <div class="progress-bar-fill" id="pr-bar" style="width:0%"></div>
+          </div>
+          <span class="progress-label" id="pr-progress">0 / 10</span>
+        </div>
+        <!-- symbol buttons -->
+        <div class="sym-btns">
+          <button class="sym-btn gt-btn" id="btn-gt" onclick="prAnswer('gt')">
+            <span class="btn-sym">&gt;</span>
+            <span class="btn-lbl">Mayor que</span>
+          </button>
+          <button class="sym-btn eq-btn" id="btn-eq" onclick="prAnswer('eq')">
+            <span class="btn-sym">=</span>
+            <span class="btn-lbl">Igual que</span>
+          </button>
+          <button class="sym-btn lt-btn" id="btn-lt" onclick="prAnswer('lt')">
+            <span class="btn-sym">&lt;</span>
+            <span class="btn-lbl">Menor que</span>
+          </button>
+        </div>
+        <!-- feedback -->
+        <div class="feedback-row">
+          <div class="feedback-badge" id="pr-feedback"></div>
+        </div>
+        <button class="next-btn" id="pr-next" onclick="prNext()">Siguiente →</button>
+      </div>
+    </div><!-- /tab-practica -->
+
+    <!-- ══ DESAFÍO ══ -->
+    <div id="tab-desafio" style="display:none; flex-direction:column; gap:16px;">
+
+      <!-- start screen -->
+      <div class="start-overlay" id="ch-start">
+        <div style="font-size:64px">🏆</div>
+        <h2>¡Desafío!</h2>
+        <p>60 segundos para comparar el mayor número de pares posible.<br>¡Construye una racha para ganar puntos extra!</p>
+        <button class="start-btn" onclick="chStart()">¡Empezar!</button>
+      </div>
+
+      <!-- challenge area (hidden until started) -->
+      <div id="ch-area" style="display:none; flex-direction:column; gap:14px;">
+        <!-- timer -->
+        <div class="timer-wrap">
+          <div class="timer-bar-bg">
+            <div class="timer-bar-fill" id="ch-timer-bar" style="width:100%"></div>
+          </div>
+          <div class="timer-text" id="ch-timer-text">60</div>
+        </div>
+        <!-- streak -->
+        <div class="streak-badge" id="ch-streak">🔥 Racha: <span id="ch-streak-num">0</span></div>
+        <!-- question card -->
+        <div class="ex-card">
+          <div class="question-label">Elige el símbolo correcto</div>
+          <div class="cmp-display">
+            <div class="cmp-box left" id="ch-num-a">7</div>
+            <div class="cmp-gap" id="ch-gap">?</div>
+            <div class="cmp-box right" id="ch-num-b">3</div>
+          </div>
+          <div class="dots-compare" id="ch-dots"></div>
+          <div class="sym-btns">
+            <button class="sym-btn gt-btn" onclick="chAnswer('gt')">
+              <span class="btn-sym">&gt;</span>
+              <span class="btn-lbl">Mayor que</span>
+            </button>
+            <button class="sym-btn eq-btn" onclick="chAnswer('eq')">
+              <span class="btn-sym">=</span>
+              <span class="btn-lbl">Igual que</span>
+            </button>
+            <button class="sym-btn lt-btn" onclick="chAnswer('lt')">
+              <span class="btn-sym">&lt;</span>
+              <span class="btn-lbl">Menor que</span>
+            </button>
+          </div>
+          <div class="feedback-row">
+            <div class="feedback-badge" id="ch-feedback"></div>
+          </div>
+        </div>
+        <!-- score display -->
+        <div class="ex-card" style="flex-direction:row; align-items:center; justify-content:center; gap:28px; padding:16px;">
+          <div style="text-align:center;">
+            <div style="font-family:'Baloo 2',cursive;font-size:32px;font-weight:900;color:var(--cmp-a)" id="ch-score-disp">0</div>
+            <div style="font-size:12px;font-weight:700;color:var(--text-light);text-transform:uppercase">Puntos</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-family:'Baloo 2',cursive;font-size:32px;font-weight:900;color:var(--correct)" id="ch-correct-disp">0</div>
+            <div style="font-size:12px;font-weight:700;color:var(--text-light);text-transform:uppercase">Correctas</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-family:'Baloo 2',cursive;font-size:32px;font-weight:900;color:var(--wrong)" id="ch-wrong-disp">0</div>
+            <div style="font-size:12px;font-weight:700;color:var(--text-light);text-transform:uppercase">Errores</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /tab-desafio -->
+
+  </div><!-- /content -->
+</div><!-- /app -->
+
+<!-- RESULT OVERLAY -->
+<div class="result-overlay" id="result-overlay">
+  <div class="result-box">
+    <div class="result-emoji" id="res-emoji">🎉</div>
+    <div class="result-title" id="res-title">¡Muy bien!</div>
+    <div class="result-sub" id="res-sub">Terminó el tiempo</div>
+    <div class="result-score" id="res-score">0 pts</div>
+    <div class="result-stats">
+      <div class="result-stat">
+        <div class="result-stat-num g" id="res-right">0</div>
+        <div class="result-stat-label">Correctas ✓</div>
+      </div>
+      <div class="result-stat">
+        <div class="result-stat-num b" id="res-wrong">0</div>
+        <div class="result-stat-label">Errores ✗</div>
+      </div>
+    </div>
+    <button class="play-again-btn" onclick="chReset()">Jugar de nuevo</button>
+  </div>
+</div>
+
+<script>
+/* ─── UTILS ─── */
+const $ = id => document.getElementById(id);
+let scoreRight = 0, scoreWrong = 0;
+
+function addScore(correct) {
+  if (correct) { scoreRight++; $('sc-right').textContent = scoreRight; }
+  else         { scoreWrong++; $('sc-wrong').textContent = scoreWrong; }
+}
+
+function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+
+function makeDots(n, cls) {
+  const wrap = document.createElement('div');
+  wrap.className = 'dots-row';
+  for (let i = 0; i < n; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot ' + cls;
+    wrap.appendChild(d);
+  }
+  return wrap;
+}
+
+function renderDots(container, a, b) {
+  container.innerHTML = '';
+  const maxShow = 20;
+  if (a > maxShow || b > maxShow) {
+    container.style.display = 'none';
+    return;
+  }
+  container.style.display = 'flex';
+  // left group
+  const gl = document.createElement('div');
+  gl.className = 'dots-group';
+  const ll = document.createElement('div');
+  ll.className = 'dots-label'; ll.textContent = a;
+  gl.appendChild(ll); gl.appendChild(makeDots(a, a < b ? 'lt' : a === b ? 'eq-l' : 'gt'));
+  container.appendChild(gl);
+  // vs
+  const vs = document.createElement('div');
+  vs.style.cssText = 'font-size:22px;font-weight:900;color:var(--text-light);align-self:center;';
+  vs.textContent = '···';
+  container.appendChild(vs);
+  // right group
+  const gr = document.createElement('div');
+  gr.className = 'dots-group';
+  const lr = document.createElement('div');
+  lr.className = 'dots-label'; lr.textContent = b;
+  gr.appendChild(lr); gr.appendChild(makeDots(b, b < a ? 'lt' : b === a ? 'eq-r' : 'gt'));
+  container.appendChild(gr);
+}
+
+function getRelation(a, b) {
+  if (a > b) return 'gt';
+  if (a < b) return 'lt';
+  return 'eq';
+}
+
+function symChar(rel) { return rel === 'gt' ? '>' : rel === 'lt' ? '<' : '='; }
+function symName(rel) { return rel === 'gt' ? 'mayor que' : rel === 'lt' ? 'menor que' : 'igual que'; }
+
+/* ─── TABS ─── */
+const TABS = ['aprender','practica','desafio'];
+function switchTab(t) {
+  TABS.forEach(id => {
+    $('tab-' + id).style.display = id === t ? 'flex' : 'none';
+  });
+  document.querySelectorAll('.nav-tab').forEach((btn, i) => {
+    btn.classList.toggle('active', TABS[i] === t);
+  });
+  if (t === 'practica' && prState.first) prInit();
+}
+
+/* ════════════════════════
+   APRENDER — number line
+════════════════════════ */
+(function buildNumline() {
+  const nl = $('numline');
+  for (let i = 0; i <= 10; i++) {
+    if (i > 0) {
+      const dash = document.createElement('div');
+      dash.className = 'nl-dash';
+      nl.appendChild(dash);
+    }
+    const item = document.createElement('div');
+    item.className = 'nl-item';
+    const num = document.createElement('div');
+    num.className = 'nl-num'; num.textContent = i;
+    const cap = document.createElement('div');
+    cap.className = 'nl-caption';
+    cap.textContent = i === 0 ? 'cero' : i === 10 ? 'diez' : '';
+    item.appendChild(num); item.appendChild(cap);
+    nl.appendChild(item);
+  }
+})();
+
+/* ─── interactive examples ─── */
+const LE_EXAMPLES = [
+  [7, 4], [2, 9], [5, 5], [10, 3], [1, 6], [8, 8], [6, 2], [4, 7]
+];
+let leIdx = 0;
+
+function leRender() {
+  const [a, b] = LE_EXAMPLES[leIdx];
+  const rel = getRelation(a, b);
+  $('le-num-left').textContent  = a;
+  $('le-num-right').textContent = b;
+  $('le-sym').textContent  = symChar(rel);
+  $('le-name').textContent = symName(rel);
+  $('le-counter').textContent = (leIdx + 1) + ' / ' + LE_EXAMPLES.length;
+
+  // pan tilt
+  const panL = $('le-pan-left'), panR = $('le-pan-right');
+  panL.classList.remove('tilt-up','tilt-down');
+  panR.classList.remove('tilt-up','tilt-down');
+  if (rel === 'gt') { panR.classList.add('tilt-down'); }
+  else if (rel === 'lt') { panL.classList.add('tilt-down'); }
+
+  // color sym
+  $('le-sym').style.color = rel === 'gt' ? 'var(--gt-clr)'
+                           : rel === 'lt' ? 'var(--lt-clr)'
+                           : 'var(--eq-clr)';
+  $('le-name').style.color = $('le-sym').style.color;
+}
+
+function leNav(dir) {
+  leIdx = (leIdx + dir + LE_EXAMPLES.length) % LE_EXAMPLES.length;
+  leRender();
+}
+leRender();
+
+/* ════════════════════════
+   PRÁCTICA
+════════════════════════ */
+const prState = { a:0, b:0, rel:'', answered:false, correct:0, wrong:0, total:0, first:true };
+const PR_MAX = 10;
+
+function prGenPair() {
+  // 20% chance equal
+  if (Math.random() < 0.2) {
+    const n = randInt(0, 20);
+    return [n, n];
+  }
+  let a = randInt(0, 20), b = randInt(0, 20);
+  while (a === b) b = randInt(0, 20);
+  return [a, b];
+}
+
+function prInit() {
+  prState.first = false;
+  prState.correct = 0; prState.wrong = 0; prState.total = 0;
+  prNext();
+}
+
+function prLoad() {
+  prState.answered = false;
+  const [a, b] = prGenPair();
+  prState.a = a; prState.b = b;
+  prState.rel = getRelation(a, b);
+
+  $('pr-num-a').textContent = a;
+  $('pr-num-b').textContent = b;
+  $('pr-gap').textContent = '?';
+  $('pr-gap').className = 'cmp-gap';
+
+  // color boxes
+  $('pr-num-a').className = 'cmp-box ' + (prState.rel === 'eq' ? 'equal-l' : 'left');
+  $('pr-num-b').className = 'cmp-box ' + (prState.rel === 'eq' ? 'equal-r' : 'right');
+
+  renderDots($('pr-dots'), a, b);
+
+  // reset buttons
+  ['btn-gt','btn-eq','btn-lt'].forEach(id => {
+    $(id).classList.remove('disabled');
+    $(id).style.opacity = '';
+  });
+  const fb = $('pr-feedback');
+  fb.className = 'feedback-badge'; fb.textContent = '';
+  $('pr-next').style.display = 'none';
+}
+
+function prAnswer(choice) {
+  if (prState.answered) return;
+  prState.answered = true;
+  const correct = choice === prState.rel;
+  prState.total++;
+  if (correct) prState.correct++; else prState.wrong++;
+  addScore(correct);
+
+  // fill gap
+  const gap = $('pr-gap');
+  gap.textContent = symChar(prState.rel);
+  gap.className = 'cmp-gap filled-' + prState.rel;
+
+  // feedback
+  const fb = $('pr-feedback');
+  fb.className = 'feedback-badge show ' + (correct ? 'correct' : 'wrong');
+  fb.textContent = correct
+    ? ['¡Correcto! 🎉', '¡Muy bien! ⭐', '¡Exacto! 🌟'][randInt(0,2)]
+    : '✗ Era ' + symChar(prState.rel) + ' (' + symName(prState.rel) + ')';
+
+  // dim wrong buttons
+  ['btn-gt','btn-eq','btn-lt'].forEach(id => $(id).classList.add('disabled'));
+
+  // progress
+  const pct = (prState.total / PR_MAX) * 100;
+  $('pr-bar').style.width = pct + '%';
+  $('pr-progress').textContent = prState.total + ' / ' + PR_MAX;
+
+  if (prState.total >= PR_MAX) {
+    setTimeout(() => {
+      $('pr-next').style.display = 'block';
+      $('pr-next').textContent = '¡Otra ronda! 🔄';
+      $('pr-next').onclick = () => { prState.total = 0; prState.correct = 0; prState.wrong = 0;
+        $('pr-bar').style.width='0%'; $('pr-progress').textContent='0 / '+PR_MAX; prLoad(); };
+    }, 800);
+  } else {
+    $('pr-next').style.display = 'block';
+    $('pr-next').textContent = 'Siguiente →';
+    $('pr-next').onclick = prNext;
+  }
+}
+
+function prNext() {
+  prLoad();
+}
+
+/* ════════════════════════
+   DESAFÍO
+════════════════════════ */
+const ch = {
+  running: false, score: 0, correct: 0, wrong: 0,
+  streak: 0, timer: 60, interval: null,
+  a: 0, b: 0, rel: '', answered: false
+};
+
+function chStart() {
+  $('ch-start').style.display = 'none';
+  $('ch-area').style.display = 'flex';
+  ch.score = 0; ch.correct = 0; ch.wrong = 0;
+  ch.streak = 0; ch.timer = 60; ch.running = true;
+  $('ch-score-disp').textContent = 0;
+  $('ch-correct-disp').textContent = 0;
+  $('ch-wrong-disp').textContent = 0;
+  $('ch-streak').classList.remove('show');
+  chLoad();
+  ch.interval = setInterval(chTick, 1000);
+}
+
+function chTick() {
+  ch.timer--;
+  $('ch-timer-text').textContent = ch.timer;
+  const pct = (ch.timer / 60) * 100;
+  const bar = $('ch-timer-bar');
+  bar.style.width = pct + '%';
+  bar.style.background = ch.timer <= 15 ? '#DC2626'
+                        : ch.timer <= 30 ? '#F59E0B'
+                        : 'var(--cmp-a)';
+  if (ch.timer <= 0) chEnd();
+}
+
+function chLoad() {
+  ch.answered = false;
+  const pair = (() => {
+    if (Math.random() < 0.2) { const n = randInt(0,20); return [n,n]; }
+    let a = randInt(0,20), b = randInt(0,20);
+    while (a===b) b = randInt(0,20);
+    return [a,b];
+  })();
+  ch.a = pair[0]; ch.b = pair[1];
+  ch.rel = getRelation(ch.a, ch.b);
+
+  $('ch-num-a').textContent = ch.a;
+  $('ch-num-b').textContent = ch.b;
+  $('ch-gap').textContent = '?';
+  $('ch-gap').className = 'cmp-gap';
+  $('ch-num-a').className = 'cmp-box ' + (ch.rel === 'eq' ? 'equal-l' : 'left');
+  $('ch-num-b').className = 'cmp-box ' + (ch.rel === 'eq' ? 'equal-r' : 'right');
+  renderDots($('ch-dots'), ch.a, ch.b);
+
+  const fb = $('ch-feedback');
+  fb.className = 'feedback-badge'; fb.textContent = '';
+}
+
+function chAnswer(choice) {
+  if (!ch.running || ch.answered) return;
+  ch.answered = true;
+  const correct = choice === ch.rel;
+
+  $('ch-gap').textContent = symChar(ch.rel);
+  $('ch-gap').className = 'cmp-gap filled-' + ch.rel;
+
+  const fb = $('ch-feedback');
+
+  if (correct) {
+    ch.correct++; ch.streak++;
+    const bonus = ch.streak >= 3 ? ch.streak * 2 : 0;
+    const pts = 10 + bonus;
+    ch.score += pts;
+    addScore(true);
+    fb.className = 'feedback-badge show correct';
+    fb.textContent = bonus ? '+' + pts + ' pts 🔥' : '+10 pts ✓';
+    if (ch.streak >= 3) {
+      $('ch-streak').classList.add('show');
+      $('ch-streak-num').textContent = ch.streak;
+    }
+  } else {
+    ch.wrong++; ch.streak = 0;
+    addScore(false);
+    $('ch-streak').classList.remove('show');
+    fb.className = 'feedback-badge show wrong';
+    fb.textContent = '✗ Era ' + symChar(ch.rel);
+  }
+
+  $('ch-score-disp').textContent  = ch.score;
+  $('ch-correct-disp').textContent = ch.correct;
+  $('ch-wrong-disp').textContent   = ch.wrong;
+
+  setTimeout(chLoad, 900);
+}
+
+function chEnd() {
+  clearInterval(ch.interval);
+  ch.running = false;
+  const pct = ch.correct / Math.max(ch.correct + ch.wrong, 1);
+  $('res-emoji').textContent = pct >= 0.8 ? '🏆' : pct >= 0.5 ? '⭐' : '💪';
+  $('res-title').textContent = pct >= 0.8 ? '¡Excelente!' : pct >= 0.5 ? '¡Bien hecho!' : '¡Sigue practicando!';
+  $('res-sub').textContent   = '¡Se acabó el tiempo!';
+  $('res-score').textContent  = ch.score + ' pts';
+  $('res-right').textContent  = ch.correct;
+  $('res-wrong').textContent  = ch.wrong;
+  $('result-overlay').classList.add('show');
+}
+
+function chReset() {
+  $('result-overlay').classList.remove('show');
+  $('ch-area').style.display = 'none';
+  $('ch-start').style.display = 'flex';
+  ch.running = false; clearInterval(ch.interval);
+}
+</script>
+</body>
+</html>
